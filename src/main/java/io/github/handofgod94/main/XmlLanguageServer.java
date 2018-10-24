@@ -2,6 +2,9 @@ package io.github.handofgod94.main;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
@@ -17,10 +20,12 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
   public static final String LANGUAGE_ID = "xml";
 
   private LanguageClient client;
+  private Injector injector;
 
   @Override
   public void connect(LanguageClient client) {
     this.client = client;
+    injector = Guice.createInjector(new XmlLanguageServerModule());
     client.logMessage(new MessageParams(MessageType.Info, "Connected to language Server for XML"));
   }
 
@@ -77,5 +82,12 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
    */
   public LanguageClient getClient() {
     return client;
+  }
+
+  /**
+   * @return the injector
+   */
+  public Injector getInjector() {
+    return injector;
   }
 }

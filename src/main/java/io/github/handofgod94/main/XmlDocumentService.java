@@ -1,6 +1,7 @@
 package io.github.handofgod94.main;
 
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
+import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
 import io.github.handofgod94.schema.resolve.XsdSchemaResolver;
@@ -14,8 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.inject.Inject;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
+
 /**
- * XmlDocumentServer
+ * DocumentService for xml docs.
  */
 public class XmlDocumentService implements TextDocumentService {
 
@@ -23,7 +28,9 @@ public class XmlDocumentService implements TextDocumentService {
 
   private XmlLanguageServer server;
   private Map<String, TextDocumentItem> openDocumentItems = new HashMap<>();
-  private Map<String, SchemaDocument> xsdDocMap = new HashMap<>();
+  private Map<String, SchemaDocument> schemaDocMap = new HashMap<>();
+
+  @Inject XmlDiagnosticServiceFactory diagnosticServiceFactory;
 
   protected XmlDocumentService(XmlLanguageServer server) {
     this.server = server;
@@ -37,14 +44,14 @@ public class XmlDocumentService implements TextDocumentService {
     TextDocumentItem documentItem = params.getTextDocument();
     openDocumentItems.put(documentItem.getUri(), documentItem);
 
-    // TODO: Evaluate using google guice
-    SchemaResolver resolver = new XsdSchemaResolver();
+    // Get instance from google guice injector
+    SchemaResolver resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
     Optional<SchemaDocument> optSchemaDocument = resolver.resolve(documentItem.getText());
 
     // Generate diagnostics on open of document
-    optSchemaDocument.ifPresent(xsdDocument -> {
-      new XmlDiagnosticService(documentItem, server, xsdDocument).compute();
-      xsdDocMap.put(documentItem.getUri(), xsdDocument);
+    optSchemaDocument.ifPresent(schemaDocument -> {
+      diagnosticServiceFactory.create(documentItem, server, schemaDocument).compute();
+      schemaDocMap.put(documentItem.getUri(), schemaDocument);
     });
   }
 
@@ -72,8 +79,8 @@ public class XmlDocumentService implements TextDocumentService {
     documentItem.setText(params.getText());
 
     // Since schema is already loaded when we opened the document, so no need to
-    // load it agian
-    SchemaDocument schemaDocument = xsdDocMap.get(documentItem.getUri());
+    // load it again
+    SchemaDocument schemaDocument = schemaDocMap.get(documentItem.getUri());
 
     new XmlDiagnosticService(documentItem, server, schemaDocument).compute();
 	}

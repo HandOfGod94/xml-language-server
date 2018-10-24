@@ -29,9 +29,9 @@ public class DocumentManager {
   }
 
   /**
-   * Retrive singleton instance of DocumentManager
+   * Retrieve singleton instance of DocumentManager
    * @param
-   * @return Instnace of DocumenManager
+   * @return Instance of DocumentManager
    */
   public static DocumentManager getInstance() {
     if (instance == null) {
