@@ -4,7 +4,6 @@ import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
-import io.github.handofgod94.schema.resolve.XsdSchemaResolver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.*;
@@ -30,12 +29,12 @@ public class XmlDocumentService implements TextDocumentService {
   private Map<String, TextDocumentItem> openDocumentItems = new HashMap<>();
   private Map<String, SchemaDocument> schemaDocMap = new HashMap<>();
 
-  @Inject XmlDiagnosticServiceFactory diagnosticServiceFactory;
+  @Inject private XmlDiagnosticServiceFactory diagnosticServiceFactory;
 
-  protected XmlDocumentService(XmlLanguageServer server) {
+  public XmlDocumentService(XmlLanguageServer server) {
     this.server = server;
+    diagnosticServiceFactory = server.getInjector().getInstance(XmlDiagnosticServiceFactory.class);
   }
-
 
   @Override
   public void didOpen(DidOpenTextDocumentParams params) {
@@ -50,7 +49,8 @@ public class XmlDocumentService implements TextDocumentService {
 
     // Generate diagnostics on open of document
     optSchemaDocument.ifPresent(schemaDocument -> {
-      diagnosticServiceFactory.create(documentItem, server, schemaDocument).compute();
+      XmlDiagnosticService service = diagnosticServiceFactory.create(documentItem, server, schemaDocument);
+      service.compute();
       schemaDocMap.put(documentItem.getUri(), schemaDocument);
     });
   }
@@ -81,8 +81,7 @@ public class XmlDocumentService implements TextDocumentService {
     // Since schema is already loaded when we opened the document, so no need to
     // load it again
     SchemaDocument schemaDocument = schemaDocMap.get(documentItem.getUri());
-
-    new XmlDiagnosticService(documentItem, server, schemaDocument).compute();
+    diagnosticServiceFactory.create(documentItem, server, schemaDocument).compute();
 	}
 
 

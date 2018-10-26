@@ -7,7 +7,7 @@ import io.github.handofgod94.schema.SchemaDocument;
 
 /**
  * Factory for XmlDiagnosticService.
- * This is used for Assisted injection.
+ * This is used for injecting {@link XmlDiagnosticService} instance.
  */
 public interface XmlDiagnosticServiceFactory {
 

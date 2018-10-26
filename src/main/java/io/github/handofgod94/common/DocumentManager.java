@@ -1,44 +1,30 @@
 package io.github.handofgod94.common;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
- * Singleton document manager. Provides functionaloty to handle document querying.
+ * Provides functionality for document querying.
  * This is for directly working on documentItem and not on actual xml content.
+ * Various document related operations such as getting words, sentences etc. can
+ * be accomplished by the methods implemented.
  */
 
 public class DocumentManager {
 
-  private static DocumentManager instance;
-
-  // documentItem on which accessor wants to query
   private TextDocumentItem documentItem;
 
   // full document text as array of strings
   private String[] documentLines = null;
 
-  private DocumentManager() {
-    // Empty constructor for document manager
-  }
-
-  public void init(TextDocumentItem documentItem) {
+  @Inject
+  DocumentManager(@Assisted TextDocumentItem documentItem) {
     this.documentItem = documentItem;
-    this.documentLines = XmlUtil.getDocumentLines.apply(documentItem.getText());
-  }
-
-  /**
-   * Retrieve singleton instance of DocumentManager
-   * @param
-   * @return Instance of DocumentManager
-   */
-  public static DocumentManager getInstance() {
-    if (instance == null) {
-      return new DocumentManager();
-    } else {
-      return instance;
-    }
+    this.documentLines = XmlUtil.getDocumentLines.apply(this.documentItem.getText());
   }
 
   /**

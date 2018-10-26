@@ -20,12 +20,11 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
   public static final String LANGUAGE_ID = "xml";
 
   private LanguageClient client;
-  private Injector injector;
+  private Injector injector = Guice.createInjector(new XmlLanguageServerModule());;
 
   @Override
   public void connect(LanguageClient client) {
     this.client = client;
-    injector = Guice.createInjector(new XmlLanguageServerModule());
     client.logMessage(new MessageParams(MessageType.Info, "Connected to language Server for XML"));
   }
 
