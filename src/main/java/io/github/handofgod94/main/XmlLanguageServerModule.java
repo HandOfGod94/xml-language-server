@@ -4,6 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
+import io.github.handofgod94.common.DocumentManagerFactory;
+import io.github.handofgod94.lsp.diagnostic.DiagnosticErrorHandler;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.XsdDocument;
@@ -20,15 +22,15 @@ public class XmlLanguageServerModule extends AbstractModule {
   @Override
   protected void configure() {
 
-    // Schema Documents
     // Includes bindings for DTD and XSD documents.
     bind(SchemaDocument.class).annotatedWith(Names.named("Xsd")).to(XsdDocument.class);
-
-    // Resolvers, to fetch documents from remote
-    // Include bindings for DTD and XSD.
     bind(SchemaResolver.class).annotatedWith(Names.named("Xsd")).to(XsdSchemaResolver.class);
 
+    // Bindings for concrete class
+    bind(DiagnosticErrorHandler.class);
+
     // FactoryBuilders for assisted injections
+    install(new FactoryModuleBuilder().build(DocumentManagerFactory.class));
     install(new FactoryModuleBuilder().build(XmlDiagnosticServiceFactory.class));
   }
 }

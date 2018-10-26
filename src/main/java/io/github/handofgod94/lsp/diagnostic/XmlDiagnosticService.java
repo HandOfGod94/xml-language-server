@@ -1,6 +1,7 @@
 package io.github.handofgod94.lsp.diagnostic;
 
 import io.github.handofgod94.common.DocumentManager;
+import io.github.handofgod94.common.DocumentManagerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import org.apache.logging.log4j.LogManager;
@@ -32,15 +33,16 @@ public class XmlDiagnosticService {
   private SchemaDocument schemaDocument;
   private XmlLanguageServer server;
   private TextDocumentItem documentItem;
-
-  // Error Handler to get all the exceptions during the parsing
-  private DiagnosticErrorHandler errorHandler = new DiagnosticErrorHandler();
+  private DocumentManagerFactory documentManagerFactory;
+  private DiagnosticErrorHandler errorHandler;
 
   @Inject
-  public XmlDiagnosticService(@Assisted TextDocumentItem documentItem, @Assisted XmlLanguageServer server, @Assisted SchemaDocument schemaDocument) {
+  XmlDiagnosticService(@Assisted TextDocumentItem documentItem, @Assisted XmlLanguageServer server, @Assisted SchemaDocument schemaDocument, DocumentManagerFactory documentManagerFactory, DiagnosticErrorHandler errorHandler) {
     this.documentItem = documentItem;
     this.server = server;
     this.schemaDocument = schemaDocument;
+    this.documentManagerFactory = documentManagerFactory;
+    this.errorHandler = errorHandler;
   }
 
   /**
@@ -79,9 +81,7 @@ public class XmlDiagnosticService {
     List<Diagnostic> diagnostics = new ArrayList<>();
 
     // Create DocumentManager for querying document
-    // TODO: evaluate injection using google guice
-    DocumentManager manager = DocumentManager.getInstance();
-    manager.init(documentItem);
+    DocumentManager manager = documentManagerFactory.create(documentItem);
 
     for (Position position : errorMap.keySet()) {
       int lineNo = position.getLine();
