@@ -3,7 +3,6 @@ package io.github.handofgod94.main;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
-
 import io.github.handofgod94.common.DocumentManagerFactory;
 import io.github.handofgod94.lsp.diagnostic.DiagnosticErrorHandler;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;

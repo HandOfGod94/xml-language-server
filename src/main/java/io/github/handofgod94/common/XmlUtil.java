@@ -5,7 +5,7 @@ import java.util.function.Function;
 /**
  * Utility class for various xml related operations.
  * Similar to other utility classes, all the functions are lambdas
- * to keep functoins pure.
+ * to keep functions pure.
  */
 public class XmlUtil {
   /**

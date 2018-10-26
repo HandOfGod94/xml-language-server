@@ -2,17 +2,20 @@ package io.github.handofgod94.schema.resolve;
 
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.XsdDocument;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Optional;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Optional;
 
 /**
  * Lookup xsd schema for an xml.
@@ -51,7 +54,8 @@ public class XsdSchemaResolver implements SchemaResolver {
     Element rootElement = xmlDocument.getRootElement();
     if (rootElement != null) {
       // TODO: Think of something robust. We need to handle
-      schemaLocation = rootElement.attributeValue(new QName("schemaLocation", new Namespace(XSD_NAMEPSACE_DEFAULT_PREFIX, "http://www.w3.org/2001/XMLSchema-instance")));
+      schemaLocation = rootElement.attributeValue(new QName("schemaLocation",
+          new Namespace(XSD_NAMEPSACE_DEFAULT_PREFIX, "http://www.w3.org/2001/XMLSchema-instance")));
     }
     String[] locations = schemaLocation.split(" +");
     for (String loc : locations) {
@@ -64,7 +68,7 @@ public class XsdSchemaResolver implements SchemaResolver {
     return url;
   }
 
-  private String fetchSchema (String url) throws IOException {
+  private String fetchSchema(String url) throws IOException {
     // TODO: Move it to default interface method
     OkHttpClient client = new OkHttpClient();
     Request request = new Request.Builder().url(url).get().build();

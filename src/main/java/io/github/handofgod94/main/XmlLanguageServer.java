@@ -1,11 +1,16 @@
 package io.github.handofgod94.main;
 
-import java.util.concurrent.CompletableFuture;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-import org.eclipse.lsp4j.*;
+import java.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.InitializeParams;
+import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.MessageParams;
+import org.eclipse.lsp4j.MessageType;
+import org.eclipse.lsp4j.SaveOptions;
+import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextDocumentSyncKind;
+import org.eclipse.lsp4j.TextDocumentSyncOptions;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageClientAware;
 import org.eclipse.lsp4j.services.LanguageServer;
@@ -20,7 +25,7 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
   public static final String LANGUAGE_ID = "xml";
 
   private LanguageClient client;
-  private Injector injector = Guice.createInjector(new XmlLanguageServerModule());;
+  private Injector injector = Guice.createInjector(new XmlLanguageServerModule());
 
   @Override
   public void connect(LanguageClient client) {
@@ -51,11 +56,11 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
   @Override
   public TextDocumentService getTextDocumentService() {
     return new XmlDocumentService(this);
-	}
+  }
 
-	@Override
-	public WorkspaceService getWorkspaceService() {
-		return new XmlWorkspaceService();
+  @Override
+  public WorkspaceService getWorkspaceService() {
+    return new XmlWorkspaceService();
   }
 
   private ServerCapabilities createServerCapabilities() {
@@ -77,14 +82,18 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
   }
 
   /**
-   * @return the client
+   * Language client for the server.
+   * @return Client object used by the server
    */
   public LanguageClient getClient() {
     return client;
   }
 
   /**
-   * @return the injector
+   * Dependency Injector.
+   * All the class creation should be done through
+   * this injector
+   * @return Google Guice Injector
    */
   public Injector getInjector() {
     return injector;
