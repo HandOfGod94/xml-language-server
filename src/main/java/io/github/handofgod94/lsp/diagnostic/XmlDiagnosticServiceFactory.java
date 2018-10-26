@@ -1,9 +1,8 @@
 package io.github.handofgod94.lsp.diagnostic;
 
-import org.eclipse.lsp4j.TextDocumentItem;
-
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
  * Factory for XmlDiagnosticService.
@@ -19,5 +18,7 @@ public interface XmlDiagnosticServiceFactory {
    * @return XmlDiagnosticService instance
    * @see io.github.handofgod94.schema.XsdDocument
    */
-  XmlDiagnosticService create(TextDocumentItem documentItem, XmlLanguageServer server, SchemaDocument schemaDocument);
+  XmlDiagnosticService create(TextDocumentItem documentItem,
+                              XmlLanguageServer server,
+                              SchemaDocument schemaDocument);
 }

@@ -1,8 +1,7 @@
 package io.github.handofgod94.schema;
 
-import org.apache.xerces.xs.XSModel;
-
 import javax.xml.validation.Schema;
+import org.apache.xerces.xs.XSModel;
 
 /**
  * Interface to download and load schema related documents.
@@ -20,7 +19,7 @@ public interface SchemaDocument {
   void loadSchema(String schemaText);
 
   /**
-   * Getter for obtaining xsModel after schema is loaded
+   * Getter for obtaining xsModel after schema is loaded.
    * @return XsModel object containing loaded schema
    */
   XSModel getXsModel();

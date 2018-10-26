@@ -2,7 +2,6 @@ package io.github.handofgod94.common;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -13,7 +12,6 @@ import org.eclipse.lsp4j.TextDocumentItem;
  * Various document related operations such as getting words, sentences etc. can
  * be accomplished by the methods implemented.
  */
-
 public class DocumentManager {
 
   private TextDocumentItem documentItem;
@@ -50,8 +48,8 @@ public class DocumentManager {
     } else if (startLine > 0) {
       String line = documentLines[startLine];
       if ((line.length() > 0)
-        && (endColumn < line.length())
-        && (startColumn < endColumn)) {
+          && (endColumn < line.length())
+          && (startColumn < endColumn)) {
         word = line.substring(startColumn, endColumn);
       }
     }
@@ -120,7 +118,9 @@ public class DocumentManager {
   }
 
   /**
-   * @return the documentLines
+   * Get all the lines present in document as String array.
+   * These includes blank lines also
+   * @return String array with all the lines.
    */
   public String[] getDocumentLines() {
     return documentLines;

@@ -1,22 +1,25 @@
 package io.github.handofgod94.main;
 
+import com.google.inject.Inject;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.services.TextDocumentService;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.google.inject.Inject;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.lsp4j.DidChangeTextDocumentParams;
+import org.eclipse.lsp4j.DidCloseTextDocumentParams;
+import org.eclipse.lsp4j.DidOpenTextDocumentParams;
+import org.eclipse.lsp4j.DidSaveTextDocumentParams;
+import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
+import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.services.TextDocumentService;
 
 /**
  * DocumentService for xml docs.
@@ -44,12 +47,14 @@ public class XmlDocumentService implements TextDocumentService {
     openDocumentItems.put(documentItem.getUri(), documentItem);
 
     // Get instance from google guice injector
-    SchemaResolver resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
+    SchemaResolver resolver =
+        server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
     Optional<SchemaDocument> optSchemaDocument = resolver.resolve(documentItem.getText());
 
     // Generate diagnostics on open of document
     optSchemaDocument.ifPresent(schemaDocument -> {
-      XmlDiagnosticService service = diagnosticServiceFactory.create(documentItem, server, schemaDocument);
+      XmlDiagnosticService service =
+          diagnosticServiceFactory.create(documentItem, server, schemaDocument);
       service.compute();
       schemaDocMap.put(documentItem.getUri(), schemaDocument);
     });
@@ -73,8 +78,8 @@ public class XmlDocumentService implements TextDocumentService {
     openDocumentItems.remove(params.getTextDocument().getUri());
   }
 
-	@Override
-	public void didSave(DidSaveTextDocumentParams params) {
+  @Override
+  public void didSave(DidSaveTextDocumentParams params) {
     TextDocumentItem documentItem = openDocumentItems.get(params.getTextDocument().getUri());
     documentItem.setText(params.getText());
 
@@ -82,7 +87,5 @@ public class XmlDocumentService implements TextDocumentService {
     // load it again
     SchemaDocument schemaDocument = schemaDocMap.get(documentItem.getUri());
     diagnosticServiceFactory.create(documentItem, server, schemaDocument).compute();
-	}
-
-
+  }
 }
