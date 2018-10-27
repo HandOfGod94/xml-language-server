@@ -1,5 +1,6 @@
 package io.github.handofgod94.schema;
 
+import java.util.List;
 import javax.xml.validation.Schema;
 import org.apache.xerces.xs.XSModel;
 
@@ -14,9 +15,9 @@ public interface SchemaDocument {
   /**
    * Reads schema text of each document file in string format
    * and loads it to appropriate Xerces objects.
-   * @param schemaText String containing text of the schema document.
+   * @param schemaTextList list of string containing content of schema.
    */
-  void loadSchema(String schemaText);
+  void loadSchema(List<String> schemaTextList);
 
   /**
    * Getter for obtaining xsModel after schema is loaded.
