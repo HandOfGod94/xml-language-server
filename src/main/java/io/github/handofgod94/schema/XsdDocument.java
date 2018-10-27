@@ -1,8 +1,7 @@
 package io.github.handofgod94.schema;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -31,20 +30,28 @@ public class XsdDocument implements SchemaDocument {
    * Loads XSD schema into XSModel object.
    * The XSModel is the model object provided by Xerces. This class is the
    * container for all the XSD elements.
-   * @param schemaText XSD file in string format.
+   * @param schemaTextList list of string having content of xsds.
    */
   @Override
-  public void loadSchema(String schemaText) {
+  public void loadSchema(List<String> schemaTextList) {
     try {
       XSLoader schemaLoader = new XMLSchemaLoader();
       SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-      this.schema = factory.newSchema(new StreamSource(new StringReader(schemaText)));
-      // TODO: Find out better way to load model then writing to a temporary file.
-      File xsdFile = File.createTempFile("cache", ".tmp");
-      this.xsModel = schemaLoader.loadURI(xsdFile.toURI().toString());
-    } catch (SAXException | IOException ex) {
+      StreamSource[] sources = getSchemaSoruces(schemaTextList);
+      this.schema = factory.newSchema(sources);
+      // Load XSModel for multiple URI List
+      // this.xsModel = schemaLoader.loadURI(xsdFile.toURI().toString());
+    } catch (SAXException ex) {
       logger.error("Error while loading schema", ex);
     }
+  }
+
+  private StreamSource[] getSchemaSoruces(List<String> schemaStringList) {
+    StreamSource[] sources = new StreamSource[schemaStringList.size()];
+    for (int i = 0; i < sources.length; i++) {
+      sources[i] = new StreamSource(new StringReader(schemaStringList.get(i)));
+    }
+    return sources;
   }
 
   @Override
