@@ -2,6 +2,7 @@ package io.github.handofgod94.common;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import java.util.Optional;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -29,7 +30,7 @@ public class DocumentManager {
    * Get string between a given range.
    *
    * @param range Range describing the start and end position
-   * @return string having contents of the document between range.
+   * @return string having contents of the document between range, if range is valid.
    */
   public String getStringBetweenRange(Range range) {
     String word = "";
@@ -62,38 +63,43 @@ public class DocumentManager {
    * Inclusive of starting and excludes end
    *
    * @param position position in the document
-   * @return Range having starting position and ending position of word
+   * @return Range having starting position and ending position of word if valid
+   *         position is provided.
    */
-  public Range getWordRangeAt(Position position) {
-    // Current position
-    String line = documentLines[position.getLine()];
-    int column = position.getCharacter();
+  public Optional<Range> getWordRangeAt(Position position) {
 
-    int startColumn = column;
-    int endColumn = column;
+    if (isValidPosition(position)) {
+      // Current position
+      String line = documentLines[position.getLine()];
+      int column = position.getCharacter();
 
-    Position start = new Position(position.getLine(), startColumn);
-    Position end = new Position(position.getLine(), endColumn);
-    Range range = new Range(start, end);
+      int startColumn = column;
+      int endColumn = column;
 
-    if ((column < line.length()) && (Character.isJavaIdentifierPart(line.charAt(column)))) {
-      // traverse both left and right side of character to get word
-      // left side
-      for (int i = column; i > 0 && Character.isJavaIdentifierPart(line.charAt(i)); --i) {
-        startColumn = i;
+      Position start = new Position(position.getLine(), startColumn);
+      Position end = new Position(position.getLine(), endColumn);
+      Range range = new Range(start, end);
+
+      if ((column < line.length()) && (Character.isJavaIdentifierPart(line.charAt(column)))) {
+        // traverse both left and right side of character to get word
+        // left side
+        for (int i = column; i > 0 && Character.isJavaIdentifierPart(line.charAt(i)); --i) {
+          startColumn = i;
+        }
+
+        // right side
+        for (int i = column + 1;
+            i < line.length() && Character.isJavaIdentifierPart(line.charAt(i));
+            ++i) {
+          endColumn = i;
+        }
+        start.setCharacter(startColumn);
+        end.setCharacter(endColumn + 1);
       }
-
-      // right side
-      for (int i = column + 1;
-           i < line.length() && Character.isJavaIdentifierPart(line.charAt(i));
-           ++i) {
-        endColumn = i;
-      }
-      start.setCharacter(startColumn);
-      end.setCharacter(endColumn + 1);
+      return Optional.of(range);
     }
 
-    return range;
+    return Optional.empty();
   }
 
   /**
@@ -105,7 +111,11 @@ public class DocumentManager {
   public char getCharAt(Position position) {
     int lineNo = position.getLine();
     int column = position.getCharacter();
-    return documentLines[lineNo].charAt(column);
+
+    if (isValidPosition(position)) {
+      return documentLines[lineNo].charAt(column);
+    }
+    return ' ';
   }
 
   /**
@@ -124,5 +134,13 @@ public class DocumentManager {
    */
   public String[] getDocumentLines() {
     return documentLines;
+  }
+
+  private boolean isValidPosition(Position position) {
+    int lineNo = position.getLine();
+    int column = position.getCharacter();
+    return lineNo > 0 && column > 0
+            && lineNo < documentLines.length
+            && column < documentLines[lineNo].length();
   }
 }
