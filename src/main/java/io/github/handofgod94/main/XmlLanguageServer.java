@@ -77,6 +77,7 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
     // Set capabilities
     ServerCapabilities capabilities = new ServerCapabilities();
     capabilities.setTextDocumentSync(syncOptions);
+    capabilities.setHoverProvider(true);
 
     return capabilities;
   }

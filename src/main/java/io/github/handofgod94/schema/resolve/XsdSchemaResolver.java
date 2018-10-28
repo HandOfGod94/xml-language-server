@@ -86,6 +86,7 @@ public class XsdSchemaResolver implements SchemaResolver {
    */
   private List<String> fetchSchemas(List<String> urls) throws IOException {
     // TODO: Move it to default interface method
+    // TODO: Create only single client for the whole server.
     OkHttpClient client = new OkHttpClient();
     List<String> schemaTextList = new ArrayList<>();
 

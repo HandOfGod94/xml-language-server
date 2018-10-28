@@ -13,4 +13,19 @@ public class AbstractXmlUnitTest {
       + "\t <bean id = \"helloWorld\" class = \"io.github.handofgod94.HelloWorld\""
       + "scope = \"prototype\"></bean>\n"
       + "</beans>";
+
+  protected static final String MOCK_XSD_TEXT =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+      + "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n"
+      + "<xs:element name=\"shipto\">\n"
+      + "<xs:complexType>\n"
+      + "<xs:sequence>\n"
+      +    "<xs:element name=\"name\" type=\"xs:string\"/>\n"
+      +    "<xs:element name=\"address\" type=\"xs:string\"/>\n"
+      +    "<xs:element name=\"city\" type=\"xs:string\"/>\n"
+      +    "<xs:element name=\"country\" type=\"xs:string\"/>\n"
+      + "</xs:sequence>\n"
+      + "</xs:complexType>\n"
+      + "</xs:element>"
+      + "</xs:schema>";
 }

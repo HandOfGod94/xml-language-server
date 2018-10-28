@@ -60,6 +60,7 @@ public class XmlDiagnosticService {
     }
 
     // Error Map
+    // This will be calculated in DiagnosticErrorHandler class.
     Map<Position, String> errorMap = errorHandler.getErrorMap();
 
     // Create diagnostic collection and get data from error map
