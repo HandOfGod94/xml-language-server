@@ -9,10 +9,10 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public interface DocumentManagerFactory {
 
   /**
-   * Creates beans manager for text beans.
-   * The beans here refers to any beans and not specific to XML documents.
-   * @param documentItem text beans item.
-   * @return DocumentManager beans manager instance.
+   * Creates document manager for text document.
+   * The document here refers to any document and not specific to XML documents.
+   * @param documentItem text document item.
+   * @return DocumentManager document manager instance.
    */
   DocumentManager create(TextDocumentItem documentItem);
 }

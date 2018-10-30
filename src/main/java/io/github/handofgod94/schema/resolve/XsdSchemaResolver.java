@@ -47,7 +47,7 @@ public class XsdSchemaResolver implements SchemaResolver {
       Document xmlDocument = reader.read(new StringReader(xmlText));
       List<URI> schemaUris = searchSchemaUris(xmlDocument);
 
-      // set schema for the bean
+      // generate schema and models
       Schema schema = generateSchema(schemaUris);
       XSLoader xsLoader = new XMLSchemaLoader();
       XSModel xsModel = xsLoader.loadURIList(getUriStringList(schemaUris));
@@ -56,27 +56,27 @@ public class XsdSchemaResolver implements SchemaResolver {
       SchemaDocument document =
           new SchemaDocument.Builder(xsModel, schema, SchemaDocumentType.XSD).build();
 
-      return Optional.ofNullable(document);
+      return Optional.of(document);
     } catch (DocumentException | IOException | SAXException e) {
-      // TODO: It can produce too much of noise if beans is continuously in editing state.
-      logger.error("Unable to parse beans", e);
+      // TODO: It can produce too much of noise if document is continuously in editing state.
+      logger.error("Unable to parse or load schema", e);
     }
     return Optional.empty();
   }
 
   @Override
   public List<URI> searchSchemaUris(Document xmlDocument) {
-    String schemaLocatoin = "";
+    String schemaLocation = "";
     List<URI> uris = new ArrayList<>();
     Element root = xmlDocument.getRootElement();
 
     // find out all the schema location
     if (root != null) {
       // TODO: Think of something robust. We need to handle
-      schemaLocatoin = root.attributeValue(new QName("schemaLocation",
+      schemaLocation = root.attributeValue(new QName("schemaLocation",
         new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance")));
     }
-    String[] locations = schemaLocatoin.split(" +");
+    String[] locations = schemaLocation.split(" +");
 
     // create uri's for all the strings ending .xsd
     for (String loc : locations) {
