@@ -18,7 +18,7 @@ public class XmlUtil {
   private static final Logger logger = LogManager.getLogger(XmlUtil.class.getName());
 
   /**
-   * Initializes document lines.
+   * Initializes beans lines.
    *
    * @param text DocumentText having next lines
    * @return Array of strings for each line
@@ -37,7 +37,7 @@ public class XmlUtil {
       Document document = reader.read(new StringReader(line));
       return Optional.of(document);
     } catch (DocumentException e) {
-      logger.debug("Unable to parse document, it could be malformed", e);
+      logger.debug("Unable to parse beans, it could be malformed", e);
     }
     return Optional.empty();
   };

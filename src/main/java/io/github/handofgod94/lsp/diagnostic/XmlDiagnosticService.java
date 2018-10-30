@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.DocumentManager;
 import io.github.handofgod94.common.DocumentManagerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
-import io.github.handofgod94.schema.SchemaDocument;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Validator;
+import io.github.handofgod94.schema.SchemaDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.Diagnostic;
@@ -46,7 +46,7 @@ public class XmlDiagnosticService {
 
   /**
    * Gets all the errors in the XML file and push it to client. This needs to
-   * invoked on load/save of document.
+   * invoked on load/save of beans.
    */
   public void compute() {
     String text = documentItem.getText();
@@ -56,7 +56,7 @@ public class XmlDiagnosticService {
     try {
       validator.validate(new StreamSource(new StringReader(text)));
     } catch (SAXException | IOException ex) {
-      logger.error("Error occurred while parsing/reading the document", ex);
+      logger.error("Error occurred while parsing/reading the beans", ex);
     }
 
     // Error Map
@@ -81,7 +81,7 @@ public class XmlDiagnosticService {
     // Create diagnostic collection
     List<Diagnostic> diagnostics = new ArrayList<>();
 
-    // Create DocumentManager for querying document
+    // Create DocumentManager for querying beans
     DocumentManager manager = documentManagerFactory.create(documentItem);
 
     for (Position position : errorMap.keySet()) {

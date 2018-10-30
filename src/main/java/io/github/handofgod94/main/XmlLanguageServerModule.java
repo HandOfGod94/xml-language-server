@@ -11,8 +11,6 @@ import io.github.handofgod94.lsp.hover.TagHover;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.lsp.hover.provider.XmlHoverProviderFactory;
-import io.github.handofgod94.schema.SchemaDocument;
-import io.github.handofgod94.schema.XsdDocument;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
 import io.github.handofgod94.schema.resolve.XsdSchemaResolver;
 
@@ -27,7 +25,6 @@ public class XmlLanguageServerModule extends AbstractModule {
   protected void configure() {
 
     // Includes bindings for DTD and XSD documents.
-    bind(SchemaDocument.class).annotatedWith(Names.named("Xsd")).to(XsdDocument.class);
     bind(SchemaResolver.class).annotatedWith(Names.named("Xsd")).to(XsdSchemaResolver.class);
 
     // Bindings for concrete class
