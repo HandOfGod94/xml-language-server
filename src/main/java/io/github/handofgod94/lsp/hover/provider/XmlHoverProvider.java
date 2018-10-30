@@ -40,7 +40,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
   /**
    * Hover Provider for xml documents.
    * Hover information will contain documentation for
-   * word being hovered, if its present in schema document.
+   * word being hovered, if its present in schema beans.
    * <p>
    * XML Document primarily consists of two things, elements and attributes
    * The required instances based on the word which is being hovered will

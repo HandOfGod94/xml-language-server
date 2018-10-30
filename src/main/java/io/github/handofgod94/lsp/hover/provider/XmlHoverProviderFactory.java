@@ -9,9 +9,9 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public interface XmlHoverProviderFactory {
 
   /**
-   * Create hover provider for current document.
+   * Create hover provider for current beans.
    * @param position position being hovered
-   * @param documentItem current document
+   * @param documentItem current beans
    * @return XmlHoverProvider instance through which we can hove hover instances.
    */
   XmlHoverProvider create(Position position, TextDocumentItem documentItem);

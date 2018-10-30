@@ -1,33 +1,63 @@
 package io.github.handofgod94.schema;
 
-import java.util.List;
-import javax.xml.validation.Schema;
 import org.apache.xerces.xs.XSModel;
+import javax.xml.validation.Schema;
 
-/**
- * Interface to download and load schema related documents.
- * Each document loaded in the editor should have either xsd schema location
- * or DTD definition. These documents will then be loaded and stored in repository
- * for future use.
- */
-public interface SchemaDocument {
+public class SchemaDocument {
 
-  /**
-   * Reads schema text of each document file in string format
-   * and loads it to appropriate Xerces objects.
-   * @param schemaTextList list of string containing content of schema.
-   */
-  void loadSchema(List<String> schemaTextList);
+  // Required params
+  private XSModel xsModel;
+  private Schema schema;
+  private SchemaDocumentType documentType;
 
-  /**
-   * Getter for obtaining xsModel after schema is loaded.
-   * @return XsModel object containing loaded schema
-   */
-  XSModel getXsModel();
+  // Optional params
+  private String namespace;
 
-  /**
-   * Getter for obtaining schema definition from the schema document.
-   * @return Schema object
-   */
-  Schema getSchema();
+  private SchemaDocument(Builder builder) {
+    this.xsModel = builder.xsModel;
+    this.documentType =builder.documentType;
+    this.namespace = builder.namespace;
+    this.schema = builder.schema;
+  }
+
+  public static class Builder {
+
+    private XSModel xsModel;
+    private Schema schema;
+    private SchemaDocumentType documentType;
+    private String namespace;
+
+    public Builder(XSModel xsModel, Schema schema, SchemaDocumentType documentType) {
+      this.xsModel = xsModel;
+      this.schema = schema;
+      this.documentType = documentType;
+    }
+
+    public Builder addNamespace(String namespace) {
+      this.namespace = namespace;
+      return this;
+    }
+
+    public SchemaDocument build() {
+      return new SchemaDocument(this);
+    }
+  }
+
+  // Getters
+
+  public XSModel getXsModel() {
+    return xsModel;
+  }
+
+  public Schema getSchema() {
+    return schema;
+  }
+
+  public SchemaDocumentType getDocumentType() {
+    return documentType;
+  }
+
+  public String getNamespace() {
+    return namespace;
+  }
 }

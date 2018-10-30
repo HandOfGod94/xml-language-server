@@ -12,11 +12,11 @@ public interface XmlDiagnosticServiceFactory {
 
   /**
    * Factory method to create service.
-   * @param documentItem currently working text document
+   * @param documentItem currently working text item
    * @param server XmlLanguageServer object
-   * @param schemaDocument Instance of schema document, could be XSD or DTD
+   * @param schemaDocument Instance of schema document
    * @return XmlDiagnosticService instance
-   * @see io.github.handofgod94.schema.XsdDocument
+   * @see io.github.handofgod94.schema.SchemaDocument
    */
   XmlDiagnosticService create(TextDocumentItem documentItem,
                               XmlLanguageServer server,

@@ -25,7 +25,7 @@ public interface XmlHoverFactory {
    * This is useful for attributes of elements.
    * Each attribute will also be associated with a parent element.
    * Lookup for documentation will consider both parent and attribute
-   * name to obtain correct document.
+   * name to obtain correct beans.
    * @param wordHovered word being hovered. It is assumed that it will be
    *     name of the attribute.
    * @param parentName name of the parent element of current attribute.
