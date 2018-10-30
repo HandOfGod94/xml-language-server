@@ -46,7 +46,7 @@ public class XmlDiagnosticService {
 
   /**
    * Gets all the errors in the XML file and push it to client. This needs to
-   * invoked on load/save of beans.
+   * invoked on load/save of document.
    */
   public void compute() {
     String text = documentItem.getText();
@@ -56,7 +56,7 @@ public class XmlDiagnosticService {
     try {
       validator.validate(new StreamSource(new StringReader(text)));
     } catch (SAXException | IOException ex) {
-      logger.error("Error occurred while parsing/reading the beans", ex);
+      logger.error("Error occurred while parsing/reading the document", ex);
     }
 
     // Error Map
@@ -81,7 +81,7 @@ public class XmlDiagnosticService {
     // Create diagnostic collection
     List<Diagnostic> diagnostics = new ArrayList<>();
 
-    // Create DocumentManager for querying beans
+    // Create DocumentManager for querying text document
     DocumentManager manager = documentManagerFactory.create(documentItem);
 
     for (Position position : errorMap.keySet()) {

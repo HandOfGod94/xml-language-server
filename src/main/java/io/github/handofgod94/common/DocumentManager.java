@@ -8,16 +8,16 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
- * Provides functionality for beans querying.
+ * Provides querying functionality for text document.
  * This is for directly working on documentItem and not on actual xml content.
- * Various beans related operations such as getting words, sentences etc. can
+ * Various document related operations such as getting words, sentences etc. can
  * be accomplished by the methods implemented.
  */
 public class DocumentManager {
 
   private TextDocumentItem documentItem;
 
-  // full beans text as array of strings
+  // full document text as array of strings
   private String[] documentLines = null;
 
   @Inject
@@ -30,7 +30,7 @@ public class DocumentManager {
    * Get string between a given range.
    *
    * @param range Range describing the start and end position
-   * @return string having contents of the beans between range, if range is valid.
+   * @return string having contents of the document between range, if range is valid.
    */
   public String getStringBetweenRange(Range range) {
     String word = "";
@@ -62,7 +62,7 @@ public class DocumentManager {
    * Returns a range containing boundary of a word from current position.
    * Inclusive of starting and excludes end
    *
-   * @param position position in the beans
+   * @param position position in the document
    * @return Range having starting position and ending position of word if valid
    *         position is provided.
    */
@@ -103,9 +103,9 @@ public class DocumentManager {
   }
 
   /**
-   * Returns character at particular position in the beans.
+   * Returns character at particular position in the document.
    *
-   * @param position Position in the beans
+   * @param position Position in the document
    * @return Character at that position
    */
   public char getCharAt(Position position) {
@@ -119,8 +119,8 @@ public class DocumentManager {
   }
 
   /**
-   * Get line in string format at given line number from beans.
-   * @param lineNo line number in the beans (0 based index)
+   * Get line in string format at given line number from document.
+   * @param lineNo line number in the document (0 based index)
    * @return String having contents of the line
    */
   public String getLineAt(int lineNo) {
@@ -128,7 +128,7 @@ public class DocumentManager {
   }
 
   /**
-   * Get all the lines present in beans as String array.
+   * Get all the lines present in document as String array.
    * These includes blank lines also
    * @return String array with all the lines.
    */

@@ -10,7 +10,7 @@ import org.xml.sax.SAXParseException;
 /**
  * SAXCustomHandler to parse XML File using SAX. Since general SAX parsing will
  * stop at first error, we will not know all the errors that are present in the
- * beans. This class extends the base ErrorHandler class and add all the
+ * xml text. This class extends the base ErrorHandler class and add all the
  * errors and warnings to the list of errors.
  */
 public class DiagnosticErrorHandler implements ErrorHandler {

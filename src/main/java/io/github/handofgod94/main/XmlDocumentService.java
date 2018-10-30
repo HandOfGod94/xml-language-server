@@ -90,7 +90,7 @@ public class XmlDocumentService implements TextDocumentService {
 
   @Override
   public void didChange(DidChangeTextDocumentParams params) {
-    // Update beans if any changes found.
+    // Update text document if any changes found.
     List<TextDocumentContentChangeEvent> contentChanges = params.getContentChanges();
     TextDocumentItem textDocumentItem = openDocumentItems.get(params.getTextDocument().getUri());
     if (!contentChanges.isEmpty()) {
@@ -119,7 +119,7 @@ public class XmlDocumentService implements TextDocumentService {
     // Get instance from google guice injector
     Optional<SchemaDocument> optSchemaDocument = resolver.resolve(documentItem.getText());
 
-    // Generate diagnostics on open of beans
+    // Generate diagnostics on open of a text document
     optSchemaDocument.ifPresent(schemaDocument -> {
       XmlDiagnosticService service =
         diagnosticServiceFactory.create(documentItem, server, schemaDocument);
