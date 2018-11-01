@@ -38,6 +38,7 @@ public class XmlDocumentService implements TextDocumentService {
 
   private XmlLanguageServer server;
   private Map<String, TextDocumentItem> openDocumentItems = new HashMap<>();
+  private SchemaDocument schemaDocument;
 
   @Inject private final XmlDiagnosticServiceFactory diagnosticServiceFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
@@ -60,12 +61,13 @@ public class XmlDocumentService implements TextDocumentService {
 
     Position position = params.getPosition();
     TextDocumentItem documentItem = openDocumentItems.get(params.getTextDocument().getUri());
-    XmlHoverProvider provider = xmlHoverProviderFactory.create(position, documentItem);
+    XmlHoverProvider provider =
+        xmlHoverProviderFactory.create(position, schemaDocument, documentItem);
     Optional<XmlHover> optHover = provider.get();
 
     // Show hover if documentation is present, else show empty/no hover.
     Hover hover = optHover
-                  .map(xmlHover -> xmlHover.getHover())
+                  .map(XmlHover::getHover)
                   .orElse(new Hover(Collections.emptyList()));
     return CompletableFuture.completedFuture(hover);
   }
@@ -82,6 +84,7 @@ public class XmlDocumentService implements TextDocumentService {
 
     // Generate diagnostics when xml document is opened
     optSchemaDocument.ifPresent(schemaDocument -> {
+      this.schemaDocument = schemaDocument;
       XmlDiagnosticService service =
           diagnosticServiceFactory.create(documentItem, server, schemaDocument);
       service.compute();
@@ -115,12 +118,11 @@ public class XmlDocumentService implements TextDocumentService {
 
     // Currently, its again fetching the whole xsd and reparsing it
     // to create new xs models. This must be avoided.
-
-    // Get instance from google guice injector
     Optional<SchemaDocument> optSchemaDocument = resolver.resolve(documentItem.getText());
 
     // Generate diagnostics on open of a text document
     optSchemaDocument.ifPresent(schemaDocument -> {
+      this.schemaDocument = schemaDocument;
       XmlDiagnosticService service =
         diagnosticServiceFactory.create(documentItem, server, schemaDocument);
       service.compute();

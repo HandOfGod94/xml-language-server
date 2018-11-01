@@ -1,10 +1,7 @@
 package io.github.handofgod94.schema.resolve;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,16 +42,21 @@ public class XsdSchemaResolver implements SchemaResolver {
     try {
       SAXReader reader = new SAXReader();
       Document xmlDocument = reader.read(new StringReader(xmlText));
+      Namespace namespace = xmlDocument.getRootElement().getNamespace();
       List<URI> schemaUris = searchSchemaUris(xmlDocument);
 
       // generate schema and models
-      Schema schema = generateSchema(schemaUris);
+      StreamSource[] sources = generateSources(schemaUris);
+      Schema schema = generateSchema(sources);
       XSLoader xsLoader = new XMLSchemaLoader();
       XSModel xsModel = xsLoader.loadURIList(getUriStringList(schemaUris));
 
       // TODO: set other information regarding schema.
       SchemaDocument document =
-          new SchemaDocument.Builder(xsModel, schema, SchemaDocumentType.XSD).build();
+          new SchemaDocument.Builder(xsModel, schema, SchemaDocumentType.XSD)
+            .addNamespace(namespace)
+            .addParsedSchemaDocs(generateParsedSchemaDocs(schemaUris))
+            .build();
 
       return Optional.of(document);
     } catch (DocumentException | IOException | SAXException e) {
@@ -72,7 +74,7 @@ public class XsdSchemaResolver implements SchemaResolver {
 
     // find out all the schema location
     if (root != null) {
-      // TODO: Think of something robust. We need to handle
+      // TODO: Think of something robust. It should handle any prefix.
       schemaLocation = root.attributeValue(new QName("schemaLocation",
         new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance")));
     }
@@ -89,14 +91,28 @@ public class XsdSchemaResolver implements SchemaResolver {
     return uris;
   }
 
-  private Schema generateSchema(List<URI> schemaUris) throws IOException, SAXException {
+  private List<Document> generateParsedSchemaDocs(List<URI> schemaUris) throws DocumentException, IOException {
+    StreamSource[] sources = generateSources(schemaUris);
+    SAXReader reader = new SAXReader();
+    List<Document> documents = new ArrayList<>();
+    for (StreamSource source: sources) {
+      Document document = reader.read(source.getInputStream());
+      documents.add(document);
+    }
+    return documents;
+  }
+
+  private StreamSource[] generateSources(List<URI> schemaUris) throws IOException {
 
     // Generate stream source for uris
     StreamSource[] sources = new StreamSource[schemaUris.size()];
     for (int i = 0; i < sources.length; i++) {
       sources[i] = new StreamSource(schemaUris.get(i).toURL().openStream());
     }
+    return sources;
+  }
 
+  private Schema generateSchema(StreamSource[] sources) throws SAXException {
     // Generate schema using the stream sources
     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     Schema schema = factory.newSchema(sources);

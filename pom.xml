@@ -33,6 +33,7 @@
     <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
     <junit.version>5.2.0</junit.version>
     <jacoco.version>0.8.1</jacoco.version>
+    <jaxen.version>1.1.6</jaxen.version>
   </properties>
 
 
@@ -77,6 +78,14 @@
       <artifactId>guice-assistedinject</artifactId>
       <version>${google.guice.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>${jaxen.version}</version>
+    </dependency>
+
+
+    <!-- test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>

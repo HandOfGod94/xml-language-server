@@ -1,7 +1,10 @@
 package io.github.handofgod94.schema;
 
 import org.apache.xerces.xs.XSModel;
+import org.dom4j.Document;
+import org.dom4j.Namespace;
 import javax.xml.validation.Schema;
+import java.util.List;
 
 public class SchemaDocument {
 
@@ -9,15 +12,17 @@ public class SchemaDocument {
   private XSModel xsModel;
   private Schema schema;
   private SchemaDocumentType documentType;
+  private List<Document> parsedSchemaDocs;
 
   // Optional params
-  private String namespace;
+  private Namespace namespace;
 
   private SchemaDocument(Builder builder) {
     this.xsModel = builder.xsModel;
     this.documentType =builder.documentType;
     this.namespace = builder.namespace;
     this.schema = builder.schema;
+    this.parsedSchemaDocs = builder.parsedSchemaDocs;
   }
 
   public static class Builder {
@@ -25,7 +30,8 @@ public class SchemaDocument {
     private XSModel xsModel;
     private Schema schema;
     private SchemaDocumentType documentType;
-    private String namespace;
+    private Namespace namespace;
+    private List<Document> parsedSchemaDocs;
 
     public Builder(XSModel xsModel, Schema schema, SchemaDocumentType documentType) {
       this.xsModel = xsModel;
@@ -33,8 +39,13 @@ public class SchemaDocument {
       this.documentType = documentType;
     }
 
-    public Builder addNamespace(String namespace) {
+    public Builder addNamespace(Namespace namespace) {
       this.namespace = namespace;
+      return this;
+    }
+
+    public Builder addParsedSchemaDocs(List<Document> parsedSchemas) {
+      this.parsedSchemaDocs = parsedSchemas;
       return this;
     }
 
@@ -57,7 +68,11 @@ public class SchemaDocument {
     return documentType;
   }
 
-  public String getNamespace() {
+  public Namespace getNamespace() {
     return namespace;
+  }
+
+  public List<Document> getParsedSchemaDocs() {
+    return parsedSchemaDocs;
   }
 }

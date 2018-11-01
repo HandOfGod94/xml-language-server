@@ -9,6 +9,7 @@ import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import java.util.Optional;
+import io.github.handofgod94.schema.SchemaDocument;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.eclipse.lsp4j.Position;
@@ -27,13 +28,17 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
   private final TextDocumentItem documentItem;
   private final XmlHoverFactory xmlHoverFactory;
   private final DocumentManagerFactory documentManagerFactory;
+  private final SchemaDocument document;
 
   @Inject
-  XmlHoverProvider(@Assisted Position position,@Assisted TextDocumentItem documentItem,
-      XmlHoverFactory xmlHoverFactory, DocumentManagerFactory documentManagerFactory) {
+  XmlHoverProvider(@Assisted Position position, @Assisted TextDocumentItem documentItem,
+                   @Assisted SchemaDocument document,
+                   XmlHoverFactory xmlHoverFactory,
+                   DocumentManagerFactory documentManagerFactory) {
     this.position = position;
     this.documentItem = documentItem;
     this.xmlHoverFactory = xmlHoverFactory;
+    this.document = document;
     this.documentManagerFactory = documentManagerFactory;
   }
 
@@ -58,7 +63,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
 
     Optional<Range> optWordRange = docManager.getWordRangeAt(position);
     String wordHovered =
-        optWordRange.map(wordRange -> docManager.getStringBetweenRange(wordRange)).orElse("");
+        optWordRange.map(docManager::getStringBetweenRange).orElse("");
 
     if (optPartialDoc.isPresent()) {
       Document partialDoc = optPartialDoc.get();
@@ -67,11 +72,11 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
       // If root element name is equal to word hovered that means
       // we are looking at tag, otherwise it could be attribute or something else altogether
       if (wordHovered.equals(root.getName())) {
-        XmlHover hover = xmlHoverFactory.getTagHover(wordHovered);
+        XmlHover hover = xmlHoverFactory.getTagHover(wordHovered, document);
         return Optional.of(hover);
       } else if (root.attribute(wordHovered) != null) {
         // if word hovered is attribute
-        XmlHover hover = xmlHoverFactory.getAttributeHover(wordHovered, root.getName());
+        XmlHover hover = xmlHoverFactory.getAttributeHover(wordHovered, document, root.getName());
         return Optional.of(hover);
       }
     }
