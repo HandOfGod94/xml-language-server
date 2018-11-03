@@ -13,7 +13,7 @@ capabilities such as autocomplete, validation or documentation support for XML d
   - [ ] XSD
   - [ ] DTD
 * Documentation
-  - [ ] XSD
+  - [x] XSD
   - [ ] DTD
 
 ## What is language server?

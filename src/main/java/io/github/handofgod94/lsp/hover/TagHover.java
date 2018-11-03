@@ -6,16 +6,13 @@ import io.github.handofgod94.schema.SchemaDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
+import org.dom4j.Element;
 import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Hover information for tags.
@@ -35,33 +32,61 @@ public class TagHover implements XmlHover {
 
   @Override
   public Hover getHover() {
-    StringBuffer hoverText = new StringBuffer();
-
     // TODO: Namespace should come from wordHovered, and only those documents should
     // be queried who has this namespace
     // Get annotations
     String namespace = schemaDocument.getNamespace().getText();
 
     // Get all the documentation node append the text to hover text
-    hoverText.append(searchInParsedDocs(wordHovered));
+    List<Node> docNodes = searchInParsedDocs(wordHovered);
 
     // Add all the documentation text to hover text.
-    MarkupContent content = new MarkupContent();
-    content.setKind(MarkupKind.PLAINTEXT);
-    content.setValue(hoverText.toString());
+    MarkupContent content = formDocStrings(docNodes);
     Hover hover = new Hover(content);
     return hover;
   }
 
-  private String searchInParsedDocs(String elementName) {
+  private List<Node> searchInParsedDocs(String elementName) {
     List<Document> parsedDocs = this.schemaDocument.getParsedSchemaDocs();
-    String annotationExpr = String.format("//*[local-name()='element'][@name='%s']/*[local-name()='annotation']", elementName);
-    for (Document doc :parsedDocs) {
+    List<Node> docNodes = new ArrayList<>();
+    String annotationExpr =
+        String.format("//*[local-name()='element'][@name='%s']/*[local-name()='annotation']", elementName);
+    for (Document doc : parsedDocs) {
       Node node = doc.selectSingleNode(annotationExpr);
       if (node != null) {
-        return node.getStringValue();
+        // Get all the children for a given node
+        docNodes = node.selectNodes("*");
       }
     }
-    return "";
+    return docNodes;
+  }
+
+  private MarkupContent formDocStrings(List<Node> nodes) {
+    MarkupContent docs = new MarkupContent();
+    StringBuffer buffer = new StringBuffer();
+
+    // Add tag info
+    String markedTag = String.format("**TAG** : %s  \n", wordHovered);
+    buffer.append(markedTag);
+
+    if (nodes.size() == 1) {
+      // if only CDATA is present then add it under Description
+      String descStr = nodes.get(0).getText().trim();
+      String markedDesc = String.format("**DESCRIPTION**: %s  \n", descStr.trim());
+      buffer.append(markedDesc);
+    } else {
+      // else get all the nodes and add "source" and its value as "Description"
+      for (Node node : nodes) {
+        Element element = (Element) node;
+        String source = element.attributeValue("source").toUpperCase();
+        String value = element.getTextTrim();
+        String markedStr = String.format("**%s**: %s  \n", source, value);
+        buffer.append(markedStr);
+      }
+    }
+
+    docs.setKind(MarkupKind.MARKDOWN);
+    docs.setValue(buffer.toString());
+    return docs;
   }
 }
