@@ -1,7 +1,10 @@
 package io.github.handofgod94.common;
 
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +19,12 @@ import org.dom4j.io.SAXReader;
 public class XmlUtil {
 
   private static final Logger logger = LogManager.getLogger(XmlUtil.class.getName());
+
+  // XSD Constants
+  public static final String XSD_UNBOUNDED = "UNBOUNDED";
+  public static final String XSD_ANY = "any";
+  public static final String XSD_WC = "WC";
+  public static final Set<String> XSD_KEYS = new HashSet<>(Arrays.asList("", XSD_UNBOUNDED, XSD_ANY, XSD_WC));
 
   /**
    * Initializes document lines.
