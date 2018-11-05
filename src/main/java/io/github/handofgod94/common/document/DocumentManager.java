@@ -1,8 +1,9 @@
-package io.github.handofgod94.common;
+package io.github.handofgod94.common.document;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import java.util.Optional;
+import io.github.handofgod94.common.XmlUtil;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;

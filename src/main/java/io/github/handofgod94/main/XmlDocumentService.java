@@ -3,6 +3,8 @@ package io.github.handofgod94.main;
 import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import io.github.handofgod94.lsp.completion.CompletionProvider;
+import io.github.handofgod94.lsp.completion.CompletionProviderFactory;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.lsp.hover.XmlHover;
@@ -18,6 +20,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionList;
+import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
@@ -27,6 +32,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
 /**
@@ -43,6 +49,7 @@ public class XmlDocumentService implements TextDocumentService {
   @Inject private final XmlDiagnosticServiceFactory diagnosticServiceFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
   @Inject private final SchemaResolver resolver;
+  @Inject private final CompletionProviderFactory completionProviderFactory;
 
   /**
    * Create Document service for XML documents.
@@ -54,6 +61,7 @@ public class XmlDocumentService implements TextDocumentService {
     xmlHoverProviderFactory = server.getInjector().getInstance(XmlHoverProviderFactory.class);
     // TODO: named injection should be based on dtd or xsd texts.
     resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
+    completionProviderFactory = server.getInjector().getInstance(CompletionProviderFactory.class);
   }
 
   @Override
@@ -70,6 +78,15 @@ public class XmlDocumentService implements TextDocumentService {
                   .map(XmlHover::getHover)
                   .orElse(new Hover(Collections.emptyList()));
     return CompletableFuture.completedFuture(hover);
+  }
+
+  @Override
+  public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams params) {
+    TextDocumentItem documentItem =
+        openDocumentItems.get(params.getTextDocument().getUri());
+    CompletionProvider completionProvider =
+        completionProviderFactory.create(params, documentItem, schemaDocument);
+    return CompletableFuture.completedFuture(Either.forLeft(completionProvider.get()));
   }
 
   @Override

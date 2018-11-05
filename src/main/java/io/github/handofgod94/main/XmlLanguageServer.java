@@ -2,7 +2,9 @@ package io.github.handofgod94.main;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.MessageParams;
@@ -68,6 +70,11 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
     SaveOptions saveOptions = new SaveOptions();
     saveOptions.setIncludeText(true);
 
+    // Completion Options
+    CompletionOptions completionOptions = new CompletionOptions();
+    completionOptions.setTriggerCharacters(Arrays.asList("<", " ", "{"));
+    completionOptions.setResolveProvider(false);
+
     // TextDocument sync options
     TextDocumentSyncOptions syncOptions = new TextDocumentSyncOptions();
     syncOptions.setOpenClose(true);
@@ -78,6 +85,7 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
     ServerCapabilities capabilities = new ServerCapabilities();
     capabilities.setTextDocumentSync(syncOptions);
     capabilities.setHoverProvider(true);
+    capabilities.setCompletionProvider(completionOptions);
 
     return capabilities;
   }

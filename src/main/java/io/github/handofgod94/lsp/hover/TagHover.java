@@ -88,7 +88,6 @@ public class TagHover implements XmlHover {
         buffer.append(markedStr);
       }
     }
-
     docs.setKind(MarkupKind.MARKDOWN);
     docs.setValue(buffer.toString());
     return docs;

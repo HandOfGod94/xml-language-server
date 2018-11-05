@@ -2,8 +2,8 @@ package io.github.handofgod94.lsp.diagnostic;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.common.DocumentManager;
-import io.github.handofgod94.common.DocumentManagerFactory;
+import io.github.handofgod94.common.document.DocumentManager;
+import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.io.IOException;

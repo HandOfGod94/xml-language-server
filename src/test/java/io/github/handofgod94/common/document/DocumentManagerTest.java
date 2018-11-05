@@ -1,10 +1,11 @@
-package io.github.handofgod94.common;
+package io.github.handofgod94.common.document;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Optional;
 
+import io.github.handofgod94.common.document.DocumentManager;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
