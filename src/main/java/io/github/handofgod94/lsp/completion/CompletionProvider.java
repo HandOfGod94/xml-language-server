@@ -3,9 +3,13 @@ package io.github.handofgod94.lsp.completion;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
+import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.document.DocumentManager;
+import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
+import io.github.handofgod94.lsp.completion.attribute.AttrCompletionFactory;
+import io.github.handofgod94.lsp.completion.attribute.XsdAttrCompletionItem;
 import io.github.handofgod94.lsp.completion.tag.TagCompletionItem;
 import io.github.handofgod94.lsp.completion.tag.TagCompletionItemFactory;
 import io.github.handofgod94.schema.SchemaDocument;
@@ -17,7 +21,6 @@ import org.eclipse.lsp4j.CompletionTriggerKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.xml.sax.SAXException;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -40,19 +43,25 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
   private final TextDocumentItem textDocumentItem;
   private final SchemaDocument schemaDocument;
   private final TagCompletionItemFactory tagCompletionItemFactory;
+  private final AttrCompletionFactory attrCompletionFactory;
   private final PositionalHandlerFactory handlerFactory;
+  private final DocumentManagerFactory documentManagerFactory;
 
   @Inject
   CompletionProvider(@Assisted CompletionParams params,
                      @Assisted TextDocumentItem textDocumentItem,
                      @Assisted SchemaDocument schemaDocument,
                      TagCompletionItemFactory tagCompletionItemFactory,
-                     PositionalHandlerFactory handlerFactory) {
+                     AttrCompletionFactory attrCompletionFactory,
+                     PositionalHandlerFactory handlerFactory,
+                     DocumentManagerFactory documentManagerFactory) {
     this.params = params;
     this.textDocumentItem = textDocumentItem;
     this.schemaDocument = schemaDocument;
     this.tagCompletionItemFactory = tagCompletionItemFactory;
+    this.attrCompletionFactory = attrCompletionFactory;
     this.handlerFactory = handlerFactory;
+    this.documentManagerFactory = documentManagerFactory;
   }
 
   @Override
@@ -61,10 +70,12 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
     Position position = params.getPosition();
     CompletionTriggerKind triggerKind = params.getContext().getTriggerKind();
     String triggerChar = params.getContext().getTriggerCharacter();
+    DocumentManager documentManager = documentManagerFactory.create(textDocumentItem);
 
 
     PositionalHandler posInfo = handlerFactory.create(position);
     parse(posInfo);
+    String currentLine = documentManager.getLineAt(position.getLine());
 
     if(triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
       switch (triggerChar) {
@@ -74,7 +85,12 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
           return tagCompletionItem.get();
       }
     } else if (triggerKind.equals(CompletionTriggerKind.Invoked)) {
-      // TODO: something for invoked.
+      // TODO: Check for validation for current postion and show accordingly.
+      if (!XmlUtil.isInsideString.apply(currentLine, position.getCharacter())) {
+        XsdAttrCompletionItem attrCompletionItem =
+          attrCompletionFactory.create(posInfo.getCurrentTag(), schemaDocument);
+        return attrCompletionItem.get();
+      }
     }
 
     return new ArrayList<>();

@@ -36,9 +36,9 @@ public class DocumentManagerTest extends AbstractXmlUnitTest {
     String wrongWord = manager.getStringBetweenRange(wrongRange);
     String invalidWord = manager.getStringBetweenRange(invalidRange);
 
-    assertEquals(validWord, "schemaLocation");
-    assertEquals(wrongWord, "");
-    assertEquals(invalidWord, "");
+    assertEquals("schemaLocation", validWord);
+    assertEquals("", wrongWord);
+    assertEquals("", invalidWord);
   }
 
   @Test

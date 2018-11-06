@@ -1,4 +1,4 @@
-package io.github.handofgod94.lsp.completion.tag;
+package io.github.handofgod94.lsp.completion.attribute;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -15,39 +15,38 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class XsdTagCompletionItem implements TagCompletionItem {
+public class XsdAttrCompletionItem implements AttrCompletionItem {
 
-  private final QName parentTag;
+  private final QName currentTag;
   private final SchemaDocument schemaDocument;
 
   @Inject
-  XsdTagCompletionItem(@Assisted QName parentTag,
-                       @Assisted SchemaDocument schemaDocument) {
-    this.parentTag = parentTag;
-    this.schemaDocument = schemaDocument;
+  XsdAttrCompletionItem(@Assisted QName currentTag, @Assisted SchemaDocument schemaDocument) {
+    this.currentTag = currentTag;
+    this.schemaDocument =schemaDocument;
   }
+
 
   @Override
   public List<CompletionItem> get() {
-    // Search if the parent tag is in element declaration or model group definitions
-    List<CompletionItem> tags =
+    List<CompletionItem> attributes =
       Stream.of(checkElement(), checkModelGroup())
       .filter(Optional::isPresent)
       .map(Optional::get)
       .findFirst()
-      .map(this::findPossibleChildren).orElse(new ArrayList<>());
+      .map(this::findPossibleAttributes)
+      .orElse(new ArrayList<>());
 
-    return tags;
+    return attributes;
   }
 
   private Optional<XSElementDeclaration> checkElement() {
     XSElementDeclaration xsObject =
-        schemaDocument.getXsModel()
-        .getElementDeclaration(parentTag.getLocalPart(), parentTag.getNamespaceURI());
+      schemaDocument.getXsModel()
+        .getElementDeclaration(currentTag.getLocalPart(), currentTag.getNamespaceURI());
     return Optional.ofNullable(xsObject);
   }
 
-  // TODO: Change it to pure
   private Optional<XSElementDeclaration> checkModelGroup() {
     // get all the model groups
     XSNamedMap xsMap = schemaDocument.getXsModel().getComponents(XSConstants.MODEL_GROUP_DEFINITION);
@@ -59,7 +58,7 @@ public class XsdTagCompletionItem implements TagCompletionItem {
       List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
       for (XSParticle particle : particles) {
         String particleName = particle.getTerm().getName();
-        if(particleName != null && particleName.equals(parentTag.getLocalPart())) {
+        if(particleName != null && particleName.equals(currentTag.getLocalPart())) {
           // if its equal that means it's present,
           // return XSParticle for ModelGroupDefinition
           XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +59,7 @@ public class XmlUtil {
    * @return String containing value of attribute
    */
   public static Function<String, Optional<Document>> getPartialDoc = line -> {
-    // TODO: improve implmentation to handle cases.
+    // TODO: improve implementation to handle cases.
     // TODO: it's not always single element per line.
     String trimmedLine = line.trim();
 
@@ -79,5 +80,35 @@ public class XmlUtil {
     }
 
     return optDocument;
+  };
+
+  /**
+   * Checks whether the given position in a give string
+   * is inside string or not.
+   *
+   * @param str   string to check in.
+   * @param index position in the string/
+   * @return true, if it's inside string, false otherwise
+   */
+  public static BiFunction<String, Integer, Boolean> isInsideString = (str, index) -> {
+    // flag to check if we have a matching quote or not
+    boolean isInsideString = false;
+
+    for (int i = 0; i < str.length(); i++) {
+      Character character = str.charAt(i);
+      // if index becomes less then i, then return it
+      // it means we have found the result
+      if (index <= i) {
+        return isInsideString;
+      }
+
+      // otherwise whenever we encounter quotes(")
+      // toggle the flag.
+      if (character == '"') {
+        isInsideString = !isInsideString;
+      }
+    }
+
+    return isInsideString;
   };
 }
