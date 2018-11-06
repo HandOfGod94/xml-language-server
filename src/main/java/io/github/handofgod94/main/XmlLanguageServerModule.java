@@ -6,6 +6,7 @@ import com.google.inject.name.Names;
 import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.lsp.completion.CompletionProviderFactory;
+import io.github.handofgod94.lsp.completion.attribute.AttrCompletionFactory;
 import io.github.handofgod94.lsp.completion.tag.TagCompletionItem;
 import io.github.handofgod94.lsp.completion.tag.TagCompletionItemFactory;
 import io.github.handofgod94.lsp.completion.tag.XsdTagCompletionItem;
@@ -50,5 +51,6 @@ public class XmlLanguageServerModule extends AbstractModule {
     install(new FactoryModuleBuilder()
       .implement(TagCompletionItem.class, XsdTagCompletionItem.class)
       .build(TagCompletionItemFactory.class));
+    install(new FactoryModuleBuilder().build(AttrCompletionFactory.class));
   }
 }

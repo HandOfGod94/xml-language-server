@@ -1,6 +1,5 @@
 package io.github.handofgod94.lsp.completion.tag;
 
-import com.google.inject.Provider;
 import io.github.handofgod94.common.XmlUtil;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
@@ -15,8 +14,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public interface TagCompletionItem extends Provider<List<CompletionItem>> {
+public interface TagCompletionItem {
 
+  /**
+   * Get all the completion item for the tag.
+   * @return List of completion item at current position
+   */
+  List<CompletionItem> get();
+
+  /**
+   * Finds all the possible children for an xsd element
+   * @param element XSD Element object pointing to parent tag
+   * @return List of completion items for the element i.e. parent tag.
+   */
   default List<CompletionItem> findPossibleChildren(XSElementDeclaration element) {
     List<CompletionItem> tagCompletionItems = new ArrayList<>();
 
