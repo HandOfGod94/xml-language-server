@@ -6,14 +6,14 @@ import javax.xml.namespace.QName;
 /**
  * Guice factory for TagCompletion.
  */
-public interface TagCompletionItemFactory {
+public interface TagCompletionFactory {
 
   /**
    * Creates instance for tag completion item.
    * @param parentTag parent tag for current position.
    * @param schemaDocument SchemaDocument having all the parsed docs and xsds.
-   * @return TagCompletionItem
+   * @return TagCompletion
    */
-  TagCompletionItem create(QName parentTag, SchemaDocument schemaDocument);
+  TagCompletion create(QName parentTag, SchemaDocument schemaDocument);
 
 }

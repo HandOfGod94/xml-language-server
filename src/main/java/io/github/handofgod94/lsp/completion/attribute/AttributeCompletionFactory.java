@@ -6,14 +6,14 @@ import javax.xml.namespace.QName;
 /**
  * Guice factory to generate attribute completions
  */
-public interface AttrCompletionFactory {
+public interface AttributeCompletionFactory {
 
   /**
-   * Generates instances for {@link XsdAttrCompletionItem}.
+   * Generates instances for {@link XsdAttributeCompletion}.
    * This will be useful to get possible attribute at current location
    * @param currentTag current tag for which we need attributes.
    * @param schemaDocument {@link SchemaDocument} instance object.
-   * @return object for {@link XsdAttrCompletionItem}.
+   * @return object for {@link XsdAttributeCompletion}.
    */
-  XsdAttrCompletionItem create(QName currentTag, SchemaDocument schemaDocument);
+  AttributeCompletion create(QName currentTag, SchemaDocument schemaDocument);
 }

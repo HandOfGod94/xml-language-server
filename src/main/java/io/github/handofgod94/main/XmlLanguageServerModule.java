@@ -6,10 +6,12 @@ import com.google.inject.name.Names;
 import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.lsp.completion.CompletionProviderFactory;
-import io.github.handofgod94.lsp.completion.attribute.AttrCompletionFactory;
-import io.github.handofgod94.lsp.completion.tag.TagCompletionItem;
-import io.github.handofgod94.lsp.completion.tag.TagCompletionItemFactory;
-import io.github.handofgod94.lsp.completion.tag.XsdTagCompletionItem;
+import io.github.handofgod94.lsp.completion.attribute.AttributeCompletion;
+import io.github.handofgod94.lsp.completion.attribute.AttributeCompletionFactory;
+import io.github.handofgod94.lsp.completion.attribute.XsdAttributeCompletion;
+import io.github.handofgod94.lsp.completion.tag.TagCompletion;
+import io.github.handofgod94.lsp.completion.tag.TagCompletionFactory;
+import io.github.handofgod94.lsp.completion.tag.XsdTagCompletion;
 import io.github.handofgod94.lsp.diagnostic.DiagnosticErrorHandler;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.lsp.hover.AttributeHover;
@@ -49,8 +51,10 @@ public class XmlLanguageServerModule extends AbstractModule {
     install(new FactoryModuleBuilder().build(CompletionProviderFactory.class));
     install(new FactoryModuleBuilder().build(PositionalHandlerFactory.class));
     install(new FactoryModuleBuilder()
-      .implement(TagCompletionItem.class, XsdTagCompletionItem.class)
-      .build(TagCompletionItemFactory.class));
-    install(new FactoryModuleBuilder().build(AttrCompletionFactory.class));
+      .implement(TagCompletion.class, XsdTagCompletion.class)
+      .build(TagCompletionFactory.class));
+    install(new FactoryModuleBuilder()
+      .implement(AttributeCompletion.class, XsdAttributeCompletion.class)
+      .build(AttributeCompletionFactory.class));
   }
 }
