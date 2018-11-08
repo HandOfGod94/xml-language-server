@@ -3,25 +3,31 @@ package io.github.handofgod94.lsp.completion.attribute;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.schema.SchemaDocument;
+import org.apache.xerces.xs.XSAttributeUse;
+import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroupDefinition;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
+import org.eclipse.lsp4j.InsertTextFormat;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class XsdAttrCompletionItem implements AttrCompletionItem {
+public class XsdAttributeCompletion implements AttributeCompletion {
 
   private final QName currentTag;
   private final SchemaDocument schemaDocument;
 
   @Inject
-  XsdAttrCompletionItem(@Assisted QName currentTag, @Assisted SchemaDocument schemaDocument) {
+  XsdAttributeCompletion(@Assisted QName currentTag, @Assisted SchemaDocument schemaDocument) {
     this.currentTag = currentTag;
     this.schemaDocument =schemaDocument;
   }
@@ -35,7 +41,10 @@ public class XsdAttrCompletionItem implements AttrCompletionItem {
       .map(Optional::get)
       .findFirst()
       .map(this::findPossibleAttributes)
-      .orElse(new ArrayList<>());
+      .orElse(new ArrayList<>())
+      .stream()
+      .map(AttributeCompletionItem::toCompletionItem)
+      .collect(Collectors.toList());
 
     return attributes;
   }
@@ -67,5 +76,40 @@ public class XsdAttrCompletionItem implements AttrCompletionItem {
       }
     }
     return Optional.empty();
+  }
+
+  /**
+   * Finds all the possible attributes for element
+   * @param element current element obtained from xs models
+   * @return list of {@link CompletionItem}
+   */
+  private List<AttributeCompletionItem> findPossibleAttributes(XSElementDeclaration element) {
+    List<AttributeCompletionItem> attributeCompletionItems = new ArrayList<>();
+
+    // Get type definitions from the element
+    XSTypeDefinition typeDefinition = element.getTypeDefinition();
+
+    if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
+      // if its a complex type, get all the attributes in that element
+      XSComplexTypeDefinition complexTypeDefinition =
+        (XSComplexTypeDefinition) typeDefinition;
+
+      // Traverse through all the attributes and add it to list
+      for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
+        XSAttributeUse attr = (XSAttributeUse) attrObject;
+        AttributeCompletionItem item =
+          new AttributeCompletionItem(attr.getAttrDeclaration().getName(), attr.getAttrDeclaration().getNamespace(), "string", 0,0, false);
+        // TODO: Typechecking or variable references
+        // TODO: Monitor max and minoccurs in an element.
+        // TODO: Add * for required attributes
+
+        attributeCompletionItems.add(item);
+      }
+
+    } else {
+      // TODO: for SIMPLE TYPE Definition
+    }
+
+    return attributeCompletionItems;
   }
 }
