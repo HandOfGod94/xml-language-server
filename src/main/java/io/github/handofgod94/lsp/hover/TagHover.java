@@ -3,6 +3,8 @@ package io.github.handofgod94.lsp.hover;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.schema.SchemaDocument;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
@@ -11,8 +13,6 @@ import org.dom4j.Node;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Hover information for tags.
@@ -50,7 +50,11 @@ public class TagHover implements XmlHover {
     List<Document> parsedDocs = this.schemaDocument.getParsedSchemaDocs();
     List<Node> docNodes = new ArrayList<>();
     String annotationExpr =
-        String.format("//*[local-name()='element'][@name='%s']/*[local-name()='annotation']", elementName);
+        String.format(
+          "//*[local-name()='element'][@name='%s']/*[local-name()='annotation']",
+          elementName
+        );
+
     for (Document doc : parsedDocs) {
       Node node = doc.selectSingleNode(annotationExpr);
       if (node != null) {
