@@ -27,7 +27,7 @@ public class XsdAttributeCompletion implements AttributeCompletion {
   @Inject
   XsdAttributeCompletion(@Assisted QName currentElement, @Assisted SchemaDocument schemaDocument) {
     this.currentElement = currentElement;
-    this.schemaDocument =schemaDocument;
+    this.schemaDocument = schemaDocument;
   }
 
 
@@ -97,7 +97,6 @@ public class XsdAttributeCompletion implements AttributeCompletion {
         XSAttributeUse attr = (XSAttributeUse) attrObject;
         AttributeCompletionItem item =
           new AttributeCompletionItem(attr.getAttrDeclaration().getName(), attr.getAttrDeclaration().getTypeDefinition(), 0,0, false);
-        // TODO: Typechecking or variable references
         // TODO: Monitor max and minoccurs in an element.
         // TODO: Add * for required attributes
 
