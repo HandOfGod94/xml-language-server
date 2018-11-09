@@ -1,15 +1,15 @@
-package io.github.handofgod94.lsp.completion.tag;
+package io.github.handofgod94.lsp.completion.element;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 
-public class TagCompletionItem {
+public class ElementCompletionItem {
 
   private String name;
   private String namespace;
   private String documentation;
 
-  public TagCompletionItem(String name, String namespace, String documentation) {
+  public ElementCompletionItem(String name, String namespace, String documentation) {
     this.name = name;
     this.namespace = namespace;
     this.documentation = documentation;

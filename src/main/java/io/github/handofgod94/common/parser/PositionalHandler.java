@@ -24,10 +24,10 @@ public class PositionalHandler extends DefaultHandler {
   // Element stack for figuring out parent
   private Stack<QName> elementStack = new Stack<>();
 
-  // Parent tag
+  // Parent element
   private QName parentTag = null;
 
-  // Current tag
+  // Current element
   private QName currentTag = null;
 
   // Reference parent start and end position
@@ -80,8 +80,8 @@ public class PositionalHandler extends DefaultHandler {
       if (cursorPosition.getLine() >= position.getLine()) {
         parentEnd.setLine(Math.max(parentEnd.getLine(), position.getLine()));
         QName qName = new QName(uri, localName);
-        // if we have peek, and it is equal to qualifiedName, then we got a parent tag.
-        // Set parent tag iff, it is equal to null, otherwise we already have a parent tag.
+        // if we have peek, and it is equal to qualifiedName, then we got a parent element.
+        // Set parent element iff, it is equal to null, otherwise we already have a parent element.
         if ((peek != null)
           && (peek.equals(qName))
           && (parentTag == null)

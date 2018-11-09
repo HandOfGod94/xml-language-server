@@ -1,8 +1,7 @@
-package io.github.handofgod94.lsp.completion.tag;
+package io.github.handofgod94.lsp.completion.element;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.schema.SchemaDocument;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
@@ -14,7 +13,6 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,32 +21,32 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class XsdTagCompletion implements TagCompletion {
+public class XsdElementCompletion implements ElementCompletion {
 
   private final QName parentTag;
   private final SchemaDocument schemaDocument;
 
   @Inject
-  XsdTagCompletion(@Assisted QName parentTag,
-                   @Assisted SchemaDocument schemaDocument) {
+  XsdElementCompletion(@Assisted QName parentTag,
+                       @Assisted SchemaDocument schemaDocument) {
     this.parentTag = parentTag;
     this.schemaDocument = schemaDocument;
   }
 
   @Override
   public List<CompletionItem> get() {
-    // Search if the parent tag is in element declaration or model group definitions
-    List<CompletionItem> tags =
+    // Search if the parent element is in element declaration or model group definitions
+    List<CompletionItem> elements =
       Stream.of(checkElement(), checkModelGroup())
       .filter(Optional::isPresent)
       .map(Optional::get)
       .findFirst()
       .map(this::findPossibleChildren).orElse(new ArrayList<>())
       .stream()
-      .map(TagCompletionItem::toCompletionItem)
+      .map(ElementCompletionItem::toCompletionItem)
       .collect(Collectors.toList());
 
-    return tags;
+    return elements;
   }
 
   private Optional<XSElementDeclaration> checkElement() {
@@ -83,11 +81,11 @@ public class XsdTagCompletion implements TagCompletion {
 
   /**
    * Finds all the possible children for an xsd element
-   * @param element XSD Element object pointing to parent tag
-   * @return List of completion items for the element i.e. parent tag.
+   * @param element XSD Element object pointing to parent element
+   * @return List of completion items for the element i.e. parent element.
    */
-  private List<TagCompletionItem> findPossibleChildren(XSElementDeclaration element) {
-    List<TagCompletionItem> tags = new ArrayList<>();
+  private List<ElementCompletionItem> findPossibleChildren(XSElementDeclaration element) {
+    List<ElementCompletionItem> tags = new ArrayList<>();
 
     // Get type definitions for current element
     XSTypeDefinition typeDefinition = element.getTypeDefinition();
@@ -110,7 +108,7 @@ public class XsdTagCompletion implements TagCompletion {
           particles.forEach(p -> xsObjects.push(p.getTerm()));
         } else if (term.getType() == XSConstants.ELEMENT_DECLARATION) {
           XSElementDeclaration ele = (XSElementDeclaration) term;
-          tags.add(new TagCompletionItem(ele.getName(), ele.getNamespace(), ""));
+          tags.add(new ElementCompletionItem(ele.getName(), ele.getNamespace(), ""));
         }
       }
     } else {

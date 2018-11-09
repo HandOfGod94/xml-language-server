@@ -11,9 +11,9 @@ public interface AttributeCompletionFactory {
   /**
    * Generates instances for {@link XsdAttributeCompletion}.
    * This will be useful to get possible attribute at current location
-   * @param currentTag current tag for which we need attributes.
+   * @param currentElement current element for which we need attributes.
    * @param schemaDocument {@link SchemaDocument} instance object.
    * @return object for {@link XsdAttributeCompletion}.
    */
-  AttributeCompletion create(QName currentTag, SchemaDocument schemaDocument);
+  AttributeCompletion create(QName currentElement, SchemaDocument schemaDocument);
 }

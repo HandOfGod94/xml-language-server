@@ -70,7 +70,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
       Element root = partialDoc.getRootElement();
 
       // If root element name is equal to word hovered that means
-      // we are looking at tag, otherwise it could be attribute or something else altogether
+      // we are looking at element, otherwise it could be attribute or something else altogether
       if (wordHovered.equals(root.getName())) {
         XmlHover hover = xmlHoverFactory.getTagHover(wordHovered, document);
         return Optional.of(hover);
