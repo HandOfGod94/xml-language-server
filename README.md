@@ -2,6 +2,8 @@
 
 > Work in progress.
 
+![build-status](https://travis-ci.org/HandOfGod94/xml-language-server.svg?branch=master)
+
 Language server for XML documents. It enables and LSP client (VScode, Sublime LSP, Eclipse Che) to leverage 
 capabilities such as autocomplete, validation or documentation support for XML documents.
 
