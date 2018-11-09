@@ -23,13 +23,13 @@ import java.util.stream.Stream;
 
 public class XsdElementCompletion implements ElementCompletion {
 
-  private final QName parentTag;
+  private final QName parentElement;
   private final SchemaDocument schemaDocument;
 
   @Inject
-  XsdElementCompletion(@Assisted QName parentTag,
+  XsdElementCompletion(@Assisted QName parentElement,
                        @Assisted SchemaDocument schemaDocument) {
-    this.parentTag = parentTag;
+    this.parentElement = parentElement;
     this.schemaDocument = schemaDocument;
   }
 
@@ -52,7 +52,7 @@ public class XsdElementCompletion implements ElementCompletion {
   private Optional<XSElementDeclaration> checkElement() {
     XSElementDeclaration xsObject =
         schemaDocument.getXsModel()
-        .getElementDeclaration(parentTag.getLocalPart(), parentTag.getNamespaceURI());
+        .getElementDeclaration(parentElement.getLocalPart(), parentElement.getNamespaceURI());
     return Optional.ofNullable(xsObject);
   }
 
@@ -68,7 +68,7 @@ public class XsdElementCompletion implements ElementCompletion {
       List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
       for (XSParticle particle : particles) {
         String particleName = particle.getTerm().getName();
-        if(particleName != null && particleName.equals(parentTag.getLocalPart())) {
+        if(particleName != null && particleName.equals(parentElement.getLocalPart())) {
           // if its equal that means it's present,
           // return XSParticle for ModelGroupDefinition
           XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
