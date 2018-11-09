@@ -51,10 +51,10 @@ public class XmlLanguageServerModule extends AbstractModule {
     install(new FactoryModuleBuilder().build(CompletionProviderFactory.class));
     install(new FactoryModuleBuilder().build(PositionalHandlerFactory.class));
     install(new FactoryModuleBuilder()
-      .implement(ElementCompletion.class, XsdElementCompletion.class)
-      .build(ElementCompletionFactory.class));
+        .implement(ElementCompletion.class, XsdElementCompletion.class)
+        .build(ElementCompletionFactory.class));
     install(new FactoryModuleBuilder()
-      .implement(AttributeCompletion.class, XsdAttributeCompletion.class)
-      .build(AttributeCompletionFactory.class));
+        .implement(AttributeCompletion.class, XsdAttributeCompletion.class)
+        .build(AttributeCompletionFactory.class));
   }
 }

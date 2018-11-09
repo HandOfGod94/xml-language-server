@@ -1,8 +1,11 @@
 package io.github.handofgod94.lsp.completion.element;
 
-import org.eclipse.lsp4j.CompletionItem;
 import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
 
+/**
+ * Interface to retrieve all the possible element list.
+ */
 public interface ElementCompletion {
 
   /**

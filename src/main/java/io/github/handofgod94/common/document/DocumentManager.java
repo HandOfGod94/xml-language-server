@@ -2,8 +2,8 @@ package io.github.handofgod94.common.document;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import java.util.Optional;
 import io.github.handofgod94.common.XmlUtil;
+import java.util.Optional;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -65,7 +65,7 @@ public class DocumentManager {
    *
    * @param position position in the document
    * @return Range having starting position and ending position of word if valid
-   *         position is provided.
+   *     position is provided.
    */
   public Optional<Range> getWordRangeAt(Position position) {
 
@@ -90,8 +90,8 @@ public class DocumentManager {
 
         // right side
         for (int i = column + 1;
-            i < line.length() && Character.isJavaIdentifierPart(line.charAt(i));
-            ++i) {
+             i < line.length() && Character.isJavaIdentifierPart(line.charAt(i));
+             ++i) {
           endColumn = i;
         }
         start.setCharacter(startColumn);
@@ -121,6 +121,7 @@ public class DocumentManager {
 
   /**
    * Get line in string format at given line number from document.
+   *
    * @param lineNo line number in the document (0 based index)
    * @return String having contents of the line
    */
@@ -131,6 +132,7 @@ public class DocumentManager {
   /**
    * Get all the lines present in document as String array.
    * These includes blank lines also
+   *
    * @return String array with all the lines.
    */
   public String[] getDocumentLines() {
@@ -141,7 +143,7 @@ public class DocumentManager {
     int lineNo = position.getLine();
     int column = position.getCharacter();
     return lineNo > 0 && column > 0
-            && lineNo < documentLines.length
-            && column < documentLines[lineNo].length();
+      && lineNo < documentLines.length
+      && column < documentLines[lineNo].length();
   }
 }
