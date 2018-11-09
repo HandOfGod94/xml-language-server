@@ -10,9 +10,8 @@ import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.lsp.completion.attribute.AttributeCompletion;
 import io.github.handofgod94.lsp.completion.attribute.AttributeCompletionFactory;
-import io.github.handofgod94.lsp.completion.attribute.XsdAttributeCompletion;
-import io.github.handofgod94.lsp.completion.tag.TagCompletion;
-import io.github.handofgod94.lsp.completion.tag.TagCompletionFactory;
+import io.github.handofgod94.lsp.completion.element.ElementCompletion;
+import io.github.handofgod94.lsp.completion.element.ElementCompletionFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +42,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
   private final CompletionParams params;
   private final TextDocumentItem textDocumentItem;
   private final SchemaDocument schemaDocument;
-  private final TagCompletionFactory tagCompletionFactory;
+  private final ElementCompletionFactory elementCompletionFactory;
   private final AttributeCompletionFactory attrCompletionFactory;
   private final PositionalHandlerFactory handlerFactory;
   private final DocumentManagerFactory documentManagerFactory;
@@ -52,14 +51,14 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
   CompletionProvider(@Assisted CompletionParams params,
                      @Assisted TextDocumentItem textDocumentItem,
                      @Assisted SchemaDocument schemaDocument,
-                     TagCompletionFactory tagCompletionFactory,
+                     ElementCompletionFactory elementCompletionFactory,
                      AttributeCompletionFactory attrCompletionFactory,
                      PositionalHandlerFactory handlerFactory,
                      DocumentManagerFactory documentManagerFactory) {
     this.params = params;
     this.textDocumentItem = textDocumentItem;
     this.schemaDocument = schemaDocument;
-    this.tagCompletionFactory = tagCompletionFactory;
+    this.elementCompletionFactory = elementCompletionFactory;
     this.attrCompletionFactory = attrCompletionFactory;
     this.handlerFactory = handlerFactory;
     this.documentManagerFactory = documentManagerFactory;
@@ -81,9 +80,9 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
     if(triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
       switch (triggerChar) {
         case TAG_AUTOCOMPLETE_TRIGGER_CHARACTER:
-          TagCompletion tagCompletion =
-            tagCompletionFactory.create(posInfo.getParentTag(), schemaDocument);
-          return tagCompletion.get();
+          ElementCompletion elementCompletion =
+            elementCompletionFactory.create(posInfo.getParentTag(), schemaDocument);
+          return elementCompletion.get();
       }
     } else if (triggerKind.equals(CompletionTriggerKind.Invoked)) {
       // TODO: Check for validation for current postion and show accordingly.

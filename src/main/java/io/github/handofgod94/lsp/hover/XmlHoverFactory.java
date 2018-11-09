@@ -5,7 +5,7 @@ import com.google.inject.name.Named;
 import io.github.handofgod94.schema.SchemaDocument;
 
 /**
- * Guice factory for tag and attribute hovers.
+ * Guice factory for element and attribute hovers.
  */
 public interface XmlHoverFactory {
 
@@ -15,10 +15,10 @@ public interface XmlHoverFactory {
    * Tags documentation will then be parsed and read
    * and will be provided as hover
    * @param wordHovered word being hovered. It is assumed that it will
-   *     name of tag for TagHover
-   * @return TagHover instance to obtain hover.
+   *     name of element for ElementHover
+   * @return ElementHover instance to obtain hover.
    */
-  @Named("Tag")
+  @Named("Element")
   XmlHover getTagHover(String wordHovered, SchemaDocument document);
 
   /**
@@ -33,7 +33,7 @@ public interface XmlHoverFactory {
    * @return AttributeHover instances to obtain hover.
    */
   @Named("Attribute")
-  XmlHover getAttributeHover(@Assisted("Tag") String wordHovered,
-                            @Assisted("Tag") SchemaDocument schemaDocument,
+  XmlHover getAttributeHover(@Assisted("Element") String wordHovered,
+                            @Assisted("Element") SchemaDocument schemaDocument,
                             @Assisted("Attribute") String parentName);
 }

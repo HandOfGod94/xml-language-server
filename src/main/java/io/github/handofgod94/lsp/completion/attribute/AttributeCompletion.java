@@ -6,7 +6,7 @@ import java.util.List;
 public interface AttributeCompletion {
 
   /**
-   * Get list of attributes for current tag.
+   * Get list of attributes for current element.
    *
    * @return list of {@link CompletionItem}.
    */

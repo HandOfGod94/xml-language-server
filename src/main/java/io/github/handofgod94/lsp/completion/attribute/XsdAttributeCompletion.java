@@ -12,8 +12,6 @@ import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
-import org.eclipse.lsp4j.InsertTextFormat;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +21,12 @@ import java.util.stream.Stream;
 
 public class XsdAttributeCompletion implements AttributeCompletion {
 
-  private final QName currentTag;
+  private final QName currentElement;
   private final SchemaDocument schemaDocument;
 
   @Inject
-  XsdAttributeCompletion(@Assisted QName currentTag, @Assisted SchemaDocument schemaDocument) {
-    this.currentTag = currentTag;
+  XsdAttributeCompletion(@Assisted QName currentElement, @Assisted SchemaDocument schemaDocument) {
+    this.currentElement = currentElement;
     this.schemaDocument =schemaDocument;
   }
 
@@ -52,7 +50,7 @@ public class XsdAttributeCompletion implements AttributeCompletion {
   private Optional<XSElementDeclaration> checkElement() {
     XSElementDeclaration xsObject =
       schemaDocument.getXsModel()
-        .getElementDeclaration(currentTag.getLocalPart(), currentTag.getNamespaceURI());
+        .getElementDeclaration(currentElement.getLocalPart(), currentElement.getNamespaceURI());
     return Optional.ofNullable(xsObject);
   }
 
@@ -67,7 +65,7 @@ public class XsdAttributeCompletion implements AttributeCompletion {
       List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
       for (XSParticle particle : particles) {
         String particleName = particle.getTerm().getName();
-        if(particleName != null && particleName.equals(currentTag.getLocalPart())) {
+        if(particleName != null && particleName.equals(currentElement.getLocalPart())) {
           // if its equal that means it's present,
           // return XSParticle for ModelGroupDefinition
           XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
