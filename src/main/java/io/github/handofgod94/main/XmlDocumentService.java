@@ -124,7 +124,7 @@ public class XmlDocumentService implements TextDocumentService {
     optSchemaDocument.ifPresent(schemaDocument -> {
       this.schemaDocument = schemaDocument;
       XmlDiagnosticService service =
-        diagnosticServiceFactory.create(documentItem, server, schemaDocument);
+          diagnosticServiceFactory.create(documentItem, server, schemaDocument);
       service.compute();
     });
   }

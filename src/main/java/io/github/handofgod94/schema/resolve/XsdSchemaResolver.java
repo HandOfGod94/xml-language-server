@@ -1,13 +1,17 @@
 package io.github.handofgod94.schema.resolve;
 
+import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.SchemaDocumentType;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import io.github.handofgod94.schema.SchemaDocument;
-import io.github.handofgod94.schema.SchemaDocumentType;
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
@@ -22,10 +26,6 @@ import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 /**
  * Lookup xsd schema for an xml.
@@ -91,11 +91,12 @@ public class XsdSchemaResolver implements SchemaResolver {
     return uris;
   }
 
-  private List<Document> generateParsedSchemaDocs(List<URI> schemaUris) throws DocumentException, IOException {
+  private List<Document> generateParsedSchemaDocs(List<URI> schemaUris)
+      throws DocumentException, IOException {
     StreamSource[] sources = generateSources(schemaUris);
     SAXReader reader = new SAXReader();
     List<Document> documents = new ArrayList<>();
-    for (StreamSource source: sources) {
+    for (StreamSource source : sources) {
       Document document = reader.read(source.getInputStream());
       documents.add(document);
     }
