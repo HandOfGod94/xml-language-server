@@ -1,7 +1,7 @@
 package io.github.handofgod94.lsp.completion.attribute;
 
-import org.eclipse.lsp4j.CompletionItem;
 import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
 
 public interface AttributeCompletion {
 

@@ -81,7 +81,8 @@ public class XmlDocumentService implements TextDocumentService {
   }
 
   @Override
-  public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams params) {
+  public CompletableFuture<Either<List<CompletionItem>, CompletionList>>
+      completion(CompletionParams params) {
     TextDocumentItem documentItem =
         openDocumentItems.get(params.getTextDocument().getUri());
     CompletionProvider completionProvider =

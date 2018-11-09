@@ -7,6 +7,9 @@ import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
 
+/**
+ * CompletionItem wrapper for Attributes.
+ */
 public class AttributeCompletionItem {
   private String name;
   private XSSimpleTypeDefinition type;
@@ -14,7 +17,16 @@ public class AttributeCompletionItem {
   private int minOccurs;
   private boolean isRequired;
 
-  public AttributeCompletionItem(String name, XSSimpleTypeDefinition type, int maxOccurs, int minOccurs, boolean isRequired) {
+  /**
+   * Attribute Completion Container having all the required information.
+   * @param name name of attribute
+   * @param type dataType of attribute
+   * @param maxOccurs maximum occurrence of the attribute
+   * @param minOccurs minimum occurrence of the attribute
+   * @param isRequired is attribute required.
+   */
+  public AttributeCompletionItem(String name, XSSimpleTypeDefinition type,
+                                 int maxOccurs, int minOccurs, boolean isRequired) {
     this.name = name;
     this.type = type;
     this.maxOccurs = maxOccurs;
@@ -62,6 +74,10 @@ public class AttributeCompletionItem {
     isRequired = required;
   }
 
+  /**
+   * Converts {@link AttributeCompletionItem} to {@link CompletionItem}.
+   * @return CompletionItem instance having datatype as details
+   */
   public CompletionItem toCompletionItem() {
     // Initialize AttributeCompletionItem
     CompletionItem info = new CompletionItem();

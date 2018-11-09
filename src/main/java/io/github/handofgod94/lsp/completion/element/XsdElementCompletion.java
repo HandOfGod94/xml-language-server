@@ -3,6 +3,13 @@ package io.github.handofgod94.lsp.completion.element;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.schema.SchemaDocument;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -13,13 +20,6 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.CompletionItem;
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Stack;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class XsdElementCompletion implements ElementCompletion {
 
@@ -37,14 +37,14 @@ public class XsdElementCompletion implements ElementCompletion {
   public List<CompletionItem> get() {
     // Search if the parent element is in element declaration or model group definitions
     List<CompletionItem> elements =
-      Stream.of(checkElement(), checkModelGroup())
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .findFirst()
-      .map(this::findPossibleChildren).orElse(new ArrayList<>())
-      .stream()
-      .map(ElementCompletionItem::toCompletionItem)
-      .collect(Collectors.toList());
+        Stream.of(checkElement(), checkModelGroup())
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .findFirst()
+          .map(this::findPossibleChildren).orElse(new ArrayList<>())
+          .stream()
+          .map(ElementCompletionItem::toCompletionItem)
+          .collect(Collectors.toList());
 
     return elements;
   }
@@ -52,23 +52,25 @@ public class XsdElementCompletion implements ElementCompletion {
   private Optional<XSElementDeclaration> checkElement() {
     XSElementDeclaration xsObject =
         schemaDocument.getXsModel()
-        .getElementDeclaration(parentElement.getLocalPart(), parentElement.getNamespaceURI());
+          .getElementDeclaration(parentElement.getLocalPart(),
+              parentElement.getNamespaceURI());
     return Optional.ofNullable(xsObject);
   }
 
   // TODO: Change it to pure
   private Optional<XSElementDeclaration> checkModelGroup() {
     // get all the model groups
-    XSNamedMap xsMap = schemaDocument.getXsModel().getComponents(XSConstants.MODEL_GROUP_DEFINITION);
+    XSNamedMap xsMap = schemaDocument.getXsModel()
+        .getComponents(XSConstants.MODEL_GROUP_DEFINITION);
 
     // traverses through it and see if it has element
-    for (Object modelGroupName: xsMap.keySet()) {
+    for (Object modelGroupName : xsMap.keySet()) {
       QName name = (QName) modelGroupName;
       XSModelGroupDefinition groupDefinition = (XSModelGroupDefinition) xsMap.get(name);
       List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
       for (XSParticle particle : particles) {
         String particleName = particle.getTerm().getName();
-        if(particleName != null && particleName.equals(parentElement.getLocalPart())) {
+        if (particleName != null && particleName.equals(parentElement.getLocalPart())) {
           // if its equal that means it's present,
           // return XSParticle for ModelGroupDefinition
           XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
@@ -80,7 +82,8 @@ public class XsdElementCompletion implements ElementCompletion {
   }
 
   /**
-   * Finds all the possible children for an xsd element
+   * Finds all the possible children for an xsd element.
+   *
    * @param element XSD Element object pointing to parent element
    * @return List of completion items for the element i.e. parent element.
    */
@@ -93,7 +96,7 @@ public class XsdElementCompletion implements ElementCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if complex type, then get the children model group
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
       XSParticle rootParticle = complexTypeDefinition.getParticle();
 
       // Recursively look for all the applicable tags

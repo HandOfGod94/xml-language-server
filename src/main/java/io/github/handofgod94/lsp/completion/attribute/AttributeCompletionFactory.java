@@ -4,7 +4,7 @@ import io.github.handofgod94.schema.SchemaDocument;
 import javax.xml.namespace.QName;
 
 /**
- * Guice factory to generate attribute completions
+ * Guice factory to generate attribute completions.
  */
 public interface AttributeCompletionFactory {
 

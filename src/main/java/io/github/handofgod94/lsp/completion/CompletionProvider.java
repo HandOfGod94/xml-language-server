@@ -13,6 +13,15 @@ import io.github.handofgod94.lsp.completion.attribute.AttributeCompletionFactory
 import io.github.handofgod94.lsp.completion.element.ElementCompletion;
 import io.github.handofgod94.lsp.completion.element.ElementCompletionFactory;
 import io.github.handofgod94.schema.SchemaDocument;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.CompletionItem;
@@ -21,15 +30,6 @@ import org.eclipse.lsp4j.CompletionTriggerKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.xml.sax.SAXException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CompletionProvider implements Provider<List<CompletionItem>> {
 
@@ -77,18 +77,20 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
     parse(posInfo);
     String currentLine = documentManager.getLineAt(position.getLine());
 
-    if(triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
+    if (triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
       switch (triggerChar) {
         case TAG_AUTOCOMPLETE_TRIGGER_CHARACTER:
           ElementCompletion elementCompletion =
-            elementCompletionFactory.create(posInfo.getParentTag(), schemaDocument);
+              elementCompletionFactory.create(posInfo.getParentTag(), schemaDocument);
           return elementCompletion.get();
+        default:
+          return new ArrayList<>();
       }
     } else if (triggerKind.equals(CompletionTriggerKind.Invoked)) {
       // TODO: Check for validation for current postion and show accordingly.
       if (!XmlUtil.isInsideString.apply(currentLine, position.getCharacter())) {
         AttributeCompletion attrCompletionItem =
-          attrCompletionFactory.create(posInfo.getCurrentTag(), schemaDocument);
+            attrCompletionFactory.create(posInfo.getCurrentTag(), schemaDocument);
         return attrCompletionItem.get();
       }
     }
@@ -104,7 +106,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
       SAXParser parser = factory.newSAXParser();
       String documentText = textDocumentItem.getText();
       InputStream documentStream =
-        new ByteArrayInputStream(documentText.getBytes(StandardCharsets.UTF_8));
+          new ByteArrayInputStream(documentText.getBytes(StandardCharsets.UTF_8));
       parser.parse(documentStream, handler);
     } catch (SAXException | IOException e) {
       // FIXME: Too much noise in debug mode while

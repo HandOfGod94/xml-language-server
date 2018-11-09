@@ -1,16 +1,15 @@
 package io.github.handofgod94.common.parser;
 
-import java.util.Stack;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import org.dom4j.Namespace;
+import java.util.Stack;
+import javax.xml.namespace.QName;
 import org.eclipse.lsp4j.Position;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-import javax.xml.namespace.QName;
 
 /**
  * Custom SAXHandler to get document information based on position.
@@ -79,13 +78,13 @@ public class PositionalHandler extends DefaultHandler {
       // update parentEnd position
       if (cursorPosition.getLine() >= position.getLine()) {
         parentEnd.setLine(Math.max(parentEnd.getLine(), position.getLine()));
-        QName qName = new QName(uri, localName);
+        QName qname = new QName(uri, localName);
         // if we have peek, and it is equal to qualifiedName, then we got a parent element.
         // Set parent element iff, it is equal to null, otherwise we already have a parent element.
         if ((peek != null)
-          && (peek.equals(qName))
-          && (parentTag == null)
-          && (parentEnd.getLine() >= position.getLine())) {
+            && (peek.equals(qname))
+            && (parentTag == null)
+            && (parentEnd.getLine() >= position.getLine())) {
           parentTag = peek;
           elementStack.pop();
         }

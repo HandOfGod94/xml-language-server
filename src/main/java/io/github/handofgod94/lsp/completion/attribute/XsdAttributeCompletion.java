@@ -3,6 +3,12 @@ package io.github.handofgod94.lsp.completion.attribute;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.schema.SchemaDocument;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
@@ -12,12 +18,6 @@ import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.CompletionItem;
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class XsdAttributeCompletion implements AttributeCompletion {
 
@@ -34,38 +34,40 @@ public class XsdAttributeCompletion implements AttributeCompletion {
   @Override
   public List<CompletionItem> get() {
     List<CompletionItem> attributes =
-      Stream.of(checkElement(), checkModelGroup())
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .findFirst()
-      .map(this::findPossibleAttributes)
-      .orElse(new ArrayList<>())
-      .stream()
-      .map(AttributeCompletionItem::toCompletionItem)
-      .collect(Collectors.toList());
+        Stream.of(checkElement(), checkModelGroup())
+          .filter(Optional::isPresent)
+          .map(Optional::get)
+          .findFirst()
+          .map(this::findPossibleAttributes)
+          .orElse(new ArrayList<>())
+          .stream()
+          .map(AttributeCompletionItem::toCompletionItem)
+          .collect(Collectors.toList());
 
     return attributes;
   }
 
   private Optional<XSElementDeclaration> checkElement() {
     XSElementDeclaration xsObject =
-      schemaDocument.getXsModel()
-        .getElementDeclaration(currentElement.getLocalPart(), currentElement.getNamespaceURI());
+        schemaDocument.getXsModel()
+          .getElementDeclaration(currentElement.getLocalPart(),
+              currentElement.getNamespaceURI());
     return Optional.ofNullable(xsObject);
   }
 
   private Optional<XSElementDeclaration> checkModelGroup() {
     // get all the model groups
-    XSNamedMap xsMap = schemaDocument.getXsModel().getComponents(XSConstants.MODEL_GROUP_DEFINITION);
+    XSNamedMap xsMap = schemaDocument.getXsModel()
+        .getComponents(XSConstants.MODEL_GROUP_DEFINITION);
 
     // traverses through it and see if it has element
-    for (Object modelGroupName: xsMap.keySet()) {
+    for (Object modelGroupName : xsMap.keySet()) {
       QName name = (QName) modelGroupName;
       XSModelGroupDefinition groupDefinition = (XSModelGroupDefinition) xsMap.get(name);
       List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
       for (XSParticle particle : particles) {
         String particleName = particle.getTerm().getName();
-        if(particleName != null && particleName.equals(currentElement.getLocalPart())) {
+        if (particleName != null && particleName.equals(currentElement.getLocalPart())) {
           // if its equal that means it's present,
           // return XSParticle for ModelGroupDefinition
           XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
@@ -77,7 +79,8 @@ public class XsdAttributeCompletion implements AttributeCompletion {
   }
 
   /**
-   * Finds all the possible attributes for element
+   * Finds all the possible attributes for element.
+   *
    * @param element current element obtained from xs models
    * @return list of {@link CompletionItem}
    */
@@ -90,13 +93,15 @@ public class XsdAttributeCompletion implements AttributeCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if its a complex type, get all the attributes in that element
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
 
       // Traverse through all the attributes and add it to list
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSAttributeUse attr = (XSAttributeUse) attrObject;
         AttributeCompletionItem item =
-          new AttributeCompletionItem(attr.getAttrDeclaration().getName(), attr.getAttrDeclaration().getTypeDefinition(), 0,0, false);
+            new AttributeCompletionItem(attr.getAttrDeclaration().getName(),
+                attr.getAttrDeclaration().getTypeDefinition(),
+                0, 0, false);
         // TODO: Monitor max and minoccurs in an element.
         // TODO: Add * for required attributes
 

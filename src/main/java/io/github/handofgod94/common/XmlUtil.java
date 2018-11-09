@@ -25,7 +25,8 @@ public class XmlUtil {
   public static final String XSD_UNBOUNDED = "UNBOUNDED";
   public static final String XSD_ANY = "any";
   public static final String XSD_WC = "WC";
-  public static final Set<String> XSD_KEYS = new HashSet<>(Arrays.asList("", XSD_UNBOUNDED, XSD_ANY, XSD_WC));
+  public static final Set<String> XSD_KEYS =
+      new HashSet<>(Arrays.asList("", XSD_UNBOUNDED, XSD_ANY, XSD_WC));
 
   /**
    * Initializes document lines.
