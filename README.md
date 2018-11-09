@@ -12,7 +12,7 @@ capabilities such as autocomplete, validation or documentation support for XML d
   - [x] XSD
   - [ ] DTD
 * Autocomplete
-  - [ ] XSD
+  - [x] XSD
   - [ ] DTD
 * Documentation
   - [x] XSD
