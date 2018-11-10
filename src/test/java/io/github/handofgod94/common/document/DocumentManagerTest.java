@@ -1,18 +1,16 @@
-package io.github.handofgod94.common;
+package io.github.handofgod94.common.document;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
+import io.github.handofgod94.AbstractXmlUnitTest;
+import io.github.handofgod94.main.XmlLanguageServer;
 import java.util.Optional;
-
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.handofgod94.AbstractXmlUnitTest;
-import io.github.handofgod94.main.XmlLanguageServer;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DocumentManagerTest extends AbstractXmlUnitTest {
 
@@ -21,7 +19,7 @@ public class DocumentManagerTest extends AbstractXmlUnitTest {
   @BeforeEach
   public void setup() {
     TextDocumentItem documentItem =
-        new TextDocumentItem(DUMMY_URI, XmlLanguageServer.LANGUAGE_ID, DUMMY_VERSION, MOCK_XML_TEXT);
+      new TextDocumentItem(DUMMY_URI, XmlLanguageServer.LANGUAGE_ID, DUMMY_VERSION, MOCK_XML_TEXT);
     manager = new DocumentManager(documentItem);
   }
 
@@ -29,15 +27,15 @@ public class DocumentManagerTest extends AbstractXmlUnitTest {
   public void testGetStringBetweenRange() {
     Range validRange = manager.getWordRangeAt(new Position(3, 10)).get();
     Range wrongRange = new Range(new Position(3, 10), new Position(2, 9));
-    Range invalidRange = new Range(new Position(-1, -1), new Position(0 , 0));
+    Range invalidRange = new Range(new Position(-1, -1), new Position(0, 0));
 
     String validWord = manager.getStringBetweenRange(validRange);
     String wrongWord = manager.getStringBetweenRange(wrongRange);
     String invalidWord = manager.getStringBetweenRange(invalidRange);
 
-    assertEquals(validWord, "schemaLocation");
-    assertEquals(wrongWord, "");
-    assertEquals(invalidWord, "");
+    assertEquals("schemaLocation", validWord);
+    assertEquals("", wrongWord);
+    assertEquals("", invalidWord);
   }
 
   @Test

@@ -17,15 +17,15 @@ import org.eclipse.lsp4j.MarkupKind;
 /**
  * Hover information for tags.
  */
-public class TagHover implements XmlHover {
+public class ElementHover implements XmlHover {
 
-  private static final Logger logger = LogManager.getLogger(TagHover.class.getName());
+  private static final Logger logger = LogManager.getLogger(ElementHover.class.getName());
 
   private final String wordHovered;
   private final SchemaDocument schemaDocument;
 
   @Inject
-  TagHover(@Assisted String wordHovered, @Assisted SchemaDocument schemaDocument) {
+  ElementHover(@Assisted String wordHovered, @Assisted SchemaDocument schemaDocument) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
   }
@@ -69,7 +69,7 @@ public class TagHover implements XmlHover {
     MarkupContent docs = new MarkupContent();
     StringBuffer buffer = new StringBuffer();
 
-    // Add tag info
+    // Add element info
     String markedTag = String.format("**TAG** : %s  \n", wordHovered);
     buffer.append(markedTag);
 
@@ -88,7 +88,6 @@ public class TagHover implements XmlHover {
         buffer.append(markedStr);
       }
     }
-
     docs.setKind(MarkupKind.MARKDOWN);
     docs.setValue(buffer.toString());
     return docs;

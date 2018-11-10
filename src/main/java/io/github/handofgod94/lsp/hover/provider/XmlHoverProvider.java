@@ -3,9 +3,9 @@ package io.github.handofgod94.lsp.hover.provider;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.common.DocumentManager;
-import io.github.handofgod94.common.DocumentManagerFactory;
 import io.github.handofgod94.common.XmlUtil;
+import io.github.handofgod94.common.document.DocumentManager;
+import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.schema.SchemaDocument;
@@ -70,7 +70,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
       Element root = partialDoc.getRootElement();
 
       // If root element name is equal to word hovered that means
-      // we are looking at tag, otherwise it could be attribute or something else altogether
+      // we are looking at element, otherwise it could be attribute or something else altogether
       if (wordHovered.equals(root.getName())) {
         XmlHover hover = xmlHoverFactory.getTagHover(wordHovered, document);
         return Optional.of(hover);

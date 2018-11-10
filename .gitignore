@@ -5,7 +5,4 @@ target/
 .project
 .classpath
 .vscode/
-**/node_modules
 .factorypath
-documentation/docs/APIReference/Tags/README.md
-documentation/docs/.vuepress/dist

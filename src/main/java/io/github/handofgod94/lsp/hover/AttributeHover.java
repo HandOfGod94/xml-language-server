@@ -17,8 +17,8 @@ public class AttributeHover implements XmlHover {
   private final String parentTagName;
 
   @Inject
-  AttributeHover(@Assisted("Tag") String wordHovered,
-                 @Assisted("Tag") SchemaDocument schemaDocument,
+  AttributeHover(@Assisted("Element") String wordHovered,
+                 @Assisted("Element") SchemaDocument schemaDocument,
                  @Assisted("Attribute") String parentTagName) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;

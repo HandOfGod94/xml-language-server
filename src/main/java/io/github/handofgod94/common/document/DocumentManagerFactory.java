@@ -1,4 +1,4 @@
-package io.github.handofgod94.common;
+package io.github.handofgod94.common.document;
 
 import org.eclipse.lsp4j.TextDocumentItem;
 
