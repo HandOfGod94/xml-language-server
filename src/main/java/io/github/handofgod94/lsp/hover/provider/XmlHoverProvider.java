@@ -59,7 +59,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
   public Optional<XmlHover> get() {
     DocumentManager docManager = documentManagerFactory.create(documentItem);
     String line = docManager.getLineAt(position.getLine());
-    Optional<Document> optPartialDoc = XmlUtil.getPartialDoc.apply(line);
+    Optional<Document> optPartialDoc = XmlUtil.getPartialDoc(line);
 
     Optional<Range> optWordRange = docManager.getWordRangeAt(position);
     String wordHovered =

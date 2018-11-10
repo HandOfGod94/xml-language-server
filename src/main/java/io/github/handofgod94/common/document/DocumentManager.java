@@ -24,7 +24,7 @@ public class DocumentManager {
   @Inject
   DocumentManager(@Assisted TextDocumentItem documentItem) {
     this.documentItem = documentItem;
-    this.documentLines = XmlUtil.getDocumentLines.apply(this.documentItem.getText());
+    this.documentLines = XmlUtil.getDocumentLines(this.documentItem.getText());
   }
 
   /**
