@@ -1,15 +1,32 @@
 package io.github.handofgod94.common;
 
+import io.github.handofgod94.common.parser.PositionalHandler;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.xerces.xs.XSConstants;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSModelGroupDefinition;
+import org.apache.xerces.xs.XSNamedMap;
+import org.apache.xerces.xs.XSParticle;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
 
 /**
  * Utility class for various xml related operations. Similar to other utility
@@ -110,5 +127,63 @@ public class XmlUtil {
       }
     }
     return isInsideString;
+  }
+
+  /**
+   * Parses XML text using PositionalHandler provided.
+   * It's assumed that handler is initialized and is not null.
+   * After parsing parent and current elements can be accessed using getters.
+   * @param handler PositionalHandler instance initialized with a position
+   * @param text text which needs to be parsed
+   */
+  public static void positionalParse(PositionalHandler handler, String text) {
+    // parse using the custom handler
+    try {
+      SAXParserFactory factory = SAXParserFactory.newInstance();
+      factory.setNamespaceAware(true);
+      SAXParser parser = factory.newSAXParser();
+      InputStream documentStream =
+        new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+      parser.parse(documentStream, handler);
+    } catch (SAXException | IOException e) {
+      // FIXME: Too much noise in debug mode while
+      logger.debug("Exception while parsing the document", e);
+    } catch (ParserConfigurationException e) {
+      logger.error("Exception while setting up parser", e);
+    }
+  }
+
+  public static Optional<XSElementDeclaration> checkInElement(XSModel xsModel, QName element) {
+    if (xsModel != null && element != null) {
+      XSElementDeclaration xsObject = xsModel.getElementDeclaration(element.getLocalPart(),
+        element.getNamespaceURI());
+      return Optional.ofNullable(xsObject);
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<XSElementDeclaration> checkInModelGroup(XSModel xsModel, QName element) {
+
+    if (xsModel != null && element != null) {
+      // get all the model groups
+      XSNamedMap xsMap = xsModel.getComponents(XSConstants.MODEL_GROUP_DEFINITION);
+
+      // traverses through it and see if it has element
+      for (Object modelGroupName : xsMap.keySet()) {
+        QName name = (QName) modelGroupName;
+        XSModelGroupDefinition groupDefinition = (XSModelGroupDefinition) xsMap.get(name);
+        List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
+        for (XSParticle particle : particles) {
+          String particleName = particle.getTerm().getName();
+          if (particleName != null && particleName.equals(element.getLocalPart())) {
+            // if its equal that means it's present,
+            // return XSParticle for ModelGroupDefinition
+            XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
+            return Optional.of(elementDeclaration);
+          }
+        }
+      }
+    }
+    return Optional.empty();
   }
 }

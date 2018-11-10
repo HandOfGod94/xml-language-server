@@ -2,6 +2,7 @@ package io.github.handofgod94.lsp.completion.attribute;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import io.github.handofgod94.schema.AttributeInfo;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class XsdAttributeCompletion implements AttributeCompletion {
           .map(this::findPossibleAttributes)
           .orElse(new ArrayList<>())
           .stream()
-          .map(AttributeCompletionItem::toCompletionItem)
+          .map(AttributeInfo::toCompletionItem)
           .collect(Collectors.toList());
 
     return attributes;
@@ -84,8 +85,8 @@ public class XsdAttributeCompletion implements AttributeCompletion {
    * @param element current element obtained from xs models
    * @return list of {@link CompletionItem}
    */
-  private List<AttributeCompletionItem> findPossibleAttributes(XSElementDeclaration element) {
-    List<AttributeCompletionItem> attributeCompletionItems = new ArrayList<>();
+  private List<AttributeInfo> findPossibleAttributes(XSElementDeclaration element) {
+    List<AttributeInfo> attributeCompletionItems = new ArrayList<>();
 
     // Get type definitions from the element
     XSTypeDefinition typeDefinition = element.getTypeDefinition();
@@ -98,14 +99,12 @@ public class XsdAttributeCompletion implements AttributeCompletion {
       // Traverse through all the attributes and add it to list
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSAttributeUse attr = (XSAttributeUse) attrObject;
-        AttributeCompletionItem item =
-            new AttributeCompletionItem(attr.getAttrDeclaration().getName(),
-                attr.getAttrDeclaration().getTypeDefinition(),
-                0, 0, false);
+        AttributeInfo info =
+            new AttributeInfo(attr);
         // TODO: Monitor max and minoccurs in an element.
         // TODO: Add * for required attributes
 
-        attributeCompletionItems.add(item);
+        attributeCompletionItems.add(info);
       }
 
     } else {

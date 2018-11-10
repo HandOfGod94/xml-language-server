@@ -1,8 +1,9 @@
 package io.github.handofgod94.lsp.hover;
 
-import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
 import io.github.handofgod94.schema.SchemaDocument;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
  * Guice factory for element and attribute hovers.
@@ -19,7 +20,10 @@ public interface XmlHoverFactory {
    * @return ElementHover instance to obtain hover.
    */
   @Named("Element")
-  XmlHover getTagHover(String wordHovered, SchemaDocument document);
+  XmlHover getElementHover(String wordHovered,
+                           SchemaDocument document,
+                           TextDocumentItem documentItem,
+                           Position position);
 
   /**
    * Creates hover instances for Attributes.
@@ -29,11 +33,12 @@ public interface XmlHoverFactory {
    * name to obtain documentation to display on hover.
    * @param wordHovered word being hovered. It is assumed that it will be
    *     name of the attribute.
-   * @param parentName name of the parent element of current attribute.
+   * @param position current hover position.
    * @return AttributeHover instances to obtain hover.
    */
   @Named("Attribute")
-  XmlHover getAttributeHover(@Assisted("Element") String wordHovered,
-                            @Assisted("Element") SchemaDocument schemaDocument,
-                            @Assisted("Attribute") String parentName);
+  XmlHover getAttributeHover(String wordHovered,
+                             SchemaDocument schemaDocument,
+                             TextDocumentItem documentItem,
+                             Position position);
 }

@@ -24,10 +24,10 @@ public class PositionalHandler extends DefaultHandler {
   private Stack<QName> elementStack = new Stack<>();
 
   // Parent element
-  private QName parentTag = null;
+  private QName parentElement = null;
 
   // Current element
-  private QName currentTag = null;
+  private QName currentElement = null;
 
   // Reference parent start and end position
   private Position parentStart = new Position(Integer.MIN_VALUE, 0);
@@ -60,7 +60,7 @@ public class PositionalHandler extends DefaultHandler {
     }
 
     if (cursorPosition.getLine() == position.getLine()) {
-      currentTag = new QName(uri, localName);
+      currentElement = new QName(uri, localName);
     }
 
   }
@@ -83,9 +83,9 @@ public class PositionalHandler extends DefaultHandler {
         // Set parent element iff, it is equal to null, otherwise we already have a parent element.
         if ((peek != null)
             && (peek.equals(qname))
-            && (parentTag == null)
+            && (parentElement == null)
             && (parentEnd.getLine() >= position.getLine())) {
-          parentTag = peek;
+          parentElement = peek;
           elementStack.pop();
         }
       } else {
@@ -101,18 +101,18 @@ public class PositionalHandler extends DefaultHandler {
     // Suppress the parseException while editing.s
     // HACK: While editing if you get parsing error, means the previous element is the parent
     if (!elementStack.isEmpty()) {
-      parentTag = elementStack.peek();
+      parentElement = elementStack.peek();
     }
     super.fatalError(e);
   }
 
   // Getters
 
-  public QName getParentTag() {
-    return parentTag;
+  public QName getParentElement() {
+    return parentElement;
   }
 
-  public QName getCurrentTag() {
-    return currentTag;
+  public QName getCurrentElement() {
+    return currentElement;
   }
 }
