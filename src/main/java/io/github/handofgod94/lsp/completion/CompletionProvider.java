@@ -88,7 +88,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
       }
     } else if (triggerKind.equals(CompletionTriggerKind.Invoked)) {
       // TODO: Check for validation for current postion and show accordingly.
-      if (!XmlUtil.isInsideString.apply(currentLine, position.getCharacter())) {
+      if (!XmlUtil.isInsideString(currentLine, position.getCharacter())) {
         AttributeCompletion attrCompletionItem =
             attrCompletionFactory.create(posInfo.getCurrentTag(), schemaDocument);
         return attrCompletionItem.get();

@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
@@ -34,7 +32,9 @@ public class XmlUtil {
    * @param text DocumentText having next lines
    * @return Array of strings for each line
    */
-  public static Function<String, String[]> getDocumentLines = text -> text.split("\\r?\\n");
+  public static String[] getDocumentLines(String text) {
+    return text.split("\\r?\\n");
+  }
 
   /**
    * Create dom4j Document object for a give a string.
@@ -42,7 +42,7 @@ public class XmlUtil {
    * @param line string containing full xml
    * @return Document object if parsed successfully
    */
-  public static Function<String, Optional<Document>> createParsedDoc = line -> {
+  public static Optional<Document> createParsedDoc(String line) {
     try {
       SAXReader reader = new SAXReader();
       Document document = reader.read(new StringReader(line));
@@ -51,7 +51,7 @@ public class XmlUtil {
       logger.debug("Unable to parse document, it could be malformed", e);
     }
     return Optional.empty();
-  };
+  }
 
   /**
    * Attempts to partially complete the line and create a parsed doc out of it.
@@ -59,14 +59,14 @@ public class XmlUtil {
    * @param line String which needs to be parsed
    * @return String containing value of attribute
    */
-  public static Function<String, Optional<Document>> getPartialDoc = line -> {
+  public static Optional<Document> getPartialDoc(String line) {
     // TODO: improve implementation to handle cases.
     // TODO: it's not always single element per line.
     String trimmedLine = line.trim();
 
     // first try directly parsing it, if its not successful
     // we will get empty value
-    Optional<Document> optDocument = createParsedDoc.apply(trimmedLine);
+    Optional<Document> optDocument = createParsedDoc(trimmedLine);
     if (!optDocument.isPresent()) {
       if (trimmedLine.startsWith("</")) {
         // if its an ending line, as starting statement
@@ -77,11 +77,11 @@ public class XmlUtil {
         trimmedLine = trimmedLine.substring(0, trimmedLine.lastIndexOf(">"));
         trimmedLine += "/>";
       }
-      return createParsedDoc.apply(trimmedLine);
+      return createParsedDoc(trimmedLine);
     }
 
     return optDocument;
-  };
+  }
 
   /**
    * Checks whether the given position in a give string
@@ -91,7 +91,7 @@ public class XmlUtil {
    * @param index position in the string/
    * @return true, if it's inside string, false otherwise
    */
-  public static BiFunction<String, Integer, Boolean> isInsideString = (str, index) -> {
+  public static boolean isInsideString(String str, int index) {
     // flag to check if we have a matching quote or not
     boolean isInsideString = false;
 
@@ -109,7 +109,6 @@ public class XmlUtil {
         isInsideString = !isInsideString;
       }
     }
-
     return isInsideString;
-  };
+  }
 }
