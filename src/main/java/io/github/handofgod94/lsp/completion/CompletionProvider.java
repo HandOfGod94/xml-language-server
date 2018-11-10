@@ -81,7 +81,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
       switch (triggerChar) {
         case TAG_AUTOCOMPLETE_TRIGGER_CHARACTER:
           ElementCompletion elementCompletion =
-              elementCompletionFactory.create(posInfo.getParentTag(), schemaDocument);
+              elementCompletionFactory.create(posInfo.getParentElement(), schemaDocument);
           return elementCompletion.get();
         default:
           return new ArrayList<>();
@@ -90,7 +90,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
       // TODO: Check for validation for current postion and show accordingly.
       if (!XmlUtil.isInsideString(currentLine, position.getCharacter())) {
         AttributeCompletion attrCompletionItem =
-            attrCompletionFactory.create(posInfo.getCurrentTag(), schemaDocument);
+            attrCompletionFactory.create(posInfo.getCurrentElement(), schemaDocument);
         return attrCompletionItem.get();
       }
     }
