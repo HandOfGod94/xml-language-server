@@ -72,11 +72,13 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
       // If root element name is equal to word hovered that means
       // we are looking at element, otherwise it could be attribute or something else altogether
       if (wordHovered.equals(root.getName())) {
-        XmlHover hover = xmlHoverFactory.getElementHover(wordHovered, document, documentItem, position);
+        XmlHover hover =
+            xmlHoverFactory.getElementHover(wordHovered, document, documentItem, position);
         return Optional.of(hover);
       } else if (root.attribute(wordHovered) != null) {
         // if word hovered is attribute
-        XmlHover hover = xmlHoverFactory.getAttributeHover(wordHovered, document, documentItem, position);
+        XmlHover hover =
+            xmlHoverFactory.getAttributeHover(wordHovered, document, documentItem, position);
         return Optional.of(hover);
       }
     }

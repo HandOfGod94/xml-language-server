@@ -58,7 +58,7 @@ public class ElementHover implements XmlHover {
     XmlUtil.positionalParse(handler, documentItem.getText());
     QName qname = handler.getCurrentElement();
     Optional<XSElementDeclaration> optElement =
-      Stream
+        Stream
         .of(
           XmlUtil.checkInElement(schemaDocument.getXsModel(), qname),
           XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qname)

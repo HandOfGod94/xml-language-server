@@ -143,7 +143,7 @@ public class XmlUtil {
       factory.setNamespaceAware(true);
       SAXParser parser = factory.newSAXParser();
       InputStream documentStream =
-        new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
+          new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
       parser.parse(documentStream, handler);
     } catch (SAXException | IOException e) {
       // FIXME: Too much noise in debug mode while
@@ -164,7 +164,7 @@ public class XmlUtil {
   public static Optional<XSElementDeclaration> checkInElement(XSModel xsModel, QName element) {
     if (xsModel != null && element != null) {
       XSElementDeclaration xsObject = xsModel.getElementDeclaration(element.getLocalPart(),
-        element.getNamespaceURI());
+          element.getNamespaceURI());
       return Optional.ofNullable(xsObject);
     }
     return Optional.empty();
@@ -178,7 +178,7 @@ public class XmlUtil {
    * for element in all the complex type definitions
    * @param xsModel xsd xerces schema model
    * @param element lookup element
-   * @return XSElementDeclaration objec it it is declared in the ComplexType definitions
+   * @return XSElementDeclaration object it it is declared in the ComplexType definitions
    */
   public static Optional<XSElementDeclaration> checkInModelGroup(XSModel xsModel, QName element) {
 
