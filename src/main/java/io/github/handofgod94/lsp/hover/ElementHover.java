@@ -5,19 +5,14 @@ import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
-import io.github.handofgod94.schema.ElementInfo;
+import io.github.handofgod94.common.wrappers.ElementInfo;
 import io.github.handofgod94.schema.SchemaDocument;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.Node;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
@@ -74,6 +69,7 @@ public class ElementHover implements XmlHover {
 
 
     // TODO: Guice injections
+    // check if word hovered is the possible element at current position or not.
     if (optElement.isPresent() && optElement.get().getName().equals(wordHovered)) {
       ElementInfo elementInfo = new ElementInfo(optElement.get());
       content = elementInfo.toMarkupContent();

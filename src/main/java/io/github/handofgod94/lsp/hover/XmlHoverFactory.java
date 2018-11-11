@@ -11,12 +11,14 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public interface XmlHoverFactory {
 
   /**
-   * Creates hover instances for Tags.
-   * This is useful for xml elements
-   * Tags documentation will then be parsed and read
+   * Creates hover instances for Elements.
+   * Elements documentation will then be parsed and read
    * and will be provided as hover
    * @param wordHovered word being hovered. It is assumed that it will
    *     name of element for ElementHover
+   * @param document schema document having xsModel and schema for current document
+   * @param documentItem current text document loaded in editor
+   * @param position current hover position
    * @return ElementHover instance to obtain hover.
    */
   @Named("Element")
@@ -31,9 +33,10 @@ public interface XmlHoverFactory {
    * Each attribute will also be associated with a parent element.
    * Lookup for documentation will consider both parent and attribute
    * name to obtain documentation to display on hover.
-   * @param wordHovered word being hovered. It is assumed that it will be
-   *     name of the attribute.
-   * @param position current hover position.
+   * @param wordHovered word being hovered. It is assumed that it will be name of the attribute
+   * @param schemaDocument schema document having xsModel and schema for current document
+   * @param position current hover position
+   * @param documentItem current text document
    * @return AttributeHover instances to obtain hover.
    */
   @Named("Attribute")
