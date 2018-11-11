@@ -27,6 +27,11 @@ public class AttributeInfo {
   private XSAttributeUse attributeUse;
   private XSSimpleTypeDefinition type;
 
+  /**
+   * Creates new object. It will hold necessary the information
+   * related attributes
+   * @param attributeUse {@link XSAttributeUse} object
+   */
   public AttributeInfo(XSAttributeUse attributeUse) {
     this.attributeUse = attributeUse;
     attributeDeclaration = attributeUse.getAttrDeclaration();
@@ -34,6 +39,12 @@ public class AttributeInfo {
     type = attributeDeclaration.getTypeDefinition();
   }
 
+  /**
+   * Generates {@link CompletionItem} for current attribute.
+   * This will be used by editors to list completions items for attributes.
+   * For attributes, it contains "name", "type" and "documentation".
+   * @return CompletionItem object having all the relevant information.
+   */
   public CompletionItem toCompletionItem() {
     CompletionItem info = new CompletionItem();
     info.setLabel(name);
@@ -45,6 +56,16 @@ public class AttributeInfo {
     return info;
   }
 
+  /**
+   * Generates documentation markup.
+   * Standard format is:
+   * <pre>
+   *   ATTRIBUTE: (attribute-name)
+   *   DESCRIPTION: (documentation for attribute)
+   *   TYPE: data type which the attribute accepts
+   * </pre>
+   * @return MarkupContent object having formatted documentation as described in doc
+   */
   public MarkupContent toMarkupContent() {
 
     MarkupContent content = new MarkupContent();
@@ -55,14 +76,15 @@ public class AttributeInfo {
     docBuffer.append(attrStr);
 
     String annotation =
-      Stream
+        Stream
         .of(Optional.ofNullable(attributeDeclaration.getAnnotation()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .map(XSAnnotation::getAnnotationString)
         .findFirst().orElse("");
 
-    // certain xsd such as maven-pom.xsd has multiple documentation elements, such as version and other info.
+    // certain xsd such as maven-pom.xsd has multiple documentation elements, such as
+    // version and other info.
     // In that case, get the one which has attribute "source".
     Optional<Document> annotationDoc = XmlUtil.createParsedDoc(annotation);
     annotationDoc.ifPresent(doc -> {
@@ -70,12 +92,12 @@ public class AttributeInfo {
       Element annotations = doc.getRootElement();
 
       // traverse through all the annotations
-      for (Iterator<Element> it = annotations.elementIterator(); it.hasNext() ; ) {
+      for (Iterator<Element> it = annotations.elementIterator(); it.hasNext(); ) {
         Element documentation = it.next();
         if (documentation.attributeCount() > 0) {
           descKey =
-            (documentation.attributeValue("source") != null) ?
-                documentation.attributeValue("source").toUpperCase() : descKey;
+            (documentation.attributeValue("source") != null)
+              ? documentation.attributeValue("source").toUpperCase() : descKey;
         }
         String descValue = documentation.getTextTrim();
         String descriptionDoc = String.format("**%s**: %s  \n", descKey, descValue);

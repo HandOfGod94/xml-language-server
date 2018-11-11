@@ -13,15 +13,8 @@ import io.github.handofgod94.lsp.completion.attribute.AttributeCompletionFactory
 import io.github.handofgod94.lsp.completion.element.ElementCompletion;
 import io.github.handofgod94.lsp.completion.element.ElementCompletionFactory;
 import io.github.handofgod94.schema.SchemaDocument;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.CompletionItem;
@@ -29,7 +22,6 @@ import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.CompletionTriggerKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.xml.sax.SAXException;
 
 public class CompletionProvider implements Provider<List<CompletionItem>> {
 
@@ -87,7 +79,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
           return new ArrayList<>();
       }
     } else if (triggerKind.equals(CompletionTriggerKind.Invoked)) {
-      // TODO: Check for validation for current postion and show accordingly.
+      // TODO: Check for validation for current position and show accordingly.
       if (!XmlUtil.isInsideString(currentLine, position.getCharacter())) {
         AttributeCompletion attrCompletionItem =
             attrCompletionFactory.create(posInfo.getCurrentElement(), schemaDocument);
