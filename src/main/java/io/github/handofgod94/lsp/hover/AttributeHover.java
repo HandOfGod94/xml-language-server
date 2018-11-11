@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
-import io.github.handofgod94.schema.AttributeInfo;
+import io.github.handofgod94.common.wrappers.AttributeInfo;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.List;

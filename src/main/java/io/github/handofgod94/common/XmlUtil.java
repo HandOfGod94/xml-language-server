@@ -153,6 +153,14 @@ public class XmlUtil {
     }
   }
 
+  /**
+   * Checks given element in the loaded xerces schema model.
+   * In other words, it checks for qname in xsd whether it's declared as element or not.
+   * If it is present then it's returned.
+   * @param xsModel xsd xerces schema model
+   * @param element lookup element
+   * @return XSElementDeclaration object if is declared as element
+   */
   public static Optional<XSElementDeclaration> checkInElement(XSModel xsModel, QName element) {
     if (xsModel != null && element != null) {
       XSElementDeclaration xsObject = xsModel.getElementDeclaration(element.getLocalPart(),
@@ -162,6 +170,16 @@ public class XmlUtil {
     return Optional.empty();
   }
 
+  /**
+   * Checks given element in the loaded xerces schema model.
+   * Element declaration can be in two places in XSD. It could be
+   * declared under global element declaration or could be inside
+   * model groups under complex type definitions. This method will check
+   * for element in all the complex type definitions
+   * @param xsModel xsd xerces schema model
+   * @param element lookup element
+   * @return XSElementDeclaration objec it it is declared in the ComplexType definitions
+   */
   public static Optional<XSElementDeclaration> checkInModelGroup(XSModel xsModel, QName element) {
 
     if (xsModel != null && element != null) {

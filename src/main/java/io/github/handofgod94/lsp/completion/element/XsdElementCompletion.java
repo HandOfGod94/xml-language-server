@@ -2,6 +2,8 @@ package io.github.handofgod94.lsp.completion.element;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import io.github.handofgod94.common.XmlUtil;
+import io.github.handofgod94.common.wrappers.ElementInfo;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,6 @@ import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModelGroup;
-import org.apache.xerces.xs.XSModelGroupDefinition;
-import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
@@ -37,48 +37,19 @@ public class XsdElementCompletion implements ElementCompletion {
   public List<CompletionItem> get() {
     // Search if the parent element is in element declaration or model group definitions
     List<CompletionItem> elements =
-        Stream.of(checkElement(), checkModelGroup())
+        Stream.of(
+            XmlUtil.checkInElement(schemaDocument.getXsModel(), parentElement),
+            XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), parentElement)
+          )
           .filter(Optional::isPresent)
           .map(Optional::get)
           .findFirst()
           .map(this::findPossibleChildren).orElse(new ArrayList<>())
           .stream()
-          .map(ElementCompletionItem::toCompletionItem)
+          .map(ElementInfo::toCompletionItem)
           .collect(Collectors.toList());
 
     return elements;
-  }
-
-  private Optional<XSElementDeclaration> checkElement() {
-    XSElementDeclaration xsObject =
-        schemaDocument.getXsModel()
-          .getElementDeclaration(parentElement.getLocalPart(),
-              parentElement.getNamespaceURI());
-    return Optional.ofNullable(xsObject);
-  }
-
-  // TODO: Change it to pure
-  private Optional<XSElementDeclaration> checkModelGroup() {
-    // get all the model groups
-    XSNamedMap xsMap = schemaDocument.getXsModel()
-        .getComponents(XSConstants.MODEL_GROUP_DEFINITION);
-
-    // traverses through it and see if it has element
-    for (Object modelGroupName : xsMap.keySet()) {
-      QName name = (QName) modelGroupName;
-      XSModelGroupDefinition groupDefinition = (XSModelGroupDefinition) xsMap.get(name);
-      List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
-      for (XSParticle particle : particles) {
-        String particleName = particle.getTerm().getName();
-        if (particleName != null && particleName.equals(parentElement.getLocalPart())) {
-          // if its equal that means it's present,
-          // return XSParticle for ModelGroupDefinition
-          XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
-          return Optional.of(elementDeclaration);
-        }
-      }
-    }
-    return Optional.empty();
   }
 
   /**
@@ -87,8 +58,8 @@ public class XsdElementCompletion implements ElementCompletion {
    * @param element XSD Element object pointing to parent element
    * @return List of completion items for the element i.e. parent element.
    */
-  private List<ElementCompletionItem> findPossibleChildren(XSElementDeclaration element) {
-    List<ElementCompletionItem> tags = new ArrayList<>();
+  private List<ElementInfo> findPossibleChildren(XSElementDeclaration element) {
+    List<ElementInfo> tags = new ArrayList<>();
 
     // Get type definitions for current element
     XSTypeDefinition typeDefinition = element.getTypeDefinition();
@@ -111,7 +82,7 @@ public class XsdElementCompletion implements ElementCompletion {
           particles.forEach(p -> xsObjects.push(p.getTerm()));
         } else if (term.getType() == XSConstants.ELEMENT_DECLARATION) {
           XSElementDeclaration ele = (XSElementDeclaration) term;
-          tags.add(new ElementCompletionItem(ele.getName(), ele.getNamespace(), ""));
+          tags.add(new ElementInfo(ele));
         }
       }
     } else {

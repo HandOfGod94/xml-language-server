@@ -12,10 +12,10 @@ public class SchemaDocument {
   private XSModel xsModel;
   private Schema schema;
   private SchemaDocumentType documentType;
-  private List<Document> parsedSchemaDocs;
 
   // Optional params
   private Namespace namespace;
+  private List<Document> parsedSchemaDocs;
 
   private SchemaDocument(Builder builder) {
     this.xsModel = builder.xsModel;

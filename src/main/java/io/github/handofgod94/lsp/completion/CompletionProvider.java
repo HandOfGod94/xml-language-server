@@ -74,7 +74,7 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
 
 
     PositionalHandler posInfo = handlerFactory.create(position);
-    parse(posInfo);
+    XmlUtil.positionalParse(posInfo, textDocumentItem.getText());
     String currentLine = documentManager.getLineAt(position.getLine());
 
     if (triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
@@ -96,23 +96,5 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
     }
 
     return new ArrayList<>();
-  }
-
-  private void parse(PositionalHandler handler) {
-    // parse using the custom handler
-    try {
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      SAXParser parser = factory.newSAXParser();
-      String documentText = textDocumentItem.getText();
-      InputStream documentStream =
-          new ByteArrayInputStream(documentText.getBytes(StandardCharsets.UTF_8));
-      parser.parse(documentStream, handler);
-    } catch (SAXException | IOException e) {
-      // FIXME: Too much noise in debug mode while
-      logger.debug("Exception while parsing the document", e);
-    } catch (ParserConfigurationException e) {
-      logger.error("Exception while setting up parser", e);
-    }
   }
 }

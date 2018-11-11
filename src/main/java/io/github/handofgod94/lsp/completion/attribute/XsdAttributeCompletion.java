@@ -2,7 +2,8 @@ package io.github.handofgod94.lsp.completion.attribute;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.schema.AttributeInfo;
+import io.github.handofgod94.common.XmlUtil;
+import io.github.handofgod94.common.wrappers.AttributeInfo;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +13,7 @@ import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
-import org.apache.xerces.xs.XSConstants;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSModelGroupDefinition;
-import org.apache.xerces.xs.XSNamedMap;
-import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.CompletionItem;
 
@@ -35,7 +32,10 @@ public class XsdAttributeCompletion implements AttributeCompletion {
   @Override
   public List<CompletionItem> get() {
     List<CompletionItem> attributes =
-        Stream.of(checkElement(), checkModelGroup())
+        Stream.of(
+            XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement),
+            XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement)
+          )
           .filter(Optional::isPresent)
           .map(Optional::get)
           .findFirst()
@@ -46,37 +46,6 @@ public class XsdAttributeCompletion implements AttributeCompletion {
           .collect(Collectors.toList());
 
     return attributes;
-  }
-
-  private Optional<XSElementDeclaration> checkElement() {
-    XSElementDeclaration xsObject =
-        schemaDocument.getXsModel()
-          .getElementDeclaration(currentElement.getLocalPart(),
-              currentElement.getNamespaceURI());
-    return Optional.ofNullable(xsObject);
-  }
-
-  private Optional<XSElementDeclaration> checkModelGroup() {
-    // get all the model groups
-    XSNamedMap xsMap = schemaDocument.getXsModel()
-        .getComponents(XSConstants.MODEL_GROUP_DEFINITION);
-
-    // traverses through it and see if it has element
-    for (Object modelGroupName : xsMap.keySet()) {
-      QName name = (QName) modelGroupName;
-      XSModelGroupDefinition groupDefinition = (XSModelGroupDefinition) xsMap.get(name);
-      List<XSParticle> particles = groupDefinition.getModelGroup().getParticles();
-      for (XSParticle particle : particles) {
-        String particleName = particle.getTerm().getName();
-        if (particleName != null && particleName.equals(currentElement.getLocalPart())) {
-          // if its equal that means it's present,
-          // return XSParticle for ModelGroupDefinition
-          XSElementDeclaration elementDeclaration = (XSElementDeclaration) particle.getTerm();
-          return Optional.of(elementDeclaration);
-        }
-      }
-    }
-    return Optional.empty();
   }
 
   /**
@@ -99,8 +68,8 @@ public class XsdAttributeCompletion implements AttributeCompletion {
       // Traverse through all the attributes and add it to list
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSAttributeUse attr = (XSAttributeUse) attrObject;
-        AttributeInfo info =
-            new AttributeInfo(attr);
+        AttributeInfo info = new AttributeInfo(attr);
+        // TODO: Guice injection
         // TODO: Monitor max and minoccurs in an element.
         // TODO: Add * for required attributes
 
