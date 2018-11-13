@@ -35,6 +35,7 @@ public class XsdElementCompletion implements ElementCompletion {
 
   @Override
   public List<CompletionItem> get() {
+    // TODO: Check in only one (element or model group) not in both always
     // Search if the parent element is in element declaration or model group definitions
     List<CompletionItem> elements =
         Stream.of(

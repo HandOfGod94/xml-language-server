@@ -4,8 +4,10 @@ package io.github.handofgod94;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -47,10 +49,8 @@ public class AbstractXmlUnitTest {
   protected final SchemaDocument createDummyXsdSchema() throws IOException, SAXException {
     XSLoader loader = new XMLSchemaLoader();
     File temp = File.createTempFile("temp", ".xsd");
-    FileWriter writer = new FileWriter(temp);
-    writer.write(MOCK_XSD_TEXT);
-    writer.flush();
-    writer.close();
+    temp.deleteOnExit();
+    Files.write(Paths.get(temp.toURI()), MOCK_XSD_TEXT.getBytes(StandardCharsets.UTF_8));
 
     XSModel model = loader.loadURI(temp.toURI().toString());
     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
