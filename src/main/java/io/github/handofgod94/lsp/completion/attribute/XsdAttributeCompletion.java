@@ -31,6 +31,7 @@ public class XsdAttributeCompletion implements AttributeCompletion {
 
   @Override
   public List<CompletionItem> get() {
+    // TODO: Check in only one (element or model group) not in both always
     List<CompletionItem> attributes =
         Stream.of(
             XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement),
