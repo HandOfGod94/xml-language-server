@@ -12,7 +12,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Custom SAXHandler to get document information based on position.
+ * Custom SAXHandler to getCompletionItems document information based on position.
  * Useful in providing hover, autocompletion etc. based on position.
  */
 public class PositionalHandler extends DefaultHandler {
@@ -99,7 +99,7 @@ public class PositionalHandler extends DefaultHandler {
   @Override
   public void fatalError(SAXParseException e) throws SAXException {
     // Suppress the parseException while editing.s
-    // HACK: While editing if you get parsing error, means the previous element is the parent
+    // HACK: While editing if you getCompletionItems parsing error, means the previous element is the parent
     if (!elementStack.isEmpty()) {
       parentElement = elementStack.peek();
     }

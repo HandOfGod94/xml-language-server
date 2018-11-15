@@ -82,7 +82,7 @@ public class XmlUtil {
     String trimmedLine = line.trim();
 
     // first try directly parsing it, if its not successful
-    // we will get empty value
+    // we will getCompletionItems empty value
     Optional<Document> optDocument = createParsedDoc(trimmedLine);
     if (!optDocument.isPresent()) {
       if (trimmedLine.startsWith("</")) {
@@ -183,7 +183,7 @@ public class XmlUtil {
   public static Optional<XSElementDeclaration> checkInModelGroup(XSModel xsModel, QName element) {
 
     if (xsModel != null && element != null) {
-      // get all the model groups
+      // getCompletionItems all the model groups
       XSNamedMap xsMap = xsModel.getComponents(XSConstants.MODEL_GROUP_DEFINITION);
 
       // traverses through it and see if it has element

@@ -1,14 +1,13 @@
 package io.github.handofgod94.lsp.hover;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
-import io.github.handofgod94.AbstractXmlUnitTest;
+import io.github.handofgod94.AbstractLangServerTest;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
+import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestElementHover extends AbstractXmlUnitTest {
+public class TestElementHover extends AbstractLangServerTest {
 
   private String MOCK_XSD_TEXT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -61,6 +60,8 @@ public class TestElementHover extends AbstractXmlUnitTest {
 
   @Inject
   private PositionalHandlerFactory handlerFactory;
+  @Inject
+  private XsAdapterFactory adapterFactory;
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -82,19 +83,14 @@ public class TestElementHover extends AbstractXmlUnitTest {
     this.textDocumentItem =
       new TextDocumentItem(DUMMY_URI, XmlLanguageServer.LANGUAGE_ID, 0, MOCK_XML_TEXT);
 
-    Guice.createInjector(new AbstractModule() {
-      @Override
-      protected void configure() {
-        install(new FactoryModuleBuilder().build(PositionalHandlerFactory.class));
-      }
-    }).injectMembers(this);
+    Guice.createInjector(guiceModule).injectMembers(this);
   }
 
   @Test
   public void testValidElement() {
     Position pos = new Position(2, 3);
     ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, pos, handlerFactory);
+      schemaDocument, textDocumentItem, pos, handlerFactory, adapterFactory);
 
     MarkupContent actualContent = hover.getHover().getContents().getRight();
 
@@ -113,7 +109,7 @@ public class TestElementHover extends AbstractXmlUnitTest {
   @MethodSource(value = "invalidPositionAndWords")
   public void testInvalidElement(Position position, String wordHovered) {
     ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());
@@ -134,7 +130,7 @@ public class TestElementHover extends AbstractXmlUnitTest {
     // For e.g. anything in "someData with elementWithDoc" should not provide hover info.
 
     ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());
@@ -142,9 +138,9 @@ public class TestElementHover extends AbstractXmlUnitTest {
 
   @Test
   public void testElementNameInComments() {
-    Position position = new Position(1,11);
+    Position position = new Position(1, 11);
     ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());

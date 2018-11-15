@@ -64,7 +64,7 @@ public class XmlDiagnosticService {
     // This will be calculated in DiagnosticErrorHandler class.
     Map<Position, String> errorMap = errorHandler.getErrorMap();
 
-    // Create diagnostic collection and get data from error map
+    // Create diagnostic collection and getCompletionItems data from error map
     List<Diagnostic> diagnostics = new ArrayList<>(getDiagnosticsFromErrorMap(errorMap));
 
     // Publish diagnostics to client

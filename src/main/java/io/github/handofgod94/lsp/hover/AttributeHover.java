@@ -5,15 +5,16 @@ import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
-import io.github.handofgod94.common.wrappers.AttributeInfo;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
+import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.namespace.QName;
-import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.MarkupContent;
@@ -30,18 +31,21 @@ public class AttributeHover implements XmlHover {
   private final Position position;
   private final PositionalHandlerFactory handlerFactory;
   private final TextDocumentItem documentItem;
+  private final XsAdapterFactory adapterFactory;
 
   @Inject
   AttributeHover(@Assisted String wordHovered,
                  @Assisted SchemaDocument schemaDocument,
                  @Assisted TextDocumentItem documentItem,
                  @Assisted Position position,
-                 PositionalHandlerFactory handlerFactory) {
+                 PositionalHandlerFactory handlerFactory,
+                 XsAdapterFactory adapterFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.position = position;
     this.handlerFactory = handlerFactory;
     this.documentItem = documentItem;
+    this.adapterFactory = adapterFactory;
   }
 
   @Override
@@ -51,22 +55,17 @@ public class AttributeHover implements XmlHover {
     // parse using positional handler
     PositionalHandler handler = handlerFactory.create(position);
 
-    // get current element and its attributes
+    // getCompletionItems current element and its attributes
     XmlUtil.positionalParse(handler, documentItem.getText());
-    QName qname = handler.getCurrentElement();
-    // TODO: could throw error if qname is absent
-    Optional<XSElementDeclaration> optElement =
-        XmlUtil.checkInElement(schemaDocument.getXsModel(), qname);
-
-    XSElementDeclaration element = optElement.isPresent()
-        ? optElement.get()
-        : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qname).get();
+    QName currentElement = handler.getCurrentElement();
+    Optional<XSElementDeclaration> element = XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
+    element = element.isPresent() ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
 
     // check in if any attributes or elements matches to wordHovered
-    List<AttributeInfo> attrList = getAllAttributes(element);
+    List<XsAdapter> attrList = element.map(this::getAllAttributes).orElse(new ArrayList<>());
 
     // Get XSObject of the wordHovered if its present in elements or attributes.
-    for (AttributeInfo attribute : attrList) {
+    for (XsAdapter attribute : attrList) {
       if (attribute.getName().equals(wordHovered)) {
         content = attribute.toMarkupContent();
       }
@@ -78,22 +77,20 @@ public class AttributeHover implements XmlHover {
     return hover;
   }
 
-  private List<AttributeInfo> getAllAttributes(XSElementDeclaration element) {
-    List<AttributeInfo> attrList = new ArrayList<>();
+  private List<XsAdapter> getAllAttributes(XSElementDeclaration element) {
+    List<XsAdapter> attrList = new ArrayList<>();
 
     // Get type definitions from the element
     XSTypeDefinition typeDefinition = element.getTypeDefinition();
 
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
-      // if its a complex type, get all the attributes in that element
+      // if its a complex type, getCompletionItems all the attributes in that element
       XSComplexTypeDefinition complexTypeDefinition =
-          (XSComplexTypeDefinition) typeDefinition;
+        (XSComplexTypeDefinition) typeDefinition;
 
-      for (Object attrObject: complexTypeDefinition.getAttributeUses()) {
-        XSAttributeUse attributeUse = (XSAttributeUse) attrObject;
-
-        // TODO: guice injections
-        attrList.add(new AttributeInfo(attributeUse));
+      for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
+        XSObject attribute = (XSObject) attrObject;
+        attrList.add(adapterFactory.getAttributeAdapter(attribute));
       }
     } else {
       // TODO: for simple types

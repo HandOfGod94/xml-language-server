@@ -5,10 +5,10 @@ import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
-import io.github.handofgod94.common.wrappers.ElementInfo;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
+import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.util.Optional;
-import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,18 +31,21 @@ public class ElementHover implements XmlHover {
   private final TextDocumentItem documentItem;
   private final Position position;
   private final PositionalHandlerFactory handlerFactory;
+  private final XsAdapterFactory adapterFactory;
 
   @Inject
   ElementHover(@Assisted String wordHovered,
                @Assisted SchemaDocument schemaDocument,
                @Assisted TextDocumentItem documentItem,
                @Assisted Position position,
-               PositionalHandlerFactory handlerFactory) {
+               PositionalHandlerFactory handlerFactory,
+               XsAdapterFactory adapterFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.documentItem = documentItem;
     this.position = position;
     this.handlerFactory = handlerFactory;
+    this.adapterFactory = adapterFactory;
   }
 
   @Override
@@ -54,25 +57,18 @@ public class ElementHover implements XmlHover {
     // parse using positional handler
     PositionalHandler handler = handlerFactory.create(position);
 
-    // get current element and its attributes
+    // getCompletionItems current element and its attributes
     XmlUtil.positionalParse(handler, documentItem.getText());
-    QName qname = handler.getCurrentElement();
-    Optional<XSElementDeclaration> optElement =
-        Stream
-        .of(
-          XmlUtil.checkInElement(schemaDocument.getXsModel(), qname),
-          XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qname)
-        )
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .findFirst();
+    QName currentElement = handler.getCurrentElement();
+
+    Optional<XSElementDeclaration> element = XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
+    element = element.isPresent() ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
 
 
-    // TODO: Guice injections
     // check if word hovered is the possible element at current position or not.
-    if (optElement.isPresent() && optElement.get().getName().equals(wordHovered)) {
-      ElementInfo elementInfo = new ElementInfo(optElement.get());
-      content = elementInfo.toMarkupContent();
+    if (element.isPresent() && element.get().getName().equals(wordHovered)) {
+      XsAdapter elementAdapter = adapterFactory.getElementAdapter(element.get());
+      content = elementAdapter.toMarkupContent();
     }
 
     // Add all the documentation text to hover text.
