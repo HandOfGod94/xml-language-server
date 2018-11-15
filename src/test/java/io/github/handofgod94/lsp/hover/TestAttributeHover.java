@@ -1,14 +1,13 @@
 package io.github.handofgod94.lsp.hover;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
-import io.github.handofgod94.AbstractXmlUnitTest;
+import io.github.handofgod94.AbstractLangServerTest;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
+import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +29,7 @@ import org.xml.sax.SAXException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestAttributeHover extends AbstractXmlUnitTest {
+public class TestAttributeHover extends AbstractLangServerTest {
 
   private String MOCK_XSD_TEXT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -61,8 +60,8 @@ public class TestAttributeHover extends AbstractXmlUnitTest {
   private SchemaDocument schemaDocument;
   private TextDocumentItem textDocumentItem;
 
-  @Inject
-  private PositionalHandlerFactory handlerFactory;
+  @Inject private PositionalHandlerFactory handlerFactory;
+  @Inject private XsAdapterFactory adapterFactory;
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -84,19 +83,14 @@ public class TestAttributeHover extends AbstractXmlUnitTest {
     this.textDocumentItem =
       new TextDocumentItem(DUMMY_URI, XmlLanguageServer.LANGUAGE_ID, 0, MOCK_XML_TEXT);
 
-    Guice.createInjector(new AbstractModule() {
-      @Override
-      protected void configure() {
-        install(new FactoryModuleBuilder().build(PositionalHandlerFactory.class));
-      }
-    }).injectMembers(this);
+    Guice.createInjector(guiceModule).injectMembers(this);
   }
 
   @Test
   public void testValidAttribute() {
     Position position = new Position(1, 11);
     AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertTrue(content.getValue().contains("TYPE"));
@@ -106,7 +100,7 @@ public class TestAttributeHover extends AbstractXmlUnitTest {
   public void testAttributeInValue() {
     Position position = new Position(1, 19);
     AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());

@@ -1,83 +1,83 @@
-package io.github.handofgod94.common.wrappers;
+package io.github.handofgod94.schema.wrappers;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.xerces.xs.XSAnnotation;
-import org.apache.xerces.xs.XSAttributeDeclaration;
-import org.apache.xerces.xs.XSAttributeUse;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSObject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
-import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
 
 /**
- * Wrapper class around {@link XSAttributeUse}.
- * It accepts the {@link XSAttributeUse} and provides additional
+ * Wrapper class around {@link XSElementDeclaration}.
+ * It accepts the {@link XSElementDeclaration} and provides additional
  * method to retrieve information required for completions and hovers.
  */
-public class AttributeInfo {
-  private XSAttributeDeclaration attributeDeclaration;
-  private String name;
-  private XSAttributeUse attributeUse;
-  private XSSimpleTypeDefinition type;
+public class ElementAdapter implements XsAdapter {
+  private final XSElementDeclaration elementDeclaration;
+  private final String name;
+  private final String namespace;
 
   /**
    * Creates new object. It will hold necessary the information
-   * related attributes
-   * @param attributeUse {@link XSAttributeUse} object
+   * related elements.
+   * @param xsObject {@link XSElementDeclaration} object
    */
-  public AttributeInfo(XSAttributeUse attributeUse) {
-    this.attributeUse = attributeUse;
-    attributeDeclaration = attributeUse.getAttrDeclaration();
-    name = attributeDeclaration.getName();
-    type = attributeDeclaration.getTypeDefinition();
+  @Inject
+  ElementAdapter(@Assisted XSObject xsObject) {
+    this.elementDeclaration = (XSElementDeclaration) xsObject;
+    name = elementDeclaration.getName();
+    namespace = elementDeclaration.getNamespace();
   }
 
   /**
    * Generates {@link CompletionItem} for current attribute.
-   * This will be used by editors to list completions items for attributes.
-   * For attributes, it contains "name", "type" and "documentation".
+   * This will be used by editors to list completions items for elements.
+   *
    * @return CompletionItem object having all the relevant information.
    */
   public CompletionItem toCompletionItem() {
-    CompletionItem info = new CompletionItem();
-    info.setLabel(name);
-    info.setDetail(type.getName());
-    info.setDocumentation(toMarkupContent());
-    info.setInsertTextFormat(InsertTextFormat.Snippet);
-    info.setInsertText(name + "=\"$1\"");
-    info.setKind(CompletionItemKind.Property);
-    return info;
+    CompletionItem item = new CompletionItem();
+    item.setLabel(name);
+    item.setDetail(namespace);
+    item.setDocumentation(toMarkupContent());
+    item.setKind(CompletionItemKind.Field);
+    return item;
   }
 
   /**
    * Generates documentation markup.
-   * Standard format is:
-   * <pre>
-   *   ATTRIBUTE: (attribute-name)
-   *   DESCRIPTION: (documentation for attribute)
-   *   TYPE: data type which the attribute accepts
-   * </pre>
+   * For element, it contains "name" and "documentation".
+   * Certain XSD (e.g. maven's pom.xsd) has extra attributes in annotations.
+   * This will also be displayed as "source" attribute of "documentation" in xsd
+   * as Key and the text of "documentation" as it's value
+   * Standard format is :
+   * <code>
+   *     ELEMENT:  (element-name)
+   *     DESCRIPTION: (documentation of element)
+   *     [OPTIONAL-ANNOTATION-DOCUMENTATION]: (descriptions of optional documentation)
+   * </code>
    * @return MarkupContent object having formatted documentation as described in doc
    */
   public MarkupContent toMarkupContent() {
-
     MarkupContent content = new MarkupContent();
     content.setKind(MarkupKind.MARKDOWN);
 
     StringBuffer docBuffer = new StringBuffer();
-    String attrStr = String.format("**ATTRIBUTE**: %s  \n", name);
-    docBuffer.append(attrStr);
+    String elementStr = String.format("**ELEMENT**: %s  \n", name);
+    docBuffer.append(elementStr);
 
     String annotation =
         Stream
-        .of(Optional.ofNullable(attributeDeclaration.getAnnotation()))
+        .of(Optional.ofNullable(elementDeclaration.getAnnotation()))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .map(XSAnnotation::getAnnotationString)
@@ -85,7 +85,7 @@ public class AttributeInfo {
 
     // certain xsd such as maven-pom.xsd has multiple documentation elements, such as
     // version and other info.
-    // In that case, get the one which has attribute "source".
+    // In that case, getCompletionItems the one which has attribute "source".
     Optional<Document> annotationDoc = XmlUtil.createParsedDoc(annotation);
     annotationDoc.ifPresent(doc -> {
       String descKey = "DESCRIPTION";
@@ -105,28 +105,22 @@ public class AttributeInfo {
       }
     });
 
-    String typeDoc = String.format("**TYPE**: %s  \n", type.getName());
-    docBuffer.append(typeDoc);
     content.setValue(docBuffer.toString());
-
     return content;
   }
 
-  // Getters
-
-  public XSAttributeDeclaration getAttributeDeclaration() {
-    return attributeDeclaration;
-  }
-
+  @Override
   public String getName() {
     return name;
   }
 
-  public XSAttributeUse getAttributeUse() {
-    return attributeUse;
+  // Getters
+
+  public XSElementDeclaration getElementDeclaration() {
+    return elementDeclaration;
   }
 
-  public XSSimpleTypeDefinition getType() {
-    return type;
+  public String getNamespace() {
+    return namespace;
   }
 }

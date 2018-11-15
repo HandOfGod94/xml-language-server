@@ -21,6 +21,10 @@ import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.lsp.hover.provider.XmlHoverProviderFactory;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
 import io.github.handofgod94.schema.resolve.XsdSchemaResolver;
+import io.github.handofgod94.schema.wrappers.AttributeAdapter;
+import io.github.handofgod94.schema.wrappers.ElementAdapter;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
+import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 
 /**
  * Google guice module for Language server.
@@ -46,6 +50,10 @@ public class XmlLanguageServerModule extends AbstractModule {
         .implement(XmlHover.class, Names.named("Element"), ElementHover.class)
         .implement(XmlHover.class, Names.named("Attribute"), AttributeHover.class)
         .build(XmlHoverFactory.class));
+    install(new FactoryModuleBuilder()
+        .implement(XsAdapter.class, Names.named("Element"), ElementAdapter.class)
+        .implement(XsAdapter.class, Names.named("Attribute"), AttributeAdapter.class)
+        .build(XsAdapterFactory.class));
 
     // TODO: different for XSD and DTD.
     install(new FactoryModuleBuilder().build(CompletionProviderFactory.class));
