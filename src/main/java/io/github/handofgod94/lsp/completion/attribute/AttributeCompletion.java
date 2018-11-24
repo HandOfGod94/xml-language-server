@@ -10,5 +10,5 @@ public interface AttributeCompletion {
    *
    * @return list of {@link CompletionItem}.
    */
-  List<CompletionItem> get();
+  List<CompletionItem> getAttrCompletions();
 }

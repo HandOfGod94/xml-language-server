@@ -24,7 +24,7 @@ public class DocumentManager {
   @Inject
   DocumentManager(@Assisted TextDocumentItem documentItem) {
     this.documentItem = documentItem;
-    this.documentLines = XmlUtil.getDocumentLines.apply(this.documentItem.getText());
+    this.documentLines = XmlUtil.getDocumentLines(this.documentItem.getText());
   }
 
   /**
@@ -82,7 +82,7 @@ public class DocumentManager {
       Range range = new Range(start, end);
 
       if ((column < line.length()) && (Character.isJavaIdentifierPart(line.charAt(column)))) {
-        // traverse both left and right side of character to get word
+        // traverse both left and right side of character to getCompletionItems word
         // left side
         for (int i = column; i > 0 && Character.isJavaIdentifierPart(line.charAt(i)); --i) {
           startColumn = i;

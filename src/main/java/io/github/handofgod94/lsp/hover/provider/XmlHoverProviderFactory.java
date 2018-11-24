@@ -12,8 +12,8 @@ public interface XmlHoverProviderFactory {
   /**
    * Create hover provider for current word.
    * @param position position being hovered
-   * @param documentItem current text document item.
    * @param document parsed xsd document.
+   * @param documentItem current text document item.
    * @return XmlHoverProvider instance through which we can hove hover instances.
    */
   XmlHoverProvider create(Position position, SchemaDocument document,

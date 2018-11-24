@@ -13,6 +13,6 @@ public interface ElementCompletion {
    *
    * @return List of completion item at current position
    */
-  List<CompletionItem> get();
+  List<CompletionItem> getCompletionItems();
 
 }

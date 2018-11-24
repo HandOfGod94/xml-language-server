@@ -7,6 +7,9 @@
 Language server for XML documents. It enables and LSP client (VScode, Sublime LSP, Eclipse Che) to leverage 
 capabilities such as autocomplete, validation or documentation support for XML documents.
 
+> Refer to [CONTRIBUTING.md](./CONTRIBUTING.md##setup-dev-environment) for setting up
+> development environment
+
 ## Features
 * XML Validations
   - [x] XSD

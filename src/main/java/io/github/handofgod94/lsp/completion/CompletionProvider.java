@@ -13,15 +13,8 @@ import io.github.handofgod94.lsp.completion.attribute.AttributeCompletionFactory
 import io.github.handofgod94.lsp.completion.element.ElementCompletion;
 import io.github.handofgod94.lsp.completion.element.ElementCompletionFactory;
 import io.github.handofgod94.schema.SchemaDocument;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.CompletionItem;
@@ -29,7 +22,6 @@ import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.CompletionTriggerKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentItem;
-import org.xml.sax.SAXException;
 
 public class CompletionProvider implements Provider<List<CompletionItem>> {
 
@@ -74,45 +66,27 @@ public class CompletionProvider implements Provider<List<CompletionItem>> {
 
 
     PositionalHandler posInfo = handlerFactory.create(position);
-    parse(posInfo);
+    XmlUtil.positionalParse(posInfo, textDocumentItem.getText());
     String currentLine = documentManager.getLineAt(position.getLine());
 
     if (triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
       switch (triggerChar) {
         case TAG_AUTOCOMPLETE_TRIGGER_CHARACTER:
           ElementCompletion elementCompletion =
-              elementCompletionFactory.create(posInfo.getParentTag(), schemaDocument);
-          return elementCompletion.get();
+              elementCompletionFactory.create(posInfo.getParentElement(), schemaDocument);
+          return elementCompletion.getCompletionItems();
         default:
           return new ArrayList<>();
       }
     } else if (triggerKind.equals(CompletionTriggerKind.Invoked)) {
-      // TODO: Check for validation for current postion and show accordingly.
-      if (!XmlUtil.isInsideString.apply(currentLine, position.getCharacter())) {
+      // TODO: Check for validation for current position and show accordingly.
+      if (!XmlUtil.isInsideString(currentLine, position.getCharacter())) {
         AttributeCompletion attrCompletionItem =
-            attrCompletionFactory.create(posInfo.getCurrentTag(), schemaDocument);
-        return attrCompletionItem.get();
+            attrCompletionFactory.create(posInfo.getCurrentElement(), schemaDocument);
+        return attrCompletionItem.getAttrCompletions();
       }
     }
 
     return new ArrayList<>();
-  }
-
-  private void parse(PositionalHandler handler) {
-    // parse using the custom handler
-    try {
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      SAXParser parser = factory.newSAXParser();
-      String documentText = textDocumentItem.getText();
-      InputStream documentStream =
-          new ByteArrayInputStream(documentText.getBytes(StandardCharsets.UTF_8));
-      parser.parse(documentStream, handler);
-    } catch (SAXException | IOException e) {
-      // FIXME: Too much noise in debug mode while
-      logger.debug("Exception while parsing the document", e);
-    } catch (ParserConfigurationException e) {
-      logger.error("Exception while setting up parser", e);
-    }
   }
 }

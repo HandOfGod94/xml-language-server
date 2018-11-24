@@ -1,7 +1,10 @@
 package io.github.handofgod94.lsp.completion.element;
 
-import io.github.handofgod94.AbstractXmlUnitTest;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import io.github.handofgod94.AbstractLangServerTest;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,36 +21,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class XsdElementCompletionTest extends AbstractXmlUnitTest {
+public class XsdElementCompletionTest extends AbstractLangServerTest {
 
   private QName parentElement;
   private SchemaDocument schemaDocument;
   private XsdElementCompletion xsdElementCompletion;
 
+  @Inject
+  private XsAdapterFactory adapterFactory;
+
   @BeforeEach
   public void setup() throws IOException, SAXException {
     schemaDocument = createDummyXsdSchema();
+    Guice.createInjector(guiceModule).injectMembers(this);
   }
 
   @Test
   public void testValidParent() {
     parentElement = new QName(null, "shipto");
-    xsdElementCompletion = new XsdElementCompletion(parentElement, schemaDocument);
+    xsdElementCompletion = new XsdElementCompletion(parentElement, schemaDocument, adapterFactory);
 
     Set<String> expectedLabels =
       new HashSet<>(Arrays.asList("name", "address", "city", "country"));
     Set<String> actual =
-        xsdElementCompletion.get().stream().map(CompletionItem::getLabel).collect(Collectors.toSet());
+      xsdElementCompletion.getCompletionItems().stream().map(CompletionItem::getLabel).collect(Collectors.toSet());
 
-    assertEquals(xsdElementCompletion.get().size(), 4);
+    assertEquals(4, xsdElementCompletion.getCompletionItems().size());
     actual.forEach(e -> assertTrue(expectedLabels.contains(e)));
   }
 
   @Test
   public void testInvalidParent() {
     parentElement = new QName(null, "invalid");
-    xsdElementCompletion =new XsdElementCompletion(parentElement, schemaDocument);
-    List<CompletionItem> actual = xsdElementCompletion.get();
+    xsdElementCompletion = new XsdElementCompletion(parentElement, schemaDocument, adapterFactory);
+    List<CompletionItem> actual = xsdElementCompletion.getCompletionItems();
 
     assertEquals(actual.size(), 0);
   }

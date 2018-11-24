@@ -3,7 +3,7 @@
   <Appenders>
     <!-- since the logging is in the LSP Client and we will not have access rights
         to VSCode extension directory fro writing logs, currently setting it to
-        SYSTEM_ERR to get it in client logs. Also note that we need JUL bridge for logs
+        SYSTEM_ERR to getCompletionItems it in client logs. Also note that we need JUL bridge for logs
         to work -->
     <Console name="Console" target="SYSTEM_ERR">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>

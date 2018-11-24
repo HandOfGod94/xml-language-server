@@ -10,7 +10,7 @@ public interface AttributeCompletionFactory {
 
   /**
    * Generates instances for {@link XsdAttributeCompletion}.
-   * This will be useful to get possible attribute at current location
+   * This will be useful to getCompletionItems possible attribute at current location
    * @param currentElement current element for which we need attributes.
    * @param schemaDocument {@link SchemaDocument} instance object.
    * @return object for {@link XsdAttributeCompletion}.
