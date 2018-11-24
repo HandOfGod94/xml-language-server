@@ -180,7 +180,7 @@ endpoints defined in [language server specification](https://microsoft.github.io
    > Note: This step assumes that you used any of the `install` command in maven and not `package` command.  
    > Also the the local .m2 repo is at `$HOME_DIR/.m2` 
    
-   ![debug](resources/debug.jpg)
+   ![debug](resources/debug.png)
 
 6. The current remote debugging port for Java is `8010`. You can connect from any ide
    to this port for Remote debugging.  
