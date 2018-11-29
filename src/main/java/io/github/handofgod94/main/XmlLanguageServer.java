@@ -72,7 +72,7 @@ public class XmlLanguageServer implements LanguageServer,LanguageClientAware {
 
     // Completion Options
     CompletionOptions completionOptions = new CompletionOptions();
-    completionOptions.setTriggerCharacters(Arrays.asList("<", " ", "{"));
+    completionOptions.setTriggerCharacters(Arrays.asList("<", " "));
     completionOptions.setResolveProvider(false);
 
     // TextDocument sync options

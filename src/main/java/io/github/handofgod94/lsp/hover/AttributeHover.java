@@ -6,8 +6,8 @@ import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.AttributeAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,21 +31,18 @@ public class AttributeHover implements XmlHover {
   private final Position position;
   private final PositionalHandlerFactory handlerFactory;
   private final TextDocumentItem documentItem;
-  private final XsAdapterFactory adapterFactory;
 
   @Inject
   AttributeHover(@Assisted String wordHovered,
                  @Assisted SchemaDocument schemaDocument,
                  @Assisted TextDocumentItem documentItem,
                  @Assisted Position position,
-                 PositionalHandlerFactory handlerFactory,
-                 XsAdapterFactory adapterFactory) {
+                 PositionalHandlerFactory handlerFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.position = position;
     this.handlerFactory = handlerFactory;
     this.documentItem = documentItem;
-    this.adapterFactory = adapterFactory;
   }
 
   @Override
@@ -90,7 +87,7 @@ public class AttributeHover implements XmlHover {
 
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSObject attribute = (XSObject) attrObject;
-        attrList.add(adapterFactory.getAttributeAdapter(attribute));
+        attrList.add(new AttributeAdapter(attribute));
       }
     } else {
       // TODO: for simple types

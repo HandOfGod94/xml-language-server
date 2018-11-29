@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import io.github.handofgod94.AbstractLangServerTest;
 import io.github.handofgod94.schema.SchemaDocument;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;

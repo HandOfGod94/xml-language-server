@@ -6,8 +6,8 @@ import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.ElementAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.util.Optional;
 import javax.xml.namespace.QName;
 import org.apache.logging.log4j.LogManager;
@@ -31,21 +31,18 @@ public class ElementHover implements XmlHover {
   private final TextDocumentItem documentItem;
   private final Position position;
   private final PositionalHandlerFactory handlerFactory;
-  private final XsAdapterFactory adapterFactory;
 
   @Inject
   ElementHover(@Assisted String wordHovered,
                @Assisted SchemaDocument schemaDocument,
                @Assisted TextDocumentItem documentItem,
                @Assisted Position position,
-               PositionalHandlerFactory handlerFactory,
-               XsAdapterFactory adapterFactory) {
+               PositionalHandlerFactory handlerFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.documentItem = documentItem;
     this.position = position;
     this.handlerFactory = handlerFactory;
-    this.adapterFactory = adapterFactory;
   }
 
   @Override
@@ -67,7 +64,7 @@ public class ElementHover implements XmlHover {
 
     // check if word hovered is the possible element at current position or not.
     if (element.isPresent() && element.get().getName().equals(wordHovered)) {
-      XsAdapter elementAdapter = adapterFactory.getElementAdapter(element.get());
+      XsAdapter elementAdapter = new ElementAdapter(element.get());
       content = elementAdapter.toMarkupContent();
     }
 
