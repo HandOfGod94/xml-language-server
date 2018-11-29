@@ -3,8 +3,8 @@ package io.github.handofgod94.main;
 import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import io.github.handofgod94.lsp.completion.CompletionProvider;
-import io.github.handofgod94.lsp.completion.CompletionProviderFactory;
+import io.github.handofgod94.lsp.completion.XmlCompletion;
+import io.github.handofgod94.lsp.completion.XmlCompletionFactory;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.lsp.hover.XmlHover;
@@ -12,6 +12,7 @@ import io.github.handofgod94.lsp.hover.provider.XmlHoverProvider;
 import io.github.handofgod94.lsp.hover.provider.XmlHoverProviderFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,6 @@ public class XmlDocumentService implements TextDocumentService {
   @Inject private final XmlDiagnosticServiceFactory diagnosticServiceFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
   @Inject private final SchemaResolver resolver;
-  @Inject private final CompletionProviderFactory completionProviderFactory;
 
   /**
    * Create Document service for XML documents.
@@ -61,7 +61,6 @@ public class XmlDocumentService implements TextDocumentService {
     xmlHoverProviderFactory = server.getInjector().getInstance(XmlHoverProviderFactory.class);
     // TODO: named injection should be based on dtd or xsd texts.
     resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
-    completionProviderFactory = server.getInjector().getInstance(CompletionProviderFactory.class);
   }
 
   @Override
@@ -85,9 +84,16 @@ public class XmlDocumentService implements TextDocumentService {
       completion(CompletionParams params) {
     TextDocumentItem documentItem =
         openDocumentItems.get(params.getTextDocument().getUri());
-    CompletionProvider completionProvider =
-        completionProviderFactory.create(params, documentItem, schemaDocument);
-    return CompletableFuture.completedFuture(Either.forLeft(completionProvider.get()));
+    XmlCompletionFactory factory = new XmlCompletionFactory();
+    XmlCompletion completion =
+        factory.create(schemaDocument, params, documentItem);
+    List<CompletionItem> list = new ArrayList<>();
+
+    if (completion!= null) {
+      list = completion.getCompletions();
+    }
+
+    return CompletableFuture.completedFuture(Either.forLeft(list));
   }
 
   @Override

@@ -1,7 +1,5 @@
 package io.github.handofgod94.schema.wrappers;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import java.util.Iterator;
 import java.util.Optional;
@@ -29,10 +27,10 @@ public class ElementAdapter implements XsAdapter {
   /**
    * Creates new object. It will hold necessary the information
    * related elements.
+   *
    * @param xsObject {@link XSElementDeclaration} object
    */
-  @Inject
-  ElementAdapter(@Assisted XSObject xsObject) {
+  public ElementAdapter(XSObject xsObject) {
     this.elementDeclaration = (XSElementDeclaration) xsObject;
     name = elementDeclaration.getName();
     namespace = elementDeclaration.getNamespace();
@@ -61,10 +59,11 @@ public class ElementAdapter implements XsAdapter {
    * as Key and the text of "documentation" as it's value
    * Standard format is :
    * <code>
-   *     ELEMENT:  (element-name)
-   *     DESCRIPTION: (documentation of element)
-   *     [OPTIONAL-ANNOTATION-DOCUMENTATION]: (descriptions of optional documentation)
+   * ELEMENT:  (element-name)
+   * DESCRIPTION: (documentation of element)
+   * [OPTIONAL-ANNOTATION-DOCUMENTATION]: (descriptions of optional documentation)
    * </code>
+   *
    * @return MarkupContent object having formatted documentation as described in doc
    */
   public MarkupContent toMarkupContent() {
@@ -76,7 +75,7 @@ public class ElementAdapter implements XsAdapter {
     docBuffer.append(elementStr);
 
     String annotation =
-        Stream
+      Stream
         .of(Optional.ofNullable(elementDeclaration.getAnnotation()))
         .filter(Optional::isPresent)
         .map(Optional::get)

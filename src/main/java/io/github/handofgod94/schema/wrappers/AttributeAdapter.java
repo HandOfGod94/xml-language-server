@@ -1,7 +1,5 @@
 package io.github.handofgod94.schema.wrappers;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import java.util.Iterator;
 import java.util.Optional;
@@ -33,12 +31,12 @@ public class AttributeAdapter implements XsAdapter {
   /**
    * Creates new object. It will hold necessary the information
    * related attributes
+   *
    * @param xsObject {@link XSAttributeUse} object
    */
-  @Inject
-  AttributeAdapter(@Assisted XSObject xsObject) {
+  public AttributeAdapter(XSObject xsObject) {
     this.attributeUse = (XSAttributeUse) xsObject;
-    attributeDeclaration =  this.attributeUse.getAttrDeclaration();
+    attributeDeclaration = this.attributeUse.getAttrDeclaration();
     name = attributeDeclaration.getName();
     type = attributeDeclaration.getTypeDefinition();
   }
@@ -47,6 +45,7 @@ public class AttributeAdapter implements XsAdapter {
    * Generates {@link CompletionItem} for current attribute.
    * This will be used by editors to list completions items for attributes.
    * For attributes, it contains "name", "type" and "documentation".
+   *
    * @return CompletionItem object having all the relevant information.
    */
   public CompletionItem toCompletionItem() {
@@ -68,6 +67,7 @@ public class AttributeAdapter implements XsAdapter {
    *   DESCRIPTION: (documentation for attribute)
    *   TYPE: data type which the attribute accepts
    * </pre>
+   *
    * @return MarkupContent object having formatted documentation as described in doc
    */
   public MarkupContent toMarkupContent() {
@@ -80,7 +80,7 @@ public class AttributeAdapter implements XsAdapter {
     docBuffer.append(attrStr);
 
     String annotation =
-        Stream
+      Stream
         .of(Optional.ofNullable(attributeDeclaration.getAnnotation()))
         .filter(Optional::isPresent)
         .map(Optional::get)
