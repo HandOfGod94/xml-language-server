@@ -15,16 +15,16 @@ import org.eclipse.lsp4j.CompletionItem;
 public abstract class AbstractXmlCompletion implements XmlCompletion {
 
   protected final SchemaDocument schemaDocument;
-  protected final PositionalHandler handler;
+  protected final QName qName;
 
 
 
-  public AbstractXmlCompletion(SchemaDocument schemaDocument, PositionalHandler handler) {
+  public AbstractXmlCompletion(SchemaDocument schemaDocument, QName qName) {
     this.schemaDocument = schemaDocument;
-    this.handler = handler;
+    this.qName = qName;
   }
 
-  protected Optional<XSElementDeclaration> getXSElementDeclaration(QName qName) {
+  protected Optional<XSElementDeclaration> getXSElementDeclaration() {
     Optional<XSElementDeclaration> element =
         XmlUtil.checkInElement(schemaDocument.getXsModel(), qName);
     element =
@@ -37,8 +37,7 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
   @Override
   public List<CompletionItem> getCompletions() {
     List<CompletionItem> items = new ArrayList<>();
-    Optional<XSElementDeclaration> element =
-        getXSElementDeclaration(searchInElement());
+    Optional<XSElementDeclaration> element = getXSElementDeclaration();
 
     element.ifPresent(e -> {
       items.addAll(
@@ -52,6 +51,5 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
     return items;
   }
 
-  protected abstract QName searchInElement();
   protected abstract List<XsAdapter> findPossibleChildren(XSElementDeclaration element);
 }

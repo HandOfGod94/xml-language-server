@@ -20,13 +20,8 @@ import org.apache.xerces.xs.XSTypeDefinition;
 public class ElementCompletion extends AbstractXmlCompletion {
 
   ElementCompletion(SchemaDocument schemaDocument,
-                    PositionalHandler handler) {
-    super(schemaDocument, handler);
-  }
-
-  @Override
-  protected QName searchInElement() {
-    return this.handler.getParentElement();
+                    QName qName) {
+    super(schemaDocument, qName);
   }
 
   @Override

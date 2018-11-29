@@ -7,7 +7,6 @@ import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -61,7 +60,6 @@ public class TestAttributeHover extends AbstractLangServerTest {
   private TextDocumentItem textDocumentItem;
 
   @Inject private PositionalHandlerFactory handlerFactory;
-  @Inject private XsAdapterFactory adapterFactory;
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -90,7 +88,7 @@ public class TestAttributeHover extends AbstractLangServerTest {
   public void testValidAttribute() {
     Position position = new Position(1, 11);
     AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertTrue(content.getValue().contains("TYPE"));
@@ -100,7 +98,7 @@ public class TestAttributeHover extends AbstractLangServerTest {
   public void testAttributeInValue() {
     Position position = new Position(1, 19);
     AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());

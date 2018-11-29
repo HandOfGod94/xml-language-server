@@ -30,9 +30,9 @@ public class XmlCompletionFactory {
     if (triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {
       switch (triggerChar) {
         case ELEMENT_TRIGGER_CHAR:
-          return new ElementCompletion(schemaDocument, handler);
+          return new ElementCompletion(schemaDocument, handler.getParentElement());
         case ATTRIBUTE_TRIGGER_CHARACTER:
-          return new AttributeCompletion(schemaDocument, handler);
+          return new AttributeCompletion(schemaDocument, handler.getCurrentElement());
       }
     }
 

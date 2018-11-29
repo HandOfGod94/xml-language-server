@@ -7,7 +7,6 @@ import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -60,8 +59,7 @@ public class TestElementHover extends AbstractLangServerTest {
 
   @Inject
   private PositionalHandlerFactory handlerFactory;
-  @Inject
-  private XsAdapterFactory adapterFactory;
+
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -90,7 +88,7 @@ public class TestElementHover extends AbstractLangServerTest {
   public void testValidElement() {
     Position pos = new Position(2, 3);
     ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, pos, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, pos, handlerFactory);
 
     MarkupContent actualContent = hover.getHover().getContents().getRight();
 
@@ -109,7 +107,7 @@ public class TestElementHover extends AbstractLangServerTest {
   @MethodSource(value = "invalidPositionAndWords")
   public void testInvalidElement(Position position, String wordHovered) {
     ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());
@@ -130,7 +128,7 @@ public class TestElementHover extends AbstractLangServerTest {
     // For e.g. anything in "someData with elementWithDoc" should not provide hover info.
 
     ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());
@@ -140,7 +138,7 @@ public class TestElementHover extends AbstractLangServerTest {
   public void testElementNameInComments() {
     Position position = new Position(1, 11);
     ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());
