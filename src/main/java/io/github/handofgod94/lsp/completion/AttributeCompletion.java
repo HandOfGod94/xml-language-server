@@ -1,6 +1,5 @@
 package io.github.handofgod94.lsp.completion;
 
-import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.AttributeAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;

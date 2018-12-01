@@ -3,7 +3,7 @@ package io.github.handofgod94.lsp.hover;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import io.github.handofgod94.AbstractLangServerTest;
-import io.github.handofgod94.common.parser.PositionalHandlerFactory;
+import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
@@ -58,7 +58,7 @@ public class TestElementHover extends AbstractLangServerTest {
   private TextDocumentItem textDocumentItem;
 
   @Inject
-  private PositionalHandlerFactory handlerFactory;
+  private PositionalHandler.Factory handlerFactory;
 
 
   @BeforeEach

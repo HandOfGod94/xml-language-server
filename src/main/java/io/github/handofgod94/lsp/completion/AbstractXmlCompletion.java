@@ -1,7 +1,6 @@
 package io.github.handofgod94.lsp.completion;
 
 import io.github.handofgod94.common.XmlUtil;
-import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
   protected final QName qName;
 
 
-
   public AbstractXmlCompletion(SchemaDocument schemaDocument, QName qName) {
     this.schemaDocument = schemaDocument;
     this.qName = qName;
@@ -26,10 +24,10 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
 
   protected Optional<XSElementDeclaration> getXSElementDeclaration() {
     Optional<XSElementDeclaration> element =
-        XmlUtil.checkInElement(schemaDocument.getXsModel(), qName);
+      XmlUtil.checkInElement(schemaDocument.getXsModel(), qName);
     element =
-        element.isPresent() ?
-          element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qName);
+      element.isPresent() ?
+        element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qName);
 
     return element;
   }
@@ -42,9 +40,9 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
     element.ifPresent(e -> {
       items.addAll(
         findPossibleChildren(e)
-        .stream()
-        .map(XsAdapter::toCompletionItem)
-        .collect(Collectors.toList())
+          .stream()
+          .map(XsAdapter::toCompletionItem)
+          .collect(Collectors.toList())
       );
     });
 

@@ -17,6 +17,13 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class PositionalHandler extends DefaultHandler {
 
+  /**
+   * Guice factory to create positional handler instances.
+   */
+  public interface Factory {
+    PositionalHandler create(Position position);
+  }
+
   // Locator for current position
   private Locator locator;
 
