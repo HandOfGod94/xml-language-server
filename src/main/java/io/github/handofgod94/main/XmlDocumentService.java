@@ -6,7 +6,6 @@ import com.google.inject.name.Names;
 import io.github.handofgod94.lsp.completion.XmlCompletion;
 import io.github.handofgod94.lsp.completion.XmlCompletionFactory;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
-import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticServiceFactory;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.provider.XmlHoverProvider;
 import io.github.handofgod94.lsp.hover.provider.XmlHoverProviderFactory;
@@ -47,7 +46,7 @@ public class XmlDocumentService implements TextDocumentService {
   private Map<String, TextDocumentItem> openDocumentItems = new HashMap<>();
   private SchemaDocument schemaDocument;
 
-  @Inject private final XmlDiagnosticServiceFactory diagnosticServiceFactory;
+  @Inject private final XmlDiagnosticService.Factory diagnosticServiceFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
   @Inject private final SchemaResolver resolver;
 
@@ -57,7 +56,7 @@ public class XmlDocumentService implements TextDocumentService {
    */
   public XmlDocumentService(XmlLanguageServer server) {
     this.server = server;
-    diagnosticServiceFactory = server.getInjector().getInstance(XmlDiagnosticServiceFactory.class);
+    diagnosticServiceFactory = server.getInjector().getInstance(XmlDiagnosticService.Factory.class);
     xmlHoverProviderFactory = server.getInjector().getInstance(XmlHoverProviderFactory.class);
     // TODO: named injection should be based on dtd or xsd texts.
     resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));

@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
-import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.AttributeAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -29,7 +28,7 @@ public class AttributeHover implements XmlHover {
   private final String wordHovered;
   private final SchemaDocument schemaDocument;
   private final Position position;
-  private final PositionalHandlerFactory handlerFactory;
+  private final PositionalHandler.Factory handlerFactory;
   private final TextDocumentItem documentItem;
 
   @Inject
@@ -37,7 +36,7 @@ public class AttributeHover implements XmlHover {
                  @Assisted SchemaDocument schemaDocument,
                  @Assisted TextDocumentItem documentItem,
                  @Assisted Position position,
-                 PositionalHandlerFactory handlerFactory) {
+                 PositionalHandler.Factory handlerFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.position = position;

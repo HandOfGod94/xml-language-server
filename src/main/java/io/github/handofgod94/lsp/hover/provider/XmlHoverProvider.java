@@ -5,7 +5,6 @@ import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.document.DocumentManager;
-import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.schema.SchemaDocument;
@@ -27,14 +26,14 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
   private final Position position;
   private final TextDocumentItem documentItem;
   private final XmlHoverFactory xmlHoverFactory;
-  private final DocumentManagerFactory documentManagerFactory;
+  private final DocumentManager.Factory documentManagerFactory;
   private final SchemaDocument document;
 
   @Inject
   XmlHoverProvider(@Assisted Position position, @Assisted TextDocumentItem documentItem,
                    @Assisted SchemaDocument document,
                    XmlHoverFactory xmlHoverFactory,
-                   DocumentManagerFactory documentManagerFactory) {
+                   DocumentManager.Factory documentManagerFactory) {
     this.position = position;
     this.documentItem = documentItem;
     this.xmlHoverFactory = xmlHoverFactory;
