@@ -20,8 +20,21 @@ public class CommentsContext extends LanguageContext implements GrammarElement {
   }
 
   @Override
+  public Type nextContextType() {
+    // No context info is required.
+    // Since we don't need any completions when we are typing
+    // inside comments.
+    return null;
+  }
+
+  @Override
   public void accept(Visitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public LanguageContext getLanguageContext() {
+    return this;
   }
 
   public String getBegRegEx() {

@@ -23,8 +23,19 @@ public class AttributeContext extends LanguageContext implements GrammarElement 
   }
 
   @Override
+  public Type nextContextType() {
+    // An attribute can be followed by attributes.
+    return Type.ATTRIBUTE;
+  }
+
+  @Override
   public void accept(Visitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public LanguageContext getLanguageContext() {
+    return this;
   }
 
   public String getRegEx() {
