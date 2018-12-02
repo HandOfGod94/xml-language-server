@@ -26,7 +26,7 @@ public class RegExVisitor implements Visitor {
     if (matcher.find()) {
       context.setMatched(true);
       context.setMatchStart(matcher.start());
-      context.setMatchEnd(matcher.end());
+      context.setMatchEnd(matcher.end() - 1);
       for (int groupNum : context.getGroupsToMatch()) {
         String value = matcher.group(groupNum);
         if (value != null) capturedGroups.put(groupNum, value);
@@ -45,10 +45,11 @@ public class RegExVisitor implements Visitor {
     Pattern pattern = Pattern.compile(regEx);
     Matcher matcher = pattern.matcher(line);
 
-    if (matcher.find()) {
+    // TODO: handle multiple attributes for same element.
+    while (matcher.find()) {
       context.setMatched(true);
       context.setMatchStart(matcher.start());
-      context.setMatchEnd(matcher.end());
+      context.setMatchEnd(matcher.end() - 1);
       for (int groupNum : context.getGroupsToMatch()) {
         String value = matcher.group(groupNum);
         if (value != null) capturedGroups.put(groupNum, value);
@@ -69,7 +70,7 @@ public class RegExVisitor implements Visitor {
     if (matcher.find()) {
       context.setMatched(true);
       context.setMatchStart(matcher.start());
-      context.setMatchEnd(matcher.end());
+      context.setMatchEnd(matcher.end() - 1);
       for (int groupNum : context.getGroupsToMatch()) {
         String value = matcher.group(groupNum);
         if (value != null) capturedGroups.put(groupNum, value);

@@ -28,8 +28,18 @@ public class ElementContext extends LanguageContext implements GrammarElement {
   }
 
   @Override
+  public Type nextContextType() {
+    return Type.ATTRIBUTE;
+  }
+
+  @Override
   public void accept(Visitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public LanguageContext getLanguageContext() {
+    return this;
   }
 
   public String getBegRegEx() {
