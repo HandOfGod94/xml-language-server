@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.document.DocumentManager;
+import io.github.handofgod94.grammar.GrammarProcessor;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.schema.SchemaDocument;
@@ -58,23 +59,23 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
   public Optional<XmlHover> get() {
     DocumentManager docManager = documentManagerFactory.create(documentItem);
     String line = docManager.getLineAt(position.getLine());
-    Optional<Document> optPartialDoc = XmlUtil.getPartialDoc(line);
 
     Optional<Range> optWordRange = docManager.getWordRangeAt(position);
     String wordHovered =
         optWordRange.map(docManager::getStringBetweenRange).orElse("");
 
-    if (optPartialDoc.isPresent()) {
-      Document partialDoc = optPartialDoc.get();
-      Element root = partialDoc.getRootElement();
+    // TODO: Improve with guice
+    GrammarProcessor grammarProcessor = new GrammarProcessor(position, line);
+    Optional<String> currentScope = grammarProcessor.processScope();
 
-      // If root element name is equal to word hovered that means
-      // we are looking at element, otherwise it could be attribute or something else altogether
-      if (wordHovered.equals(root.getName())) {
+    if (currentScope.isPresent()) {
+      // TODO: Move this to common point
+      if (currentScope.get().contains("entity")
+          && currentScope.get().contains("tag")) {
         XmlHover hover =
             xmlHoverFactory.getElementHover(wordHovered, document, documentItem, position);
         return Optional.of(hover);
-      } else if (root.attribute(wordHovered) != null) {
+      } else if (currentScope.get().contains("attribute")) {
         // if word hovered is attribute
         XmlHover hover =
             xmlHoverFactory.getAttributeHover(wordHovered, document, documentItem, position);

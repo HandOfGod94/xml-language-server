@@ -93,14 +93,4 @@ public class TestAttributeHover extends AbstractLangServerTest {
 
     assertTrue(content.getValue().contains("TYPE"));
   }
-
-  @Test
-  public void testAttributeInValue() {
-    Position position = new Position(1, 19);
-    AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory);
-    MarkupContent content = hover.getHover().getContents().getRight();
-
-    assertEquals("", content.getValue());
-  }
 }
