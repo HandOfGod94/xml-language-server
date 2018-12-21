@@ -5,6 +5,7 @@ import io.github.handofgod94.grammar.graph.LanguageGraphContext;
 import io.github.handofgod94.grammar.graph.Scope;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.lsp4j.Position;
@@ -25,17 +26,17 @@ public class GrammarProcessor {
     this.line = line;
   }
 
-  public String processScope() {
+  public Optional<String> processScope() {
     traverseOrder = languageGraphContext.getTraverseOrder();
 
     for (GrammarNode node : traverseOrder) {
       if (node.getColor() == GrammarNode.Color.WHITE) {
         String caretScope = DFS(node);
-        if (caretScope != null) return caretScope;
+        if (caretScope != null) return Optional.of(caretScope);
       }
     }
 
-    return null;
+    return Optional.empty();
   }
 
   private String DFS(GrammarNode node) {
