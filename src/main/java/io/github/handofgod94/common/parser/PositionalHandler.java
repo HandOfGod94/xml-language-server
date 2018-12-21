@@ -61,7 +61,7 @@ public class PositionalHandler extends DefaultHandler {
     Position cursorPosition = new Position();
     cursorPosition.setLine(locator.getLineNumber() - 1);
 
-    if (cursorPosition.getLine() <= position.getLine()) {
+    if (cursorPosition.getLine() < position.getLine()) {
       elementStack.push(new QName(uri, localName));
       parentStart.setLine(Math.max(parentStart.getLine(), position.getLine()));
     }

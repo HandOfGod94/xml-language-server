@@ -35,7 +35,7 @@ public class DocumentManager {
   private String[] documentLines = null;
 
   @Inject
-  DocumentManager(@Assisted TextDocumentItem documentItem) {
+  public DocumentManager(@Assisted TextDocumentItem documentItem) {
     this.documentItem = documentItem;
     this.documentLines = XmlUtil.getDocumentLines(this.documentItem.getText());
   }
