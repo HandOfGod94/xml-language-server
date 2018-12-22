@@ -1,5 +1,7 @@
 package io.github.handofgod94.grammar;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.grammar.graph.GrammarNode;
 import io.github.handofgod94.grammar.graph.LanguageGraphContext;
 import io.github.handofgod94.grammar.graph.Scope;
@@ -11,6 +13,11 @@ import java.util.regex.Pattern;
 import org.eclipse.lsp4j.Position;
 
 public class GrammarProcessor {
+
+  public interface Factory {
+    GrammarProcessor create(Position position, String line);
+  }
+
   private List<GrammarNode> traverseOrder;
 
   private final LanguageGraphContext languageGraphContext;
@@ -19,8 +26,11 @@ public class GrammarProcessor {
   private final Position position;
   private final String line;
 
-  public GrammarProcessor(Position position, String line) {
-    this.languageGraphContext = new LanguageGraphContext();
+  @Inject
+  GrammarProcessor(@Assisted Position position,
+                   @Assisted String line,
+                   LanguageGraphContext languageGraphContext) {
+    this.languageGraphContext = languageGraphContext;
     this.graph = languageGraphContext.getAdjList();
     this.position = position;
     this.line = line;

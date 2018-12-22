@@ -29,17 +29,20 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
   private final XmlHoverFactory xmlHoverFactory;
   private final DocumentManager.Factory documentManagerFactory;
   private final SchemaDocument document;
+  private final GrammarProcessor.Factory grammarFactory;
 
   @Inject
   XmlHoverProvider(@Assisted Position position, @Assisted TextDocumentItem documentItem,
                    @Assisted SchemaDocument document,
                    XmlHoverFactory xmlHoverFactory,
-                   DocumentManager.Factory documentManagerFactory) {
+                   DocumentManager.Factory documentManagerFactory,
+                   GrammarProcessor.Factory grammarFactory) {
     this.position = position;
     this.documentItem = documentItem;
     this.xmlHoverFactory = xmlHoverFactory;
     this.document = document;
     this.documentManagerFactory = documentManagerFactory;
+    this.grammarFactory = grammarFactory;
   }
 
   /**
@@ -64,8 +67,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
     String wordHovered =
         optWordRange.map(docManager::getStringBetweenRange).orElse("");
 
-    // TODO: Improve with guice
-    GrammarProcessor grammarProcessor = new GrammarProcessor(position, line);
+    GrammarProcessor grammarProcessor = grammarFactory.create(position, line);
     Optional<String> currentScope = grammarProcessor.processScope();
 
     if (currentScope.isPresent()) {

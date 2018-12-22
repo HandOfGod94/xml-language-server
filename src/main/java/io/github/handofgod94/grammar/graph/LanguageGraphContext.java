@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class LanguageGraphContext {
-  // TODO: Make this singleton
 
   private final List<GrammarNode> traverseOrder;
   private final Map<GrammarNode, List<GrammarNode>> adjList;
