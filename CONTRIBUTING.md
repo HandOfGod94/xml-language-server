@@ -204,7 +204,7 @@ endpoints defined in [language server specification](https://microsoft.github.io
                 '-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager',
                 '-jar',
                 
-                //Modfify the address to change the debugging port
+                //Modify the address to change the debugging port
                 '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=8010',
                 debugXmlServerPath
             ],
