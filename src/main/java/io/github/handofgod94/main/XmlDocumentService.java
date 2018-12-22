@@ -47,6 +47,7 @@ public class XmlDocumentService implements TextDocumentService {
   private SchemaDocument schemaDocument;
 
   @Inject private final XmlDiagnosticService.Factory diagnosticServiceFactory;
+  @Inject private final XmlCompletionFactory xmlCompletionFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
   @Inject private final SchemaResolver resolver;
 
@@ -58,6 +59,7 @@ public class XmlDocumentService implements TextDocumentService {
     this.server = server;
     diagnosticServiceFactory = server.getInjector().getInstance(XmlDiagnosticService.Factory.class);
     xmlHoverProviderFactory = server.getInjector().getInstance(XmlHoverProviderFactory.class);
+    xmlCompletionFactory = server.getInjector().getInstance(XmlCompletionFactory.class);
     // TODO: named injection should be based on dtd or xsd texts.
     resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
   }
@@ -83,9 +85,8 @@ public class XmlDocumentService implements TextDocumentService {
       completion(CompletionParams params) {
     TextDocumentItem documentItem =
         openDocumentItems.get(params.getTextDocument().getUri());
-    XmlCompletionFactory factory = new XmlCompletionFactory();
     XmlCompletion completion =
-        factory.create(schemaDocument, params, documentItem);
+        xmlCompletionFactory.create(schemaDocument, params, documentItem);
     List<CompletionItem> list = new ArrayList<>();
 
     if (completion!= null) {

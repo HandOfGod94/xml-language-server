@@ -1,5 +1,6 @@
 package io.github.handofgod94.lsp.completion;
 
+import com.google.inject.Inject;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.document.DocumentManager;
 import io.github.handofgod94.common.parser.PositionalHandler;
@@ -17,6 +18,10 @@ public class XmlCompletionFactory {
   private static final String ELEMENT_TRIGGER_CHAR = "<";
   private static final String ATTRIBUTE_TRIGGER_CHARACTER = " ";
 
+  @Inject DocumentManager.Factory docManagerFactory;
+  @Inject GrammarProcessor.Factory grammarFactory;
+  @Inject PositionalHandler.Factory posHandlerFactory;
+
   public XmlCompletion create(@Nonnull SchemaDocument schemaDocument,
                        @Nonnull CompletionParams params,
                        @Nonnull TextDocumentItem documentItem) {
@@ -25,13 +30,13 @@ public class XmlCompletionFactory {
     CompletionTriggerKind triggerKind = params.getContext().getTriggerKind();
     String triggerChar = params.getContext().getTriggerCharacter();
     String text = documentItem.getText();
-
-    // TODO: improve with guice
-    DocumentManager manager = new DocumentManager(documentItem);
-    PositionalHandler handler = new PositionalHandler(position);
-    XmlUtil.positionalParse(handler, text);
     int line = position.getLine();
-    GrammarProcessor processor = new GrammarProcessor(position, manager.getLineAt(line));
+    DocumentManager manager = docManagerFactory.create(documentItem);
+    PositionalHandler handler = posHandlerFactory.create(position);
+    GrammarProcessor processor = grammarFactory.create(position, manager.getLineAt(line));
+
+    XmlUtil.positionalParse(handler, text);
+
     Optional<String> currentScope = processor.processScope();
 
     if (triggerKind.equals(CompletionTriggerKind.TriggerCharacter)) {

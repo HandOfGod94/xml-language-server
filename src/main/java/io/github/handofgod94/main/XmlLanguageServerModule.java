@@ -5,6 +5,9 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import io.github.handofgod94.common.document.DocumentManager;
 import io.github.handofgod94.common.parser.PositionalHandler;
+import io.github.handofgod94.grammar.GrammarProcessor;
+import io.github.handofgod94.grammar.graph.LanguageGraphContext;
+import io.github.handofgod94.lsp.completion.XmlCompletionFactory;
 import io.github.handofgod94.lsp.diagnostic.DiagnosticErrorHandler;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
 import io.github.handofgod94.lsp.hover.AttributeHover;
@@ -30,6 +33,8 @@ public class XmlLanguageServerModule extends AbstractModule {
 
     // Bindings for concrete class
     bind(DiagnosticErrorHandler.class);
+    bind(XmlCompletionFactory.class);
+    bind(LanguageGraphContext.class);
 
     // FactoryBuilders for assisted injections
     install(new FactoryModuleBuilder().build(DocumentManager.Factory.class));
@@ -40,5 +45,6 @@ public class XmlLanguageServerModule extends AbstractModule {
       .implement(XmlHover.class, Names.named("Element"), ElementHover.class)
       .implement(XmlHover.class, Names.named("Attribute"), AttributeHover.class)
       .build(XmlHoverFactory.class));
+    install(new FactoryModuleBuilder().build(GrammarProcessor.Factory.class));
   }
 }
