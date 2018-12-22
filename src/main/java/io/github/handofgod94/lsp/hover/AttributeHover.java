@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
-import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.AttributeAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -29,7 +28,7 @@ public class AttributeHover implements XmlHover {
   private final String wordHovered;
   private final SchemaDocument schemaDocument;
   private final Position position;
-  private final PositionalHandlerFactory handlerFactory;
+  private final PositionalHandler.Factory handlerFactory;
   private final TextDocumentItem documentItem;
 
   @Inject
@@ -37,7 +36,7 @@ public class AttributeHover implements XmlHover {
                  @Assisted SchemaDocument schemaDocument,
                  @Assisted TextDocumentItem documentItem,
                  @Assisted Position position,
-                 PositionalHandlerFactory handlerFactory) {
+                 PositionalHandler.Factory handlerFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.position = position;
@@ -55,8 +54,10 @@ public class AttributeHover implements XmlHover {
     // getCompletionItems current element and its attributes
     XmlUtil.positionalParse(handler, documentItem.getText());
     QName currentElement = handler.getCurrentElement();
-    Optional<XSElementDeclaration> element = XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
-    element = element.isPresent() ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
+    Optional<XSElementDeclaration> element =
+        XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
+    element = element.isPresent()
+        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
 
     // check in if any attributes or elements matches to wordHovered
     List<XsAdapter> attrList = element.map(this::getAllAttributes).orElse(new ArrayList<>());
@@ -83,7 +84,7 @@ public class AttributeHover implements XmlHover {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if its a complex type, getCompletionItems all the attributes in that element
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
 
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSObject attribute = (XSObject) attrObject;

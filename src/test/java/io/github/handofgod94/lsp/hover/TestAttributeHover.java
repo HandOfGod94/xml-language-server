@@ -3,11 +3,10 @@ package io.github.handofgod94.lsp.hover;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import io.github.handofgod94.AbstractLangServerTest;
-import io.github.handofgod94.common.parser.PositionalHandlerFactory;
+import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -60,8 +59,7 @@ public class TestAttributeHover extends AbstractLangServerTest {
   private SchemaDocument schemaDocument;
   private TextDocumentItem textDocumentItem;
 
-  @Inject private PositionalHandlerFactory handlerFactory;
-  @Inject private XsAdapterFactory adapterFactory;
+  @Inject private PositionalHandler.Factory handlerFactory;
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -90,19 +88,9 @@ public class TestAttributeHover extends AbstractLangServerTest {
   public void testValidAttribute() {
     Position position = new Position(1, 11);
     AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertTrue(content.getValue().contains("TYPE"));
-  }
-
-  @Test
-  public void testAttributeInValue() {
-    Position position = new Position(1, 19);
-    AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
-    MarkupContent content = hover.getHover().getContents().getRight();
-
-    assertEquals("", content.getValue());
   }
 }

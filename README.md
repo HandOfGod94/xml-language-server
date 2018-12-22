@@ -49,3 +49,12 @@ of this server (language client) needs to have `java` installed in their system.
 mvn clean package # To generate jar file locally
 mvn clean install # To install artifact in local repository
 ```
+
+### For Docker Fans
+
+```shell
+docker run -it --rm --name xml-language-server -v $(pwd):/usr/src/mymaven -w /usr/src/mymaven maven:3.6.0-jdk-8-alpine mvn clean install
+```
+
+Don't forget to replace `$(pwd)` with absolute path of the project.  
+Also if you are on windows make sure, you have give docker permission to access/mount volumes.

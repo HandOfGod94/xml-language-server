@@ -17,6 +17,13 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class PositionalHandler extends DefaultHandler {
 
+  /**
+   * Guice factory to create positional handler instances.
+   */
+  public interface Factory {
+    PositionalHandler create(Position position);
+  }
+
   // Locator for current position
   private Locator locator;
 
@@ -54,7 +61,7 @@ public class PositionalHandler extends DefaultHandler {
     Position cursorPosition = new Position();
     cursorPosition.setLine(locator.getLineNumber() - 1);
 
-    if (cursorPosition.getLine() <= position.getLine()) {
+    if (cursorPosition.getLine() < position.getLine()) {
       elementStack.push(new QName(uri, localName));
       parentStart.setLine(Math.max(parentStart.getLine(), position.getLine()));
     }
@@ -98,8 +105,9 @@ public class PositionalHandler extends DefaultHandler {
 
   @Override
   public void fatalError(SAXParseException e) throws SAXException {
-    // Suppress the parseException while editing.s
-    // HACK: While editing if you getCompletionItems parsing error, means the previous element is the parent
+    // Suppress the parseException while editing.
+    // HACK: While editing if you getCompletionItems parsing error,
+    // means the previous element is the parent
     if (!elementStack.isEmpty()) {
       parentElement = elementStack.peek();
     }

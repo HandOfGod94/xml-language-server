@@ -16,13 +16,26 @@ import org.eclipse.lsp4j.TextDocumentItem;
  */
 public class DocumentManager {
 
+  /**
+   * Guice Factory for {@link DocumentManager}.
+   */
+  public interface Factory {
+    /**
+     * Creates document manager for text document.
+     * The document here refers to any document and not specific to XML documents.
+     * @param documentItem text document item.
+     * @return DocumentManager document manager instance.
+     */
+    DocumentManager create(TextDocumentItem documentItem);
+  }
+
   private TextDocumentItem documentItem;
 
   // full document text as array of strings
   private String[] documentLines = null;
 
   @Inject
-  DocumentManager(@Assisted TextDocumentItem documentItem) {
+  public DocumentManager(@Assisted TextDocumentItem documentItem) {
     this.documentItem = documentItem;
     this.documentLines = XmlUtil.getDocumentLines(this.documentItem.getText());
   }

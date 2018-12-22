@@ -1,6 +1,5 @@
 package io.github.handofgod94.lsp.completion;
 
-import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.AttributeAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -14,13 +13,8 @@ import org.apache.xerces.xs.XSTypeDefinition;
 
 public class AttributeCompletion extends AbstractXmlCompletion {
 
-  AttributeCompletion(SchemaDocument schemaDocument, PositionalHandler handler) {
-    super(schemaDocument, handler);
-  }
-
-  @Override
-  protected QName searchInElement() {
-    return this.handler.getCurrentElement();
+  AttributeCompletion(SchemaDocument schemaDocument, QName qname) {
+    super(schemaDocument, qname);
   }
 
   @Override
@@ -33,7 +27,7 @@ public class AttributeCompletion extends AbstractXmlCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if its a complex type, getCompletionItems all the attributes in that element
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
 
       // Traverse through all the attributes and add it to list
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {

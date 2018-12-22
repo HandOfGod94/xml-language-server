@@ -1,8 +1,6 @@
-package io.github.handofgod94.lsp.completion.attribute;
+package io.github.handofgod94.lsp.completion;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import io.github.handofgod94.AbstractLangServerTest;
+import io.github.handofgod94.AbstractXmlUnitTest;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.io.IOException;
 import java.util.List;
@@ -14,23 +12,21 @@ import org.xml.sax.SAXException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class XsdAttributeCompletionTest extends AbstractLangServerTest {
+public class TestAttributeCompletion extends AbstractXmlUnitTest {
 
   private SchemaDocument schemaDocument;
-
-  @Inject XsAdapterFactory adapterFactory;
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
     schemaDocument = createDummyXsdSchema();
-    Guice.createInjector(guiceModule).injectMembers(this);
   }
 
   @Test
   public void testValidCurrentElement() {
     QName currentElement = new QName("shipto");
-    XsdAttributeCompletion attr = new XsdAttributeCompletion(currentElement, schemaDocument, adapterFactory);
-    List<CompletionItem> actual = attr.getAttrCompletions();
+    AttributeCompletion attr =
+        new AttributeCompletion(schemaDocument, currentElement);
+    List<CompletionItem> actual = attr.getCompletions();
 
     assertEquals(1, actual.size());
     assertEquals("locationId", actual.get(0).getLabel());
@@ -41,10 +37,10 @@ public class XsdAttributeCompletionTest extends AbstractLangServerTest {
   public void testInvalidCurrentElement() {
     QName invalidElement = new QName("dummy");
     QName emptyElement = new QName("shipper");
-    XsdAttributeCompletion invalidAttr = new XsdAttributeCompletion(invalidElement, schemaDocument, adapterFactory);
-    XsdAttributeCompletion emptyAttr = new XsdAttributeCompletion(emptyElement, schemaDocument, adapterFactory);
+    AttributeCompletion invalidAttr = new AttributeCompletion(schemaDocument, invalidElement);
+    AttributeCompletion emptyAttr = new AttributeCompletion(schemaDocument, emptyElement);
 
-    assertEquals(0, invalidAttr.getAttrCompletions().size());
-    assertEquals(0, emptyAttr.getAttrCompletions().size());
+    assertEquals(0, invalidAttr.getCompletions().size());
+    assertEquals(0, emptyAttr.getCompletions().size());
   }
 }

@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
-import io.github.handofgod94.common.parser.PositionalHandlerFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.ElementAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -30,14 +29,14 @@ public class ElementHover implements XmlHover {
   private final SchemaDocument schemaDocument;
   private final TextDocumentItem documentItem;
   private final Position position;
-  private final PositionalHandlerFactory handlerFactory;
+  private final PositionalHandler.Factory handlerFactory;
 
   @Inject
   ElementHover(@Assisted String wordHovered,
                @Assisted SchemaDocument schemaDocument,
                @Assisted TextDocumentItem documentItem,
                @Assisted Position position,
-               PositionalHandlerFactory handlerFactory) {
+               PositionalHandler.Factory handlerFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.documentItem = documentItem;
@@ -58,8 +57,10 @@ public class ElementHover implements XmlHover {
     XmlUtil.positionalParse(handler, documentItem.getText());
     QName currentElement = handler.getCurrentElement();
 
-    Optional<XSElementDeclaration> element = XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
-    element = element.isPresent() ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
+    Optional<XSElementDeclaration> element =
+        XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
+    element = element.isPresent()
+        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
 
 
     // check if word hovered is the possible element at current position or not.

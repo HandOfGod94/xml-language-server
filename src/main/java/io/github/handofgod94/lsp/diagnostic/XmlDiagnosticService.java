@@ -3,7 +3,6 @@ package io.github.handofgod94.lsp.diagnostic;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.document.DocumentManager;
-import io.github.handofgod94.common.document.DocumentManagerFactory;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.io.IOException;
@@ -25,18 +24,36 @@ import org.xml.sax.SAXException;
 
 public class XmlDiagnosticService {
 
+  /**
+   * Factory for XmlDiagnosticService.
+   * This is used for injecting {@link XmlDiagnosticService} instance.
+   */
+  public interface Factory {
+    /**
+     * Factory method to create service.
+     * @param documentItem currently working text item
+     * @param server XmlLanguageServer object
+     * @param schemaDocument Instance of schema document
+     * @return XmlDiagnosticService instance
+     * @see io.github.handofgod94.schema.SchemaDocument
+     */
+    XmlDiagnosticService create(TextDocumentItem documentItem,
+                                XmlLanguageServer server,
+                                SchemaDocument schemaDocument);
+  }
+
   private static final Logger logger = LogManager.getLogger(XmlDiagnosticService.class.getName());
 
   private SchemaDocument schemaDocument;
   private XmlLanguageServer server;
   private TextDocumentItem documentItem;
-  private DocumentManagerFactory documentManagerFactory;
+  private DocumentManager.Factory documentManagerFactory;
   private DiagnosticErrorHandler errorHandler;
 
   @Inject
   XmlDiagnosticService(@Assisted TextDocumentItem documentItem, @Assisted XmlLanguageServer server,
                        @Assisted SchemaDocument schemaDocument,
-                       DocumentManagerFactory documentManagerFactory,
+                       DocumentManager.Factory documentManagerFactory,
                        DiagnosticErrorHandler errorHandler) {
     this.documentItem = documentItem;
     this.server = server;

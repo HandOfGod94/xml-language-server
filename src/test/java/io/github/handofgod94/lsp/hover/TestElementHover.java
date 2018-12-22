@@ -3,11 +3,10 @@ package io.github.handofgod94.lsp.hover;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import io.github.handofgod94.AbstractLangServerTest;
-import io.github.handofgod94.common.parser.PositionalHandlerFactory;
+import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
-import io.github.handofgod94.schema.wrappers.XsAdapterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -59,9 +58,8 @@ public class TestElementHover extends AbstractLangServerTest {
   private TextDocumentItem textDocumentItem;
 
   @Inject
-  private PositionalHandlerFactory handlerFactory;
-  @Inject
-  private XsAdapterFactory adapterFactory;
+  private PositionalHandler.Factory handlerFactory;
+
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -90,7 +88,7 @@ public class TestElementHover extends AbstractLangServerTest {
   public void testValidElement() {
     Position pos = new Position(2, 3);
     ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, pos, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, pos, handlerFactory);
 
     MarkupContent actualContent = hover.getHover().getContents().getRight();
 
@@ -109,40 +107,10 @@ public class TestElementHover extends AbstractLangServerTest {
   @MethodSource(value = "invalidPositionAndWords")
   public void testInvalidElement(Position position, String wordHovered) {
     ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());
   }
 
-  static Stream<Arguments> elementNameInText() {
-    return Stream.of(
-      Arguments.of(new Position(2, 30), "elementWithDoc"),
-      Arguments.of(new Position(3, 40), "elementWithDoc")
-    );
-  }
-
-  @ParameterizedTest
-  @MethodSource(value = "elementNameInText")
-  public void testElementNameInText(Position position, String wordHovered) {
-    // It should not hover for th element names which occurs as text of the element
-    // and not as its tag Name.
-    // For e.g. anything in "someData with elementWithDoc" should not provide hover info.
-
-    ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
-    MarkupContent content = hover.getHover().getContents().getRight();
-
-    assertEquals("", content.getValue());
-  }
-
-  @Test
-  public void testElementNameInComments() {
-    Position position = new Position(1, 11);
-    ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
-    MarkupContent content = hover.getHover().getContents().getRight();
-
-    assertEquals("", content.getValue());
-  }
 }
