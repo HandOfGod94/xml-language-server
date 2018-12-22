@@ -8,7 +8,7 @@ import org.w3c.dom.ls.LSResourceResolver;
 
 /**
  * Custom LS Resolver to capture all the namespaces defined as part
- * of schemaLocation, which will then be resolved for xsd
+ * of schemaLocation, which will then be resolved for xsd.
  */
 public class XsdLsResolver implements LSResourceResolver {
 

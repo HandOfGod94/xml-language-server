@@ -21,6 +21,10 @@ capabilities such as autocomplete, validation or documentation support for XML d
   - [x] XSD
   - [ ] DTD
 
+## Demo
+
+![demo](./resources/demo.gif)
+
 ## What is language server?
 
 Language server is the server part of Language Server Protocol (LSP).  
