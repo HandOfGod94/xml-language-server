@@ -184,7 +184,7 @@ endpoints defined in [language server specification](https://microsoft.github.io
 
 6. The current remote debugging port for Java is `8010`. You can connect from any ide
    to this port for Remote debugging.  
-   If you want to change it then it can be modified in `xml-vscode-clien/src/extension.ts` file
+   If you want to change it then it can be modified in `xml-vscode-plugin/src/extension.ts` file
    ```typescript
    // Server options
     let serverOpts: ServerOptions = {
@@ -204,7 +204,7 @@ endpoints defined in [language server specification](https://microsoft.github.io
                 '-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager',
                 '-jar',
                 
-                //Modfify the address to change the debugging port
+                //Modify the address to change the debugging port
                 '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=8010',
                 debugXmlServerPath
             ],

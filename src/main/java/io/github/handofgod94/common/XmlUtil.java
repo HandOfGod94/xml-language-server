@@ -1,5 +1,6 @@
 package io.github.handofgod94.common;
 
+import io.github.handofgod94.common.parser.CustomErrorHandler;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,12 +10,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xerces.xs.XSConstants;
@@ -26,6 +33,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+import org.eclipse.lsp4j.Position;
 import org.xml.sax.SAXException;
 
 /**
@@ -203,5 +211,46 @@ public class XmlUtil {
       }
     }
     return Optional.empty();
+  }
+
+  /**
+   * Generates XML Schema instance object.
+   * @apiNote  Since we are not providing any sources for schema, then it'll
+   *     automatically look for schema location in the document itself and will
+   *     load the schema.
+   * @return A standard XML Schema object following 2001 XML namespace
+   * @throws SAXException If unable to create schema object.
+   */
+  public static Schema generateSchema() throws SAXException {
+    // Generate schema using the stream sources
+    SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    Schema schema = factory.newSchema();
+    return schema;
+  }
+
+  /**
+   * Check for well formed XML.
+   * The schema validation and other LSP features, could only work with
+   * well formed XML documents. This utility provides a helper function
+   * to check for XML errors. If any errors are present, then it'll calculate
+   * position and error messages present in the XML and will store it in a map.
+   * If no errors are present, then it'll return an empty Map.
+   * @param text xml text which needs to be checked
+   * @return A Map containing error position and message if present, empty otherwise.
+   */
+  public static Map<Position, String> checkWellFormedXml(String text) {
+    CustomErrorHandler errorHandler = new CustomErrorHandler();
+    try {
+      Validator validator = generateSchema().newValidator();
+      validator.setErrorHandler(errorHandler);
+
+      validator.validate(new StreamSource(new StringReader(text)));
+    } catch (SAXException | IOException e) {
+      logger.info("Document seems to be malformed or unable to retrieve schema", e);
+    }
+
+    Map<Position, String> errorMap = errorHandler.getErrorMap();
+
+    return errorMap;
   }
 }

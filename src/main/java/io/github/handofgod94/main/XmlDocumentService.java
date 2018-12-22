@@ -3,6 +3,8 @@ package io.github.handofgod94.main;
 import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
+import io.github.handofgod94.common.XmlUtil;
+import io.github.handofgod94.common.document.DocumentManager;
 import io.github.handofgod94.lsp.completion.XmlCompletion;
 import io.github.handofgod94.lsp.completion.XmlCompletionFactory;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
@@ -29,6 +31,7 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.TextDocumentPositionParams;
@@ -46,20 +49,21 @@ public class XmlDocumentService implements TextDocumentService {
   private Map<String, TextDocumentItem> openDocumentItems = new HashMap<>();
   private SchemaDocument schemaDocument;
 
-  @Inject private final XmlDiagnosticService.Factory diagnosticServiceFactory;
   @Inject private final XmlCompletionFactory xmlCompletionFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
+  @Inject private final DocumentManager.Factory docManagerFactory;
   @Inject private final SchemaResolver resolver;
 
   /**
    * Create Document service for XML documents.
+   *
    * @param server the language server instance
    */
   public XmlDocumentService(XmlLanguageServer server) {
     this.server = server;
-    diagnosticServiceFactory = server.getInjector().getInstance(XmlDiagnosticService.Factory.class);
     xmlHoverProviderFactory = server.getInjector().getInstance(XmlHoverProviderFactory.class);
     xmlCompletionFactory = server.getInjector().getInstance(XmlCompletionFactory.class);
+    docManagerFactory = server.getInjector().getInstance(DocumentManager.Factory.class);
     // TODO: named injection should be based on dtd or xsd texts.
     resolver = server.getInjector().getInstance(Key.get(SchemaResolver.class, Names.named("Xsd")));
   }
@@ -75,8 +79,8 @@ public class XmlDocumentService implements TextDocumentService {
 
     // Show hover if documentation is present, else show empty/no hover.
     Hover hover = optHover
-                  .map(XmlHover::getHover)
-                  .orElse(new Hover(Collections.emptyList()));
+        .map(XmlHover::getHover)
+        .orElse(new Hover(Collections.emptyList()));
     return CompletableFuture.completedFuture(hover);
   }
 
@@ -96,6 +100,8 @@ public class XmlDocumentService implements TextDocumentService {
     return CompletableFuture.completedFuture(Either.forLeft(list));
   }
 
+
+
   @Override
   public void didOpen(DidOpenTextDocumentParams params) {
     logger.info("File opened: {}", params.getTextDocument().getUri());
@@ -103,16 +109,14 @@ public class XmlDocumentService implements TextDocumentService {
     TextDocumentItem documentItem = params.getTextDocument();
     openDocumentItems.put(documentItem.getUri(), documentItem);
 
-    // Get instance from google guice injector
-    Optional<SchemaDocument> optSchemaDocument = resolver.resolve(documentItem.getText());
+    Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
+    publishDiagnostics(documentItem, errorMessages);
 
-    // Generate diagnostics when xml document is opened
-    optSchemaDocument.ifPresent(schemaDocument -> {
-      this.schemaDocument = schemaDocument;
-      XmlDiagnosticService service =
-          diagnosticServiceFactory.create(documentItem, server, schemaDocument);
-      service.compute();
-    });
+    if (errorMessages.isEmpty() && schemaDocument == null) {
+      // Load XSD Schema model
+      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
+      schemaDocumentOptional.ifPresent(document -> schemaDocument = document);
+    }
   }
 
   @Override
@@ -138,18 +142,21 @@ public class XmlDocumentService implements TextDocumentService {
     TextDocumentItem documentItem = openDocumentItems.get(params.getTextDocument().getUri());
     documentItem.setText(params.getText());
 
-    // TODO: This should be observable, if document changes, then it requires resync.
+    Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
+    publishDiagnostics(documentItem, errorMessages);
 
-    // Currently, its again fetching the whole xsd and reparsing it
-    // to create new xs models. This must be avoided.
-    Optional<SchemaDocument> optSchemaDocument = resolver.resolve(documentItem.getText());
+    if (errorMessages.isEmpty() && schemaDocument == null) {
+      // Load XSD Schema model
+      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
+      schemaDocumentOptional.ifPresent(document -> schemaDocument = document);
+    }
+  }
 
-    // Generate diagnostics on open of a text document
-    optSchemaDocument.ifPresent(schemaDocument -> {
-      this.schemaDocument = schemaDocument;
-      XmlDiagnosticService service =
-          diagnosticServiceFactory.create(documentItem, server, schemaDocument);
-      service.compute();
-    });
+  private void publishDiagnostics(TextDocumentItem documentItem, Map<Position, String> errorMap) {
+    DocumentManager manager = docManagerFactory.create(documentItem);
+    String[] lines = manager.getDocumentLines();
+    PublishDiagnosticsParams diagnostics =
+        XmlDiagnosticService.getDiagnostics(lines, documentItem.getUri(), errorMap);
+    server.getClient().publishDiagnostics(diagnostics);
   }
 }

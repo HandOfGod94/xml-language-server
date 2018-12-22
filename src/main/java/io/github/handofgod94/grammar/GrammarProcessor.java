@@ -18,6 +18,9 @@ import org.eclipse.lsp4j.Position;
  */
 public class GrammarProcessor {
 
+  /**
+   * Guice factory for GrammarProcessor.
+   */
   public interface Factory {
     GrammarProcessor create(Position position, String line);
   }
