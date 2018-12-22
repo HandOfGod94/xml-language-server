@@ -1,5 +1,6 @@
 package io.github.handofgod94.schema.resolve;
 
+import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
 import java.io.IOException;
@@ -8,10 +9,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
@@ -46,8 +45,7 @@ public class XsdSchemaResolver implements SchemaResolver {
       List<URI> schemaUris = searchSchemaUris(xmlDocument);
 
       // generate schema and models
-      StreamSource[] sources = generateSources(schemaUris);
-      Schema schema = generateSchema(sources);
+      Schema schema = XmlUtil.generateSchema();
       XSLoader xsLoader = new XMLSchemaLoader();
       XSModel xsModel = xsLoader.loadURIList(getUriStringList(schemaUris));
 
@@ -111,13 +109,6 @@ public class XsdSchemaResolver implements SchemaResolver {
       sources[i] = new StreamSource(schemaUris.get(i).toURL().openStream());
     }
     return sources;
-  }
-
-  private Schema generateSchema(StreamSource[] sources) throws SAXException {
-    // Generate schema using the stream sources
-    SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    Schema schema = factory.newSchema(sources);
-    return schema;
   }
 
   private StringList getUriStringList(List<URI> uris) {
