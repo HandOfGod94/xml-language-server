@@ -42,9 +42,9 @@ public class XmlLanguageServerModule extends AbstractModule {
     install(new FactoryModuleBuilder().build(XmlDiagnosticService.Factory.class));
     install(new FactoryModuleBuilder().build(XmlHoverProviderFactory.class));
     install(new FactoryModuleBuilder()
-      .implement(XmlHover.class, Names.named("Element"), ElementHover.class)
-      .implement(XmlHover.class, Names.named("Attribute"), AttributeHover.class)
-      .build(XmlHoverFactory.class));
+        .implement(XmlHover.class, Names.named("Element"), ElementHover.class)
+        .implement(XmlHover.class, Names.named("Attribute"), AttributeHover.class)
+        .build(XmlHoverFactory.class));
     install(new FactoryModuleBuilder().build(GrammarProcessor.Factory.class));
   }
 }

@@ -3,15 +3,12 @@ package io.github.handofgod94.lsp.hover.provider;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.document.DocumentManager;
 import io.github.handofgod94.grammar.GrammarProcessor;
 import io.github.handofgod94.lsp.hover.XmlHover;
 import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.schema.SchemaDocument;
 import java.util.Optional;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentItem;
@@ -55,8 +52,7 @@ public class XmlHoverProvider implements Provider<Optional<XmlHover>> {
    * be provided by this method.
    * </p>
    *
-   * @return XmlHover instance having value if documentation
-   *     is found.
+   * @return XmlHover instance having value if documentation is found.
    */
   @Override
   public Optional<XmlHover> get() {

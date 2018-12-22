@@ -13,8 +13,8 @@ import org.apache.xerces.xs.XSTypeDefinition;
 
 public class AttributeCompletion extends AbstractXmlCompletion {
 
-  AttributeCompletion(SchemaDocument schemaDocument, QName qName) {
-    super(schemaDocument, qName);
+  AttributeCompletion(SchemaDocument schemaDocument, QName qname) {
+    super(schemaDocument, qname);
   }
 
   @Override
@@ -27,7 +27,7 @@ public class AttributeCompletion extends AbstractXmlCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if its a complex type, getCompletionItems all the attributes in that element
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
 
       // Traverse through all the attributes and add it to list
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {

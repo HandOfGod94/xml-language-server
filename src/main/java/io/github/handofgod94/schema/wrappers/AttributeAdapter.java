@@ -80,7 +80,7 @@ public class AttributeAdapter implements XsAdapter {
     docBuffer.append(attrStr);
 
     String annotation =
-      Stream
+        Stream
         .of(Optional.ofNullable(attributeDeclaration.getAnnotation()))
         .filter(Optional::isPresent)
         .map(Optional::get)

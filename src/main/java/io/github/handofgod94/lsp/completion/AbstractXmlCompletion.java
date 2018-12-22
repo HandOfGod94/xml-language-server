@@ -14,20 +14,20 @@ import org.eclipse.lsp4j.CompletionItem;
 public abstract class AbstractXmlCompletion implements XmlCompletion {
 
   protected final SchemaDocument schemaDocument;
-  protected final QName qName;
+  protected final QName qname;
 
 
-  public AbstractXmlCompletion(SchemaDocument schemaDocument, QName qName) {
+  public AbstractXmlCompletion(SchemaDocument schemaDocument, QName qname) {
     this.schemaDocument = schemaDocument;
-    this.qName = qName;
+    this.qname = qname;
   }
 
-  protected Optional<XSElementDeclaration> getXSElementDeclaration() {
+  protected Optional<XSElementDeclaration> getXsElementDeclaration() {
     Optional<XSElementDeclaration> element =
-      XmlUtil.checkInElement(schemaDocument.getXsModel(), qName);
+        XmlUtil.checkInElement(schemaDocument.getXsModel(), qname);
     element =
-      element.isPresent() ?
-        element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qName);
+      element.isPresent()
+        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qname);
 
     return element;
   }
@@ -35,11 +35,11 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
   @Override
   public List<CompletionItem> getCompletions() {
     List<CompletionItem> items = new ArrayList<>();
-    Optional<XSElementDeclaration> element = getXSElementDeclaration();
+    Optional<XSElementDeclaration> element = getXsElementDeclaration();
 
     element.ifPresent(e -> {
       items.addAll(
-        findPossibleChildren(e)
+          findPossibleChildren(e)
           .stream()
           .map(XsAdapter::toCompletionItem)
           .collect(Collectors.toList())

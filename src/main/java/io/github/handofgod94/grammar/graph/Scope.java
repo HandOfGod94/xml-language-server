@@ -75,30 +75,31 @@ public class Scope {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Scope scope = (Scope) o;
-    return Objects.equals(name, scope.name) &&
-      Objects.equals(beginRegEx, scope.beginRegEx) &&
-      Objects.equals(endRegEx, scope.endRegEx) &&
-      Objects.equals(beginCaptures, scope.beginCaptures) &&
-      Objects.equals(endCaptures, scope.endCaptures) &&
-      Objects.equals(captures, scope.captures) &&
-      Objects.equals(matchPattern, scope.matchPattern);
+    return Objects.equals(name, scope.name)
+      && Objects.equals(beginRegEx, scope.beginRegEx)
+      && Objects.equals(endRegEx, scope.endRegEx)
+      && Objects.equals(beginCaptures, scope.beginCaptures)
+      && Objects.equals(endCaptures, scope.endCaptures)
+      && Objects.equals(captures, scope.captures)
+      && Objects.equals(matchPattern, scope.matchPattern);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, beginRegEx, endRegEx, beginCaptures, endCaptures, captures, matchPattern);
+    return Objects
+        .hash(name, beginRegEx, endRegEx, beginCaptures, endCaptures, captures, matchPattern);
   }
 
   @Override
   public String toString() {
-    return "ScopeNode{" +
-      "name='" + name + '\'' +
-      ", beginRegEx='" + beginRegEx + '\'' +
-      ", endRegEx='" + endRegEx + '\'' +
-      ", beginCaptures=" + beginCaptures +
-      ", endCaptures=" + endCaptures +
-      ", captures=" + captures +
-      ", matchPattern='" + matchPattern + '\'' +
-      '}';
+    return "ScopeNode{"
+      + "name='" + name + '\''
+      + ", beginRegEx='" + beginRegEx + '\''
+      + ", endRegEx='" + endRegEx + '\''
+      + ", beginCaptures=" + beginCaptures
+      + ", endCaptures=" + endCaptures
+      + ", captures=" + captures
+      + ", matchPattern='" + matchPattern + '\''
+      + '}';
   }
 }

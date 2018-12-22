@@ -1,7 +1,5 @@
 package io.github.handofgod94.lsp.completion;
 
-import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.ElementAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -20,8 +18,8 @@ import org.apache.xerces.xs.XSTypeDefinition;
 public class ElementCompletion extends AbstractXmlCompletion {
 
   ElementCompletion(SchemaDocument schemaDocument,
-                    QName qName) {
-    super(schemaDocument, qName);
+                    QName qname) {
+    super(schemaDocument, qname);
   }
 
   @Override
@@ -34,7 +32,7 @@ public class ElementCompletion extends AbstractXmlCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if complex type, then getCompletionItems the children model group
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
       XSParticle rootParticle = complexTypeDefinition.getParticle();
 
       // Recursively look for all the applicable tags

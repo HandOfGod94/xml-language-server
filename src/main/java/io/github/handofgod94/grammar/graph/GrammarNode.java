@@ -11,7 +11,7 @@ public class GrammarNode {
   private ScopeBuilder builder;
   private Color color;
 
-  public GrammarNode(ScopeBuilder builder) {
+  GrammarNode(ScopeBuilder builder) {
     this.builder = builder;
     this.color = Color.WHITE;
   }
@@ -20,7 +20,7 @@ public class GrammarNode {
     return builder.getScope();
   }
 
-  public void generateScope(){
+  void generateScope() {
     builder.create();
     builder.addName();
     builder.addBeginRegEx();
@@ -41,8 +41,12 @@ public class GrammarNode {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     GrammarNode that = (GrammarNode) o;
     return Objects.equals(builder, that.builder);
   }
@@ -54,9 +58,9 @@ public class GrammarNode {
 
   @Override
   public String toString() {
-    return "GrammarNode{" +
-      "builder=" + builder +
-      ", color=" + color +
-      '}';
+    return "GrammarNode{"
+      + "builder=" + builder
+      + ", color=" + color
+      + '}';
   }
 }

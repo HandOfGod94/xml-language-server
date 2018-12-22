@@ -105,8 +105,9 @@ public class PositionalHandler extends DefaultHandler {
 
   @Override
   public void fatalError(SAXParseException e) throws SAXException {
-    // Suppress the parseException while editing.s
-    // HACK: While editing if you getCompletionItems parsing error, means the previous element is the parent
+    // Suppress the parseException while editing.
+    // HACK: While editing if you getCompletionItems parsing error,
+    // means the previous element is the parent
     if (!elementStack.isEmpty()) {
       parentElement = elementStack.peek();
     }

@@ -12,6 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.lsp4j.Position;
 
+/**
+ * A processor which loads the XML Grammar
+ * and extracts scope information from the line.
+ */
 public class GrammarProcessor {
 
   public interface Factory {
@@ -36,12 +40,24 @@ public class GrammarProcessor {
     this.line = line;
   }
 
+  /**
+   * Extracts scope information for the current line passed
+   * during the initialization with {@link GrammarProcessor.Factory}.
+   *
+   * <p>
+   * It preforms dfs traversal on the XML grammar graph in topologically
+   * sorted order and find out the deepest match to the scope for current position.
+   * If no such match is found then and <code>Optional.empty()</code> will be returned.
+   * </p>
+   * @return String wrapped in optional object if it finds a scope to match with,
+   *     else an Optional.empty().
+   */
   public Optional<String> processScope() {
     traverseOrder = languageGraphContext.getTraverseOrder();
 
     for (GrammarNode node : traverseOrder) {
       if (node.getColor() == GrammarNode.Color.WHITE) {
-        String caretScope = DFS(node);
+        String caretScope = dfs(node);
         if (caretScope != null) return Optional.of(caretScope);
       }
     }
@@ -49,7 +65,7 @@ public class GrammarProcessor {
     return Optional.empty();
   }
 
-  private String DFS(GrammarNode node) {
+  private String dfs(GrammarNode node) {
     Scope scope = node.getScope();
     String scopeName = null;
     node.setColor(GrammarNode.Color.GRAY);
@@ -62,11 +78,11 @@ public class GrammarProcessor {
       scopeName = getScopeName(scope, line, position.getCharacter());
     }
 
-    // Recurse with DFS.
+    // Recurse with dfs.
     if (graph.get(node) != null) {
-      for (GrammarNode gN : graph.get(node)) {
-        if (gN.getColor() == GrammarNode.Color.WHITE) {
-          String childScope = DFS(gN);
+      for (GrammarNode adjNode : graph.get(node)) {
+        if (adjNode.getColor() == GrammarNode.Color.WHITE) {
+          String childScope = dfs(adjNode);
           if (childScope != null) return childScope;
         }
       }
@@ -78,20 +94,24 @@ public class GrammarProcessor {
 
   protected boolean isMatchInScope(Scope scope, String line) {
     int columnPos = position.getCharacter();
-    if (scope.getMatchPattern() != null)
+
+    if (scope.getMatchPattern() != null) {
       return hasMatchPattern(scope.getMatchPattern(), line, columnPos);
-    else if (scope.getBeginRegEx() != null)
+    } else if (scope.getBeginRegEx() != null) {
       return hasBoundedPattern(scope.getBeginRegEx(), scope.getEndRegEx(), line, columnPos);
+    }
 
     return false;
   }
 
   protected String getScopeName(Scope scope, String line, int position) {
     String scopeName = scope.getName();
-    String regEx = (scope.getMatchPattern() != null) ? scope.getMatchPattern() : scope.getBeginRegEx();
+    String regEx =
+        (scope.getMatchPattern() != null) ? scope.getMatchPattern() : scope.getBeginRegEx();
     Matcher matcher = generateMatcher(regEx, line);
 
-    Map<Integer, String> captures = (scope.getCaptures() != null) ? scope.getCaptures() : scope.getBeginCaptures();
+    Map<Integer, String> captures =
+        (scope.getCaptures() != null) ? scope.getCaptures() : scope.getBeginCaptures();
     while (matcher.find()) {
       for (int groupNum : captures.keySet()) {
         int start = matcher.start(groupNum);

@@ -40,7 +40,7 @@ public class TagStuff extends ScopeBuilder {
   protected void addCaptures() {
     Map<Integer, String> captures = new LinkedHashMap<>();
     captures.put(1, "entity.other.attribute-name.namespace.xml");
-//    captures.put(2, "entity.other.attribute-name.xml");
+    // captures.put(2, "entity.other.attribute-name.xml");
     captures.put(2, "punctuation.separator.namespace.xml");
     captures.put(3, "entity.other.attribute-name.localname.xml");
     scope.setCaptures(captures);
