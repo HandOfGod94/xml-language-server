@@ -100,6 +100,8 @@ public class XmlDocumentService implements TextDocumentService {
     return CompletableFuture.completedFuture(Either.forLeft(list));
   }
 
+
+
   @Override
   public void didOpen(DidOpenTextDocumentParams params) {
     logger.info("File opened: {}", params.getTextDocument().getUri());
@@ -110,7 +112,7 @@ public class XmlDocumentService implements TextDocumentService {
     Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
     publishDiagnostics(documentItem, errorMessages);
 
-    if (errorMessages.isEmpty()) {
+    if (errorMessages.isEmpty() && schemaDocument == null) {
       // Load XSD Schema model
       Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
       schemaDocumentOptional.ifPresent(document -> schemaDocument = document);
@@ -143,7 +145,7 @@ public class XmlDocumentService implements TextDocumentService {
     Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
     publishDiagnostics(documentItem, errorMessages);
 
-    if (errorMessages.isEmpty()) {
+    if (errorMessages.isEmpty() && schemaDocument == null) {
       // Load XSD Schema model
       Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
       schemaDocumentOptional.ifPresent(document -> schemaDocument = document);
