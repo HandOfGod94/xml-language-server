@@ -92,7 +92,7 @@ public class GrammarProcessor {
     return scopeName;
   }
 
-  protected boolean isMatchInScope(Scope scope, String line) {
+  private boolean isMatchInScope(Scope scope, String line) {
     int columnPos = position.getCharacter();
 
     if (scope.getMatchPattern() != null) {
@@ -104,7 +104,7 @@ public class GrammarProcessor {
     return false;
   }
 
-  protected String getScopeName(Scope scope, String line, int position) {
+  private String getScopeName(Scope scope, String line, int position) {
     String scopeName = scope.getName();
     String regEx =
         (scope.getMatchPattern() != null) ? scope.getMatchPattern() : scope.getBeginRegEx();
