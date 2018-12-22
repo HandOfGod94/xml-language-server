@@ -10,6 +10,10 @@ capabilities such as autocomplete, validation or documentation support for XML d
 > Refer to [CONTRIBUTING.md](./CONTRIBUTING.md##setup-dev-environment) for setting up
 > development environment
 
+## Demo
+
+![demo](./resources/demo.gif)
+
 ## Features
 * XML Validations
   - [x] XSD
@@ -20,10 +24,6 @@ capabilities such as autocomplete, validation or documentation support for XML d
 * Documentation
   - [x] XSD
   - [ ] DTD
-
-## Demo
-
-![demo](./resources/demo.gif)
 
 ## What is language server?
 
