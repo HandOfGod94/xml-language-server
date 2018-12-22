@@ -1,112 +1,56 @@
 package io.github.handofgod94.lsp.diagnostic;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
-import io.github.handofgod94.common.document.DocumentManager;
-import io.github.handofgod94.main.XmlLanguageServer;
-import io.github.handofgod94.schema.SchemaDocument;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Validator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.TextDocumentItem;
-import org.xml.sax.SAXException;
 
 public class XmlDiagnosticService {
 
   /**
-   * Factory for XmlDiagnosticService.
-   * This is used for injecting {@link XmlDiagnosticService} instance.
+   * Get parameters for diagnostic, based on the error map.
+   * The error map should consist the position of error in the document
+   * as well as message for that error. These params can be published to client
+   * using XML Language server object
+   * @param lines array of document split line by line
+   * @param documentUri uri of the document for which diagnostics are requested
+   * @param errorMap HashMap consisting of position of error and the error message
+   * @return PublishDiagnosticsParams instance having all the diagnostics.
    */
-  public interface Factory {
-    /**
-     * Factory method to create service.
-     * @param documentItem currently working text item
-     * @param server XmlLanguageServer object
-     * @param schemaDocument Instance of schema document
-     * @return XmlDiagnosticService instance
-     * @see io.github.handofgod94.schema.SchemaDocument
-     */
-    XmlDiagnosticService create(TextDocumentItem documentItem,
-                                XmlLanguageServer server,
-                                SchemaDocument schemaDocument);
-  }
-
-  private static final Logger logger = LogManager.getLogger(XmlDiagnosticService.class.getName());
-
-  private SchemaDocument schemaDocument;
-  private XmlLanguageServer server;
-  private TextDocumentItem documentItem;
-  private DocumentManager.Factory documentManagerFactory;
-  private DiagnosticErrorHandler errorHandler;
-
-  @Inject
-  XmlDiagnosticService(@Assisted TextDocumentItem documentItem, @Assisted XmlLanguageServer server,
-                       @Assisted SchemaDocument schemaDocument,
-                       DocumentManager.Factory documentManagerFactory,
-                       DiagnosticErrorHandler errorHandler) {
-    this.documentItem = documentItem;
-    this.server = server;
-    this.schemaDocument = schemaDocument;
-    this.documentManagerFactory = documentManagerFactory;
-    this.errorHandler = errorHandler;
-  }
-
-  /**
-   * Gets all the errors in the XML file and push it to client. This needs to
-   * invoked on load/save of document.
-   */
-  public void compute() {
-    String text = documentItem.getText();
-    Validator validator = schemaDocument.getSchema().newValidator();
-    validator.setErrorHandler(errorHandler);
-
-    try {
-      validator.validate(new StreamSource(new StringReader(text)));
-    } catch (SAXException | IOException ex) {
-      logger.error("Error occurred while parsing/reading the document", ex);
-    }
-
-    // Error Map
-    // This will be calculated in DiagnosticErrorHandler class.
-    Map<Position, String> errorMap = errorHandler.getErrorMap();
-
+  public static PublishDiagnosticsParams getDiagnostics(String[] lines,
+                                                        String documentUri,
+                                                        Map<Position, String> errorMap) {
     // Create diagnostic collection and getCompletionItems data from error map
-    List<Diagnostic> diagnostics = new ArrayList<>(getDiagnosticsFromErrorMap(errorMap));
+    List<Diagnostic> diagnostics = new ArrayList<>(getDiagnosticsFromErrorMap(lines, errorMap));
 
     // Publish diagnostics to client
     PublishDiagnosticsParams diagnosticsParams =
-        new PublishDiagnosticsParams(this.documentItem.getUri(), diagnostics);
-    server.getClient().publishDiagnostics(diagnosticsParams);
+        new PublishDiagnosticsParams(documentUri, diagnostics);
+
+    return diagnosticsParams;
   }
 
   /**
    * Traverse errorMap and create list of diagnostic objects.
    *
+   * @param lines array of string having content of document line by line.
+   * @param errorMap Map of position to error obtained from Xml Document
    * @return List of diagnostics
    */
-  protected List<Diagnostic> getDiagnosticsFromErrorMap(Map<Position, String> errorMap) {
+  private static List<Diagnostic> getDiagnosticsFromErrorMap(String[] lines,
+                                                             Map<Position, String> errorMap) {
     // Create diagnostic collection
     List<Diagnostic> diagnostics = new ArrayList<>();
-
-    // Create DocumentManager for querying text document
-    DocumentManager manager = documentManagerFactory.create(documentItem);
 
     for (Position position : errorMap.keySet()) {
       int lineNo = position.getLine();
       int endColumn = position.getCharacter();
       String message = errorMap.get(position);
-      String line = manager.getDocumentLines()[lineNo];
+      String line = lines[lineNo];
       int startColumn = line.length() - line.trim().length();
 
       Position startPosition = new Position(lineNo, startColumn);

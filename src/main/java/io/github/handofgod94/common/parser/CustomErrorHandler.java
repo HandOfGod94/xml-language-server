@@ -1,4 +1,4 @@
-package io.github.handofgod94.lsp.diagnostic;
+package io.github.handofgod94.common.parser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.xml.sax.SAXParseException;
  * xml text. This class extends the base ErrorHandler class and add all the
  * errors and warnings to the list of errors.
  */
-public class DiagnosticErrorHandler implements ErrorHandler {
+public class CustomErrorHandler implements ErrorHandler {
 
   // Error map to store line number and errors description and severity.
   private Map<Position, String> errorMap = new HashMap<>();
