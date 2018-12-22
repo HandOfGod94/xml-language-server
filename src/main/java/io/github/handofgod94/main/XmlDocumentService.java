@@ -47,7 +47,7 @@ public class XmlDocumentService implements TextDocumentService {
 
   private XmlLanguageServer server;
   private Map<String, TextDocumentItem> openDocumentItems = new HashMap<>();
-  private SchemaDocument schemaDocument;
+  private Map<String, SchemaDocument> openSchemas = new HashMap<>();
 
   @Inject private final XmlCompletionFactory xmlCompletionFactory;
   @Inject private final XmlHoverProviderFactory xmlHoverProviderFactory;
@@ -70,31 +70,40 @@ public class XmlDocumentService implements TextDocumentService {
 
   @Override
   public CompletableFuture<Hover> hover(TextDocumentPositionParams params) {
-
+    Hover hover = new Hover(Collections.emptyList());
     Position position = params.getPosition();
     TextDocumentItem documentItem = openDocumentItems.get(params.getTextDocument().getUri());
-    XmlHoverProvider provider =
-        xmlHoverProviderFactory.create(position, schemaDocument, documentItem);
-    Optional<XmlHover> optHover = provider.get();
+    SchemaDocument schemaDocument = openSchemas.get(params.getTextDocument().getUri());
 
-    // Show hover if documentation is present, else show empty/no hover.
-    Hover hover = optHover
+    if (schemaDocument != null && documentItem != null) {
+      XmlHoverProvider provider =
+          xmlHoverProviderFactory.create(position, schemaDocument, documentItem);
+      Optional<XmlHover> optHover = provider.get();
+
+      // Show hover if documentation is present, else show empty/no hover.
+      hover = optHover
         .map(XmlHover::getHover)
         .orElse(new Hover(Collections.emptyList()));
+    }
     return CompletableFuture.completedFuture(hover);
   }
 
   @Override
   public CompletableFuture<Either<List<CompletionItem>, CompletionList>>
       completion(CompletionParams params) {
-    TextDocumentItem documentItem =
-        openDocumentItems.get(params.getTextDocument().getUri());
-    Optional<XmlCompletion> completion =
-        xmlCompletionFactory.create(schemaDocument, params, documentItem);
     List<CompletionItem> list = new ArrayList<>();
 
-    if (completion.isPresent()) {
-      list = completion.get().getCompletions();
+    SchemaDocument schemaDocument = openSchemas.get(params.getTextDocument().getUri());
+    TextDocumentItem documentItem =
+        openDocumentItems.get(params.getTextDocument().getUri());
+
+    if (schemaDocument != null && documentItem != null) {
+      Optional<XmlCompletion> completion =
+          xmlCompletionFactory.create(schemaDocument, params, documentItem);
+
+      if (completion.isPresent()) {
+        list = completion.get().getCompletions();
+      }
     }
 
     return CompletableFuture.completedFuture(Either.forLeft(list));
@@ -110,12 +119,13 @@ public class XmlDocumentService implements TextDocumentService {
     openDocumentItems.put(documentItem.getUri(), documentItem);
 
     Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
-    publishDiagnostics(documentItem, errorMessages);
+    publishDiagnostics(documentItem.getUri(), errorMessages);
 
-    if (errorMessages.isEmpty() && schemaDocument == null) {
+    if (errorMessages.isEmpty() && !openSchemas.containsKey(documentItem.getUri())) {
       // Load XSD Schema model
       Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
-      schemaDocumentOptional.ifPresent(document -> schemaDocument = document);
+      schemaDocumentOptional
+          .ifPresent(document -> openSchemas.put(documentItem.getUri(), document));
     }
   }
 
@@ -133,8 +143,12 @@ public class XmlDocumentService implements TextDocumentService {
   public void didClose(DidCloseTextDocumentParams params) {
     logger.info("File closed: {}", params.getTextDocument().getUri());
 
+    // clear diagnostics
+    publishDiagnostics(params.getTextDocument().getUri(), Collections.emptyMap());
+
     // Remove entries from global maps
     openDocumentItems.remove(params.getTextDocument().getUri());
+    openSchemas.remove(params.getTextDocument().getUri());
   }
 
   @Override
@@ -143,16 +157,18 @@ public class XmlDocumentService implements TextDocumentService {
     documentItem.setText(params.getText());
 
     Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
-    publishDiagnostics(documentItem, errorMessages);
+    publishDiagnostics(documentItem.getUri(), errorMessages);
 
-    if (errorMessages.isEmpty() && schemaDocument == null) {
+    if (errorMessages.isEmpty() && !openSchemas.containsKey(documentItem.getUri())) {
       // Load XSD Schema model
       Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
-      schemaDocumentOptional.ifPresent(document -> schemaDocument = document);
+      schemaDocumentOptional
+          .ifPresent(document -> openSchemas.put(documentItem.getUri(), document));
     }
   }
 
-  private void publishDiagnostics(TextDocumentItem documentItem, Map<Position, String> errorMap) {
+  private void publishDiagnostics(String textDocumentIdUri, Map<Position, String> errorMap) {
+    TextDocumentItem documentItem = openDocumentItems.get(textDocumentIdUri);
     DocumentManager manager = docManagerFactory.create(documentItem);
     String[] lines = manager.getDocumentLines();
     PublishDiagnosticsParams diagnostics =

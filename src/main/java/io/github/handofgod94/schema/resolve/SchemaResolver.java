@@ -1,10 +1,7 @@
 package io.github.handofgod94.schema.resolve;
 
 import io.github.handofgod94.schema.SchemaDocument;
-import java.net.URI;
-import java.util.List;
 import java.util.Optional;
-import org.dom4j.Document;
 
 /**
  * Interface to support resolution of schema from the url
@@ -22,13 +19,4 @@ public interface SchemaResolver {
    */
   Optional<SchemaDocument> resolve(String xml);
 
-  /**
-   * Searches schema URls and should return a list.
-   * Currently this lookup will only happen in schemaLocation attribute
-   * and will not take place in noSchemaLocation
-   *
-   * @param document parsed xml document, possibly the current textDocumentItem text
-   * @return list of urls
-   */
-  List<URI> searchSchemaUris(Document document);
 }

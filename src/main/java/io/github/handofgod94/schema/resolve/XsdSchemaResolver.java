@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
+import javax.xml.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
@@ -20,9 +21,7 @@ import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
 
@@ -42,10 +41,15 @@ public class XsdSchemaResolver implements SchemaResolver {
       SAXReader reader = new SAXReader();
       Document xmlDocument = reader.read(new StringReader(xmlText));
       Namespace namespace = xmlDocument.getRootElement().getNamespace();
-      List<URI> schemaUris = searchSchemaUris(xmlDocument);
 
       // generate schema and models
       Schema schema = XmlUtil.generateSchema();
+      XsdLsResolver resourceResolver = new XsdLsResolver();
+      Validator validator = schema.newValidator();
+      validator.setResourceResolver(resourceResolver);
+      validator.validate(new StreamSource(new StringReader(xmlText)));
+      List<URI> schemaUris = resourceResolver.getNamespaces();
+
       XSLoader xsLoader = new XMLSchemaLoader();
       XSModel xsModel = xsLoader.loadURIList(getUriStringList(schemaUris));
 
@@ -64,31 +68,14 @@ public class XsdSchemaResolver implements SchemaResolver {
     return Optional.empty();
   }
 
-  @Override
-  public List<URI> searchSchemaUris(Document xmlDocument) {
-    String schemaLocation = "";
-    List<URI> uris = new ArrayList<>();
-    Element root = xmlDocument.getRootElement();
-
-    // find out all the schema location
-    if (root != null) {
-      // TODO: Think of something robust. It should handle any prefix.
-      schemaLocation = root.attributeValue(new QName("schemaLocation",
-        new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance")));
-    }
-    String[] locations = schemaLocation.split(" +");
-
-    // create uri's for all the strings ending .xsd
-    for (String loc : locations) {
-      if (loc.endsWith(".xsd")) {
-        URI uri = URI.create(loc);
-        uris.add(uri);
-      }
-    }
-
-    return uris;
-  }
-
+  /**
+   * Get all the xsd docs retrieved and store it in a List.
+   * This is required to get documentation information for the elements.
+   * @param schemaUris list of URI present in current document
+   * @return List of parsed document objects
+   * @throws DocumentException if unable to parse the XSD retried.
+   * @throws IOException Unable to create reader to read XSD.
+   */
   private List<Document> generateParsedSchemaDocs(List<URI> schemaUris)
       throws DocumentException, IOException {
     StreamSource[] sources = generateSources(schemaUris);
