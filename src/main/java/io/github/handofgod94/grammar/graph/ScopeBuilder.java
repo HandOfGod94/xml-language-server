@@ -30,9 +30,9 @@ public abstract class ScopeBuilder {
 
   @Override
   public String toString() {
-    return "ScopeNodeBuilder{" +
-      "scopeNode=" + scope +
-      '}';
+    return "ScopeNodeBuilder{"
+      + "scopeNode=" + scope
+      + '}';
   }
 
   @Override

@@ -54,8 +54,10 @@ public class AttributeHover implements XmlHover {
     // getCompletionItems current element and its attributes
     XmlUtil.positionalParse(handler, documentItem.getText());
     QName currentElement = handler.getCurrentElement();
-    Optional<XSElementDeclaration> element = XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
-    element = element.isPresent() ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
+    Optional<XSElementDeclaration> element =
+        XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
+    element = element.isPresent()
+        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
 
     // check in if any attributes or elements matches to wordHovered
     List<XsAdapter> attrList = element.map(this::getAllAttributes).orElse(new ArrayList<>());
@@ -82,7 +84,7 @@ public class AttributeHover implements XmlHover {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if its a complex type, getCompletionItems all the attributes in that element
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
 
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSObject attribute = (XSObject) attrObject;

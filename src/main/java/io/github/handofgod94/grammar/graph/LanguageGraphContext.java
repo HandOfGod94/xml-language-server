@@ -11,6 +11,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Generates Graph for the XML Language Grammar.
+ * The grammar is referenced from xml.tmLang.json.
+ * Each node(vertex) will be initialized with its respective regular expression
+ * and other scoping realted information such as name of the scope, captures etc.
+ *
+ * <p>
+ * This will then be used in {@link io.github.handofgod94.lsp.completion.XmlCompletionFactory}
+ * and {@link io.github.handofgod94.lsp.hover.provider.XmlHoverProvider} to control their triggering
+ * based on the scope.
+ * </p>
+ *
+ * <p>
+ * Right now it's not Singleton, since the graph needs to be cleaned up
+ * after visiting the nodes on each iteration. This could lead to performance
+ * issue.
+ * </p>
+ */
 public class LanguageGraphContext {
 
   private final List<GrammarNode> traverseOrder;
@@ -27,6 +45,13 @@ public class LanguageGraphContext {
   private final GrammarNode doubleQuoteStringNode = new GrammarNode(doubleQuoteString);
   private final GrammarNode singleQuoteStringNode = new GrammarNode(singleQuoteString);
 
+  /**
+   * Generates the graph for XML Grammar.
+   * It loads and initializes all the scoping information related
+   * to various elements of xml.tmLang grammar and stores it in-memory.
+   *
+   *
+   */
   public LanguageGraphContext() {
     commentNode.generateScope();
     elementNode.generateScope();

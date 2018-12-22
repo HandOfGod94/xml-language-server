@@ -17,7 +17,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 public class DocumentManager {
 
   /**
-   * Guice Factory for {@link DocumentManager}
+   * Guice Factory for {@link DocumentManager}.
    */
   public interface Factory {
     /**

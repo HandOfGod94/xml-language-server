@@ -75,7 +75,7 @@ public class ElementAdapter implements XsAdapter {
     docBuffer.append(elementStr);
 
     String annotation =
-      Stream
+        Stream
         .of(Optional.ofNullable(elementDeclaration.getAnnotation()))
         .filter(Optional::isPresent)
         .map(Optional::get)

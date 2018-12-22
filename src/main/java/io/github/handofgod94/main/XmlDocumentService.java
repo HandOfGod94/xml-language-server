@@ -85,12 +85,12 @@ public class XmlDocumentService implements TextDocumentService {
       completion(CompletionParams params) {
     TextDocumentItem documentItem =
         openDocumentItems.get(params.getTextDocument().getUri());
-    XmlCompletion completion =
+    Optional<XmlCompletion> completion =
         xmlCompletionFactory.create(schemaDocument, params, documentItem);
     List<CompletionItem> list = new ArrayList<>();
 
-    if (completion!= null) {
-      list = completion.getCompletions();
+    if (completion.isPresent()) {
+      list = completion.get().getCompletions();
     }
 
     return CompletableFuture.completedFuture(Either.forLeft(list));
