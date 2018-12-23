@@ -1,6 +1,8 @@
 # XML Language Server
 
-> Work in progress.
+> I started this project when there was no XML Plugin available for VSCode. But now we have XML Plugin by RedHat available, 
+> so I recommend all to use that as I won't be able to go ahead with the current project.  
+> Do check em out: https://github.com/angelozerr/lsp4xml, https://github.com/redhat-developer/vscode-xml
 
 ![build-status](https://travis-ci.org/HandOfGod94/xml-language-server.svg?branch=master)
 
