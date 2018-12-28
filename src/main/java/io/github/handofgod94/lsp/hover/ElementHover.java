@@ -58,9 +58,7 @@ public class ElementHover implements XmlHover {
     QName currentElement = handler.getCurrentElement();
 
     Optional<XSElementDeclaration> element =
-        XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
-    element = element.isPresent()
-        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
+        XmlUtil.searchElement(schemaDocument.getXsModel(), currentElement);
 
 
     // check if word hovered is the possible element at current position or not.

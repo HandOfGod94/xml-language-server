@@ -22,20 +22,10 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
     this.qname = qname;
   }
 
-  protected Optional<XSElementDeclaration> getXsElementDeclaration() {
-    Optional<XSElementDeclaration> element =
-        XmlUtil.checkInElement(schemaDocument.getXsModel(), qname);
-    element =
-      element.isPresent()
-        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), qname);
-
-    return element;
-  }
-
   @Override
   public List<CompletionItem> getCompletions() {
     List<CompletionItem> items = new ArrayList<>();
-    Optional<XSElementDeclaration> element = getXsElementDeclaration();
+    Optional<XSElementDeclaration> element = XmlUtil.searchElement(schemaDocument.getXsModel(), qname);
 
     element.ifPresent(e -> {
       items.addAll(

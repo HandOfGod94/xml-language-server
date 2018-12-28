@@ -39,12 +39,10 @@ public class SchemaDocument {
      * {@link SchemaDocument} provides generic container, which contains parsed models and
      * schemas which can be consumed by anyone.
      * @param xsModel parsed Xerces XS model
-     * @param schema {@link Schema} instance for all the xsds present in xml
      * @param documentType enum type defined in {@link SchemaDocumentType}
      */
-    public Builder(XSModel xsModel, Schema schema, SchemaDocumentType documentType) {
+    public Builder(XSModel xsModel, SchemaDocumentType documentType) {
       this.xsModel = xsModel;
-      this.schema = schema;
       this.documentType = documentType;
     }
 
@@ -55,6 +53,11 @@ public class SchemaDocument {
 
     public Builder addParsedSchemaDocs(List<Document> parsedSchemas) {
       this.parsedSchemaDocs = parsedSchemas;
+      return this;
+    }
+
+    public Builder addSchema(Schema schema) {
+      this.schema = schema;
       return this;
     }
 

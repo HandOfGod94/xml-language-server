@@ -5,6 +5,7 @@ import com.google.inject.Key;
 import com.google.inject.name.Names;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.document.DocumentManager;
+import io.github.handofgod94.common.parser.XmlState;
 import io.github.handofgod94.lsp.completion.XmlCompletion;
 import io.github.handofgod94.lsp.completion.XmlCompletionFactory;
 import io.github.handofgod94.lsp.diagnostic.XmlDiagnosticService;
@@ -118,12 +119,13 @@ public class XmlDocumentService implements TextDocumentService {
     TextDocumentItem documentItem = params.getTextDocument();
     openDocumentItems.put(documentItem.getUri(), documentItem);
 
-    Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
+    XmlState xmlState = XmlUtil.checkWellFormedXml(documentItem);
+    Map<Position, String> errorMessages = xmlState.getErrorMap();
     publishDiagnostics(documentItem.getUri(), errorMessages);
 
     if (errorMessages.isEmpty() && !openSchemas.containsKey(documentItem.getUri())) {
       // Load XSD Schema model
-      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
+      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem, xmlState.getSchemaLocations());
       schemaDocumentOptional
           .ifPresent(document -> openSchemas.put(documentItem.getUri(), document));
     }
@@ -156,12 +158,13 @@ public class XmlDocumentService implements TextDocumentService {
     TextDocumentItem documentItem = openDocumentItems.get(params.getTextDocument().getUri());
     documentItem.setText(params.getText());
 
-    Map<Position, String> errorMessages = XmlUtil.checkWellFormedXml(documentItem.getText());
+    XmlState xmlState = XmlUtil.checkWellFormedXml(documentItem);
+    Map<Position, String> errorMessages = xmlState.getErrorMap();
     publishDiagnostics(documentItem.getUri(), errorMessages);
 
     if (errorMessages.isEmpty() && !openSchemas.containsKey(documentItem.getUri())) {
       // Load XSD Schema model
-      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem.getText());
+      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem, xmlState.getSchemaLocations());
       schemaDocumentOptional
           .ifPresent(document -> openSchemas.put(documentItem.getUri(), document));
     }
