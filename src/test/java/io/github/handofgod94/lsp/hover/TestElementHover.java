@@ -76,7 +76,7 @@ public class TestElementHover extends AbstractLangServerTest {
     Schema schema = factory.newSchema(temp);
 
     this.schemaDocument =
-      new SchemaDocument.Builder(model, schema, SchemaDocumentType.XSD).build();
+      new SchemaDocument.Builder(model, SchemaDocumentType.XSD).addSchema(schema).build();
 
     this.textDocumentItem =
       new TextDocumentItem(DUMMY_URI, XmlLanguageServer.LANGUAGE_ID, 0, MOCK_XML_TEXT);

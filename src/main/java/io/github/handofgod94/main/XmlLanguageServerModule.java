@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import io.github.handofgod94.common.document.DocumentManager;
-import io.github.handofgod94.common.parser.CustomErrorHandler;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.grammar.GrammarProcessor;
 import io.github.handofgod94.grammar.graph.LanguageGraphContext;
@@ -31,7 +30,6 @@ public class XmlLanguageServerModule extends AbstractModule {
     bind(SchemaResolver.class).annotatedWith(Names.named("Xsd")).to(XsdSchemaResolver.class);
 
     // Bindings for concrete class
-    bind(CustomErrorHandler.class);
     bind(XmlCompletionFactory.class);
     bind(LanguageGraphContext.class);
 

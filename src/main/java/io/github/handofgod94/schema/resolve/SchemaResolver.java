@@ -1,7 +1,10 @@
 package io.github.handofgod94.schema.resolve;
 
 import io.github.handofgod94.schema.SchemaDocument;
+import java.net.URI;
+import java.util.List;
 import java.util.Optional;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
  * Interface to support resolution of schema from the url
@@ -14,9 +17,10 @@ public interface SchemaResolver {
    * These URLs can then be used to generate models or schemas
    * using xerces or javax.
    *
-   * @param xml String having xml content loaded in the editor.
+   * @param documentItem current text document item.
+   * @param schemaLocations list of URI having schemaLocations for current document.
    * @return schema if resolution is successful.
    */
-  Optional<SchemaDocument> resolve(String xml);
+  Optional<SchemaDocument> resolve(TextDocumentItem documentItem, List<URI> schemaLocations);
 
 }

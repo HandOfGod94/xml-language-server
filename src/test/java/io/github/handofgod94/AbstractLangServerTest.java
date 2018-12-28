@@ -60,7 +60,7 @@ public class AbstractLangServerTest {
     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     Schema schema = factory.newSchema(temp);
 
-    SchemaDocument document = new SchemaDocument.Builder(model, schema, SchemaDocumentType.XSD).build();
+    SchemaDocument document = new SchemaDocument.Builder(model, SchemaDocumentType.XSD).addSchema(schema).build();
 
     return document;
   }

@@ -55,9 +55,7 @@ public class AttributeHover implements XmlHover {
     XmlUtil.positionalParse(handler, documentItem.getText());
     QName currentElement = handler.getCurrentElement();
     Optional<XSElementDeclaration> element =
-        XmlUtil.checkInElement(schemaDocument.getXsModel(), currentElement);
-    element = element.isPresent()
-        ? element : XmlUtil.checkInModelGroup(schemaDocument.getXsModel(), currentElement);
+        XmlUtil.searchElement(schemaDocument.getXsModel(), currentElement);
 
     // check in if any attributes or elements matches to wordHovered
     List<XsAdapter> attrList = element.map(this::getAllAttributes).orElse(new ArrayList<>());
@@ -68,8 +66,6 @@ public class AttributeHover implements XmlHover {
         content = attribute.toMarkupContent();
       }
     }
-
-    // Get annotation and documentation of XSObject and show it in hover.
 
     Hover hover = new Hover(content);
     return hover;

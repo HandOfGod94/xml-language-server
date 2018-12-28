@@ -1,6 +1,5 @@
 package io.github.handofgod94.schema.resolve;
 
-import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
 import java.io.IOException;
@@ -10,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.Validator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
@@ -23,7 +20,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Namespace;
 import org.dom4j.io.SAXReader;
-import org.xml.sax.SAXException;
+import org.eclipse.lsp4j.TextDocumentItem;
 
 /**
  * Lookup xsd schema for an xml.
@@ -36,32 +33,27 @@ public class XsdSchemaResolver implements SchemaResolver {
   private static final Logger logger = LogManager.getLogger(XsdSchemaResolver.class.getName());
 
   @Override
-  public Optional<SchemaDocument> resolve(String xmlText) {
+  public Optional<SchemaDocument> resolve(TextDocumentItem documentItem,
+                                          List<URI> schemaLocations) {
+
     try {
+      String xmlText = documentItem.getText();
       SAXReader reader = new SAXReader();
       Document xmlDocument = reader.read(new StringReader(xmlText));
       Namespace namespace = xmlDocument.getRootElement().getNamespace();
 
-      // generate schema and models
-      Schema schema = XmlUtil.generateSchema();
-      XsdLsResolver resourceResolver = new XsdLsResolver();
-      Validator validator = schema.newValidator();
-      validator.setResourceResolver(resourceResolver);
-      validator.validate(new StreamSource(new StringReader(xmlText)));
-      List<URI> schemaUris = resourceResolver.getNamespaces();
-
       XSLoader xsLoader = new XMLSchemaLoader();
-      XSModel xsModel = xsLoader.loadURIList(getUriStringList(schemaUris));
+      XSModel xsModel = xsLoader.loadURIList(getUriStringList(schemaLocations));
 
       // TODO: set other information regarding schema.
       SchemaDocument document =
-          new SchemaDocument.Builder(xsModel, schema, SchemaDocumentType.XSD)
-            .addNamespace(namespace)
-            .addParsedSchemaDocs(generateParsedSchemaDocs(schemaUris))
-            .build();
+        new SchemaDocument.Builder(xsModel, SchemaDocumentType.XSD)
+          .addNamespace(namespace)
+          .addParsedSchemaDocs(generateParsedSchemaDocs(schemaLocations))
+          .build();
 
       return Optional.of(document);
-    } catch (DocumentException | IOException | SAXException e) {
+    } catch (DocumentException | IOException e) {
       // TODO: It can produce too much of noise if document is continuously in editing state.
       logger.error("Unable to parse or load schema", e);
     }
@@ -71,13 +63,14 @@ public class XsdSchemaResolver implements SchemaResolver {
   /**
    * Get all the xsd docs retrieved and store it in a List.
    * This is required to get documentation information for the elements.
+   *
    * @param schemaUris list of URI present in current document
    * @return List of parsed document objects
    * @throws DocumentException if unable to parse the XSD retried.
-   * @throws IOException Unable to create reader to read XSD.
+   * @throws IOException       Unable to create reader to read XSD.
    */
   private List<Document> generateParsedSchemaDocs(List<URI> schemaUris)
-      throws DocumentException, IOException {
+    throws DocumentException, IOException {
     StreamSource[] sources = generateSources(schemaUris);
     SAXReader reader = new SAXReader();
     List<Document> documents = new ArrayList<>();
