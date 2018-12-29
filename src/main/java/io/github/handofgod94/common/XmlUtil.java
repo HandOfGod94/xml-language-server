@@ -35,6 +35,8 @@ import org.apache.xerces.xs.XSModelGroupDefinition;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSParticle;
+import org.apache.xerces.xs.XSSimpleTypeDefinition;
+import org.apache.xerces.xs.XSTypeDefinition;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
@@ -125,8 +127,10 @@ public class XmlUtil {
           && element.getNamespace().equals(qname.getNamespaceURI())) return Optional.of(element);
 
       // TODO: Handle SimpleType elements
-      XSComplexTypeDefinition types = (XSComplexTypeDefinition) element.getTypeDefinition();
-      return searchElement(types.getParticle(), types.getParticle().getType(), qname);
+      if (element.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
+        XSComplexTypeDefinition types = (XSComplexTypeDefinition) element.getTypeDefinition();
+        return searchElement(types.getParticle(), types.getParticle().getType(), qname);
+      }
     }
 
     if (type == XSConstants.PARTICLE) {

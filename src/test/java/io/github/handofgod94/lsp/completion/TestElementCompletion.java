@@ -1,7 +1,10 @@
 package io.github.handofgod94.lsp.completion;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
 import io.github.handofgod94.AbstractXmlUnitTest;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,16 +23,19 @@ public class TestElementCompletion extends AbstractXmlUnitTest {
   private QName parentElement;
   private SchemaDocument schemaDocument;
 
+  @Inject private XsAdapter.Factory factory;
+
   @BeforeEach
   public void setup() throws IOException, SAXException {
     schemaDocument = createDummyXsdSchema();
+    Guice.createInjector(guiceModule).injectMembers(this);
   }
 
   @Test
   public void testValidParent() {
     parentElement = new QName(null, "shipto");
     ElementCompletion elementCompletion =
-        new ElementCompletion(schemaDocument, parentElement);
+        new ElementCompletion(schemaDocument, parentElement, factory);
 
     Set<String> expectedLabels =
       new HashSet<>(Arrays.asList("name", "address", "city", "country"));

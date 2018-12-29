@@ -1,6 +1,6 @@
 package io.github.handofgod94.common.document;
 
-import io.github.handofgod94.AbstractLangServerTest;
+import io.github.handofgod94.AbstractXmlUnitTest;
 import io.github.handofgod94.main.XmlLanguageServer;
 import java.util.Optional;
 import org.eclipse.lsp4j.Position;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class DocumentManagerTest extends AbstractLangServerTest {
+public class DocumentManagerTest extends AbstractXmlUnitTest {
 
   private DocumentManager manager;
 
