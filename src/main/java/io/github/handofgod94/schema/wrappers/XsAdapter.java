@@ -1,5 +1,7 @@
 package io.github.handofgod94.schema.wrappers;
 
+import com.google.inject.name.Named;
+import org.apache.xerces.xs.XSObject;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.MarkupContent;
 
@@ -7,6 +9,14 @@ import org.eclipse.lsp4j.MarkupContent;
  * Adapter interface to work with complex Xerces objects.
  */
 public interface XsAdapter {
+
+  interface Factory {
+    @Named("Element")
+    ElementAdapter createElementAdapter(XSObject object);
+
+    @Named("Attribute")
+    AttributeAdapter cretAttributeAdatper(XSObject object);
+  }
 
   String getName();
 

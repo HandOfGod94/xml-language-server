@@ -1,5 +1,7 @@
 package io.github.handofgod94.schema.wrappers;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import java.util.Iterator;
 import java.util.Optional;
@@ -34,7 +36,8 @@ public class AttributeAdapter implements XsAdapter {
    *
    * @param xsObject {@link XSAttributeUse} object
    */
-  public AttributeAdapter(XSObject xsObject) {
+  @Inject
+  AttributeAdapter(@Assisted XSObject xsObject) {
     this.attributeUse = (XSAttributeUse) xsObject;
     attributeDeclaration = this.attributeUse.getAttrDeclaration();
     name = attributeDeclaration.getName();

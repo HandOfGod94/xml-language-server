@@ -1,5 +1,6 @@
 package io.github.handofgod94.lsp.completion;
 
+import com.google.inject.name.Named;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -16,6 +17,15 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
   protected final SchemaDocument schemaDocument;
   protected final QName qname;
 
+
+  public interface Factory {
+
+    @Named("Element")
+    ElementCompletion createEdeCompleter(SchemaDocument schemaDocument, QName qname);
+
+    @Named("Attribute")
+    AttributeCompletion createAttrCompleter(SchemaDocument schemaDocument, QName qname);
+  }
 
   public AbstractXmlCompletion(SchemaDocument schemaDocument, QName qname) {
     this.schemaDocument = schemaDocument;

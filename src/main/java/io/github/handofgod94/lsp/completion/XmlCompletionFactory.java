@@ -17,10 +17,21 @@ public class XmlCompletionFactory {
 
   private static final String ELEMENT_TRIGGER_CHAR = "<";
   private static final String ATTRIBUTE_TRIGGER_CHARACTER = " ";
+  private final DocumentManager.Factory docManagerFactory;
+  private final GrammarProcessor.Factory grammarFactory;
+  private final PositionalHandler.Factory posHandlerFactory;
+  private final AbstractXmlCompletion.Factory completer;
 
-  @Inject DocumentManager.Factory docManagerFactory;
-  @Inject GrammarProcessor.Factory grammarFactory;
-  @Inject PositionalHandler.Factory posHandlerFactory;
+  @Inject
+  XmlCompletionFactory(DocumentManager.Factory docManagerFactory,
+                       GrammarProcessor.Factory grammarFactory,
+                       PositionalHandler.Factory posHandlerFactory,
+                       AbstractXmlCompletion.Factory completer) {
+    this.docManagerFactory = docManagerFactory;
+    this.grammarFactory = grammarFactory;
+    this.posHandlerFactory = posHandlerFactory;
+    this.completer = completer;
+  }
 
   /**
    * Provides XmlCompletion instances for elements and attributes.
@@ -54,12 +65,12 @@ public class XmlCompletionFactory {
 
       switch (triggerChar) {
         case ELEMENT_TRIGGER_CHAR:
-          if (currentScope.isPresent() && !currentScope.get().contains("meta")) return null;
-          return Optional.of(new ElementCompletion(schemaDocument, handler.getParentElement()));
+          if (currentScope.isPresent() && !currentScope.get().contains("meta")) return Optional.empty();
+          return Optional.of(completer.createEdeCompleter(schemaDocument, handler.getParentElement()));
         case ATTRIBUTE_TRIGGER_CHARACTER:
           if (currentScope.isPresent() && currentScope.get().contains("meta")) {
             return Optional.of(
-                new AttributeCompletion(schemaDocument, handler.getCurrentElement())
+                completer.createAttrCompleter(schemaDocument, handler.getCurrentElement())
             );
           }
           break;
@@ -72,13 +83,13 @@ public class XmlCompletionFactory {
       if (currentScope.isPresent()
           && currentScope.get().contains("tag")
           && currentScope.get().contains("entity")) {
-        return Optional.of(new ElementCompletion(schemaDocument, handler.getParentElement()));
+        return Optional.of(completer.createEdeCompleter(schemaDocument, handler.getParentElement()));
       }
 
       if (currentScope.isPresent()
           && (currentScope.get().contains("attribute")
             || currentScope.get().contains("meta"))) {
-        return Optional.of(new AttributeCompletion(schemaDocument, handler.getCurrentElement()));
+        return Optional.of(completer.createAttrCompleter(schemaDocument, handler.getCurrentElement()));
       }
     }
 

@@ -1,7 +1,8 @@
 package io.github.handofgod94.lsp.completion;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.schema.SchemaDocument;
-import io.github.handofgod94.schema.wrappers.ElementAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,14 @@ import org.apache.xerces.xs.XSTypeDefinition;
 
 public class ElementCompletion extends AbstractXmlCompletion {
 
-  ElementCompletion(SchemaDocument schemaDocument,
-                    QName qname) {
+  private final XsAdapter.Factory factory;
+
+  @Inject
+  ElementCompletion(@Assisted SchemaDocument schemaDocument,
+                    @Assisted QName qname,
+                    XsAdapter.Factory factory) {
     super(schemaDocument, qname);
+    this.factory = factory;
   }
 
   @Override
@@ -32,7 +38,7 @@ public class ElementCompletion extends AbstractXmlCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if complex type, then getCompletionItems the children model group
       XSComplexTypeDefinition complexTypeDefinition =
-          (XSComplexTypeDefinition) typeDefinition;
+        (XSComplexTypeDefinition) typeDefinition;
       XSParticle rootParticle = complexTypeDefinition.getParticle();
 
       // Recursively look for all the applicable tags
@@ -47,7 +53,7 @@ public class ElementCompletion extends AbstractXmlCompletion {
           particles.forEach(p -> xsObjects.push(p.getTerm()));
         } else if (term.getType() == XSConstants.ELEMENT_DECLARATION) {
           XSElementDeclaration ele = (XSElementDeclaration) term;
-          tags.add(new ElementAdapter(ele));
+          tags.add(factory.createElementAdapter(ele));
         }
       }
     } else {

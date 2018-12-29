@@ -30,18 +30,21 @@ public class AttributeHover implements XmlHover {
   private final Position position;
   private final PositionalHandler.Factory handlerFactory;
   private final TextDocumentItem documentItem;
+  private final XsAdapter.Factory adapterFactory;
 
   @Inject
   AttributeHover(@Assisted String wordHovered,
                  @Assisted SchemaDocument schemaDocument,
                  @Assisted TextDocumentItem documentItem,
                  @Assisted Position position,
-                 PositionalHandler.Factory handlerFactory) {
+                 PositionalHandler.Factory handlerFactory,
+                 XsAdapter.Factory adapterFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.position = position;
     this.handlerFactory = handlerFactory;
     this.documentItem = documentItem;
+    this.adapterFactory = adapterFactory;
   }
 
   @Override
@@ -84,7 +87,7 @@ public class AttributeHover implements XmlHover {
 
       for (Object attrObject : complexTypeDefinition.getAttributeUses()) {
         XSObject attribute = (XSObject) attrObject;
-        attrList.add(new AttributeAdapter(attribute));
+        attrList.add(adapterFactory.cretAttributeAdatper(attribute));
       }
     } else {
       // TODO: for simple types

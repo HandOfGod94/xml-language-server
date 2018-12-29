@@ -30,18 +30,21 @@ public class ElementHover implements XmlHover {
   private final TextDocumentItem documentItem;
   private final Position position;
   private final PositionalHandler.Factory handlerFactory;
+  private final XsAdapter.Factory adapterFactory;
 
   @Inject
   ElementHover(@Assisted String wordHovered,
                @Assisted SchemaDocument schemaDocument,
                @Assisted TextDocumentItem documentItem,
                @Assisted Position position,
-               PositionalHandler.Factory handlerFactory) {
+               PositionalHandler.Factory handlerFactory,
+               XsAdapter.Factory adapterFactory) {
     this.wordHovered = wordHovered;
     this.schemaDocument = schemaDocument;
     this.documentItem = documentItem;
     this.position = position;
     this.handlerFactory = handlerFactory;
+    this.adapterFactory = adapterFactory;
   }
 
   @Override
@@ -63,7 +66,7 @@ public class ElementHover implements XmlHover {
 
     // check if word hovered is the possible element at current position or not.
     if (element.isPresent() && element.get().getName().equals(wordHovered)) {
-      XsAdapter elementAdapter = new ElementAdapter(element.get());
+      XsAdapter elementAdapter = adapterFactory.createElementAdapter(element.get());
       content = elementAdapter.toMarkupContent();
     }
 
