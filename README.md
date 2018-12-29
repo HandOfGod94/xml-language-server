@@ -4,7 +4,7 @@
 > so I recommend all to use that as I won't be able to go ahead with the current project.  
 > Do check em out: https://github.com/angelozerr/lsp4xml, https://github.com/redhat-developer/vscode-xml
 
-![build-status](https://travis-ci.org/HandOfGod94/xml-language-server.svg?branch=master)
+![build-status](https://travis-ci.org/HandOfGod94/xml-language-server.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/HandOfGod94/xml-language-server/badge.svg?branch=dev)](https://coveralls.io/github/HandOfGod94/xml-language-server?branch=dev)
 
 Language server for XML documents. It enables and LSP client (VScode, Sublime LSP, Eclipse Che) to leverage 
 capabilities such as autocomplete, validation or documentation support for XML documents.
