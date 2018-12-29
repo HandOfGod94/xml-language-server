@@ -1,5 +1,7 @@
 package io.github.handofgod94.schema.wrappers;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import java.util.Iterator;
 import java.util.Optional;
@@ -24,13 +26,15 @@ public class ElementAdapter implements XsAdapter {
   private final String name;
   private final String namespace;
 
+
   /**
    * Creates new object. It will hold necessary the information
    * related elements.
    *
    * @param xsObject {@link XSElementDeclaration} object
    */
-  public ElementAdapter(XSObject xsObject) {
+  @Inject
+  ElementAdapter(@Assisted XSObject xsObject) {
     this.elementDeclaration = (XSElementDeclaration) xsObject;
     name = elementDeclaration.getName();
     namespace = elementDeclaration.getNamespace();

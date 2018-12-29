@@ -7,6 +7,9 @@ import io.github.handofgod94.common.document.DocumentManager;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.grammar.GrammarProcessor;
 import io.github.handofgod94.grammar.graph.LanguageGraphContext;
+import io.github.handofgod94.lsp.completion.AbstractXmlCompletion;
+import io.github.handofgod94.lsp.completion.AttributeCompletion;
+import io.github.handofgod94.lsp.completion.ElementCompletion;
 import io.github.handofgod94.lsp.completion.XmlCompletionFactory;
 import io.github.handofgod94.lsp.hover.AttributeHover;
 import io.github.handofgod94.lsp.hover.ElementHover;
@@ -15,6 +18,9 @@ import io.github.handofgod94.lsp.hover.XmlHoverFactory;
 import io.github.handofgod94.lsp.hover.provider.XmlHoverProviderFactory;
 import io.github.handofgod94.schema.resolve.SchemaResolver;
 import io.github.handofgod94.schema.resolve.XsdSchemaResolver;
+import io.github.handofgod94.schema.wrappers.AttributeAdapter;
+import io.github.handofgod94.schema.wrappers.ElementAdapter;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
 
 /**
  * Google guice module for Language server.
@@ -41,6 +47,14 @@ public class XmlLanguageServerModule extends AbstractModule {
         .implement(XmlHover.class, Names.named("Element"), ElementHover.class)
         .implement(XmlHover.class, Names.named("Attribute"), AttributeHover.class)
         .build(XmlHoverFactory.class));
+    install(new FactoryModuleBuilder()
+        .implement(XsAdapter.class, Names.named("Element"), ElementAdapter.class)
+        .implement(XsAdapter.class, Names.named("Attribute"), AttributeAdapter.class)
+        .build(XsAdapter.Factory.class));
+    install(new FactoryModuleBuilder()
+        .implement(AbstractXmlCompletion.class, Names.named("Element"), ElementCompletion.class)
+        .implement(AbstractXmlCompletion.class, Names.named("Attribute"), AttributeCompletion.class)
+        .build(AbstractXmlCompletion.Factory.class));
     install(new FactoryModuleBuilder().build(GrammarProcessor.Factory.class));
   }
 }

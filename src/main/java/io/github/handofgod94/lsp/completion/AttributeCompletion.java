@@ -1,5 +1,7 @@
 package io.github.handofgod94.lsp.completion;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.wrappers.AttributeAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
@@ -13,8 +15,14 @@ import org.apache.xerces.xs.XSTypeDefinition;
 
 public class AttributeCompletion extends AbstractXmlCompletion {
 
-  AttributeCompletion(SchemaDocument schemaDocument, QName qname) {
+  private final XsAdapter.Factory factory;
+
+  @Inject
+  AttributeCompletion(@Assisted SchemaDocument schemaDocument,
+                      @Assisted QName qname,
+                      XsAdapter.Factory factory) {
     super(schemaDocument, qname);
+    this.factory = factory;
   }
 
   @Override
@@ -34,7 +42,7 @@ public class AttributeCompletion extends AbstractXmlCompletion {
         // TODO: Monitor max and minoccurs in an element.
         // TODO: Add * for required attributes
 
-        attributeCompletionItems.add(new AttributeAdapter((XSObject) attrObject));
+        attributeCompletionItems.add(factory.cretAttributeAdatper((XSObject) attrObject));
       }
 
     } else {
