@@ -27,7 +27,8 @@ public class XmlState implements LSResourceResolver, ErrorHandler {
   private List<URI> schemaLocations = new ArrayList<>();
 
   @Override
-  public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+  public LSInput resolveResource(String type, String namespaceUri,
+                                 String publicId, String systemId, String baseUri) {
 
     if (systemId != null) {
       schemaLocations.add(URI.create(systemId));

@@ -65,8 +65,12 @@ public class XmlCompletionFactory {
 
       switch (triggerChar) {
         case ELEMENT_TRIGGER_CHAR:
-          if (currentScope.isPresent() && !currentScope.get().contains("meta")) return Optional.empty();
-          return Optional.of(completer.createEdeCompleter(schemaDocument, handler.getParentElement()));
+          if (currentScope.isPresent() && !currentScope.get().contains("meta")) {
+            return Optional.empty();
+          }
+          return Optional.of(
+              completer.createEdeCompleter(schemaDocument, handler.getParentElement())
+          );
         case ATTRIBUTE_TRIGGER_CHARACTER:
           if (currentScope.isPresent() && currentScope.get().contains("meta")) {
             return Optional.of(
@@ -83,13 +87,17 @@ public class XmlCompletionFactory {
       if (currentScope.isPresent()
           && currentScope.get().contains("tag")
           && currentScope.get().contains("entity")) {
-        return Optional.of(completer.createEdeCompleter(schemaDocument, handler.getParentElement()));
+        return Optional.of(
+            completer.createEdeCompleter(schemaDocument, handler.getParentElement())
+        );
       }
 
       if (currentScope.isPresent()
           && (currentScope.get().contains("attribute")
             || currentScope.get().contains("meta"))) {
-        return Optional.of(completer.createAttrCompleter(schemaDocument, handler.getCurrentElement()));
+        return Optional.of(
+            completer.createAttrCompleter(schemaDocument, handler.getCurrentElement())
+        );
       }
     }
 

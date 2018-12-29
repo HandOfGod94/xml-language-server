@@ -47,7 +47,7 @@ public class XsdSchemaResolver implements SchemaResolver {
 
       // TODO: set other information regarding schema.
       SchemaDocument document =
-        new SchemaDocument.Builder(xsModel, SchemaDocumentType.XSD)
+          new SchemaDocument.Builder(xsModel, SchemaDocumentType.XSD)
           .addNamespace(namespace)
           .addParsedSchemaDocs(generateParsedSchemaDocs(schemaLocations))
           .build();
@@ -70,7 +70,7 @@ public class XsdSchemaResolver implements SchemaResolver {
    * @throws IOException       Unable to create reader to read XSD.
    */
   private List<Document> generateParsedSchemaDocs(List<URI> schemaUris)
-    throws DocumentException, IOException {
+      throws DocumentException, IOException {
     StreamSource[] sources = generateSources(schemaUris);
     SAXReader reader = new SAXReader();
     List<Document> documents = new ArrayList<>();
