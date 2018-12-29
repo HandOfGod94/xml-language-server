@@ -34,6 +34,7 @@
     <junit.version>5.2.0</junit.version>
     <jacoco.version>0.8.1</jacoco.version>
     <jaxen.version>1.1.6</jaxen.version>
+    <coveralls.version>4.3.0</coveralls.version>
   </properties>
 
 
@@ -212,6 +213,11 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.eluder.coveralls</groupId>
+          <artifactId>coveralls-maven-plugin</artifactId>
+          <version>${coveralls.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -263,6 +269,10 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.eluder.coveralls</groupId>
+            <artifactId>coveralls-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
