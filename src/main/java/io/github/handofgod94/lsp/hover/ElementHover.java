@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.Assisted;
 import io.github.handofgod94.common.XmlUtil;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.schema.SchemaDocument;
-import io.github.handofgod94.schema.wrappers.ElementAdapter;
 import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.util.Optional;
 import javax.xml.namespace.QName;

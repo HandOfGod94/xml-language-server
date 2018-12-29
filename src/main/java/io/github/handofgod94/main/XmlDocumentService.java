@@ -125,7 +125,8 @@ public class XmlDocumentService implements TextDocumentService {
 
     if (errorMessages.isEmpty() && !openSchemas.containsKey(documentItem.getUri())) {
       // Load XSD Schema model
-      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem, xmlState.getSchemaLocations());
+      Optional<SchemaDocument> schemaDocumentOptional =
+          resolver.resolve(documentItem, xmlState.getSchemaLocations());
       schemaDocumentOptional
           .ifPresent(document -> openSchemas.put(documentItem.getUri(), document));
     }
@@ -164,7 +165,8 @@ public class XmlDocumentService implements TextDocumentService {
 
     if (errorMessages.isEmpty() && !openSchemas.containsKey(documentItem.getUri())) {
       // Load XSD Schema model
-      Optional<SchemaDocument> schemaDocumentOptional = resolver.resolve(documentItem, xmlState.getSchemaLocations());
+      Optional<SchemaDocument> schemaDocumentOptional =
+          resolver.resolve(documentItem, xmlState.getSchemaLocations());
       schemaDocumentOptional
           .ifPresent(document -> openSchemas.put(documentItem.getUri(), document));
     }

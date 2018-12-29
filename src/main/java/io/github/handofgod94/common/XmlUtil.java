@@ -10,11 +10,8 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,7 +32,6 @@ import org.apache.xerces.xs.XSModelGroupDefinition;
 import org.apache.xerces.xs.XSNamedMap;
 import org.apache.xerces.xs.XSObject;
 import org.apache.xerces.xs.XSParticle;
-import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -102,11 +98,23 @@ public class XmlUtil {
     }
   }
 
+  /**
+   * Recursively search in all the global elements present in XSD.
+   * The {@link XSElementDeclaration} is useful to get many information regarding
+   * element. It contains documentation, restrictions, patterns, attribute it uses
+   * and much more. This utility is thus useful to get all kind of information
+   * defined in XSD for an Element.
+   * @param xsModel Pre-loaded Xerces Schema model
+   * @param qname Name of the element which you want to search
+   * @return instance of XSElementDeclaration wrapped as Optional if found,
+   *     else Optional.empty()
+   */
   public static Optional<XSElementDeclaration> searchElement(XSModel xsModel, QName qname) {
     if (qname == null) return Optional.empty();
 
     // if present in global context, then directly send it
-    XSElementDeclaration global = xsModel.getElementDeclaration(qname.getLocalPart(), qname.getNamespaceURI());
+    XSElementDeclaration global =
+        xsModel.getElementDeclaration(qname.getLocalPart(), qname.getNamespaceURI());
     if (global != null) return Optional.of(global);
 
     // other wise search it in children
@@ -120,7 +128,9 @@ public class XmlUtil {
     return Optional.empty();
   }
 
-  private static Optional<XSElementDeclaration> searchElement(XSObject object, short type, QName qname) {
+  private static Optional<XSElementDeclaration> searchElement(XSObject object,
+                                                              short type,
+                                                              QName qname) {
     if (type == XSConstants.ELEMENT_DECLARATION) {
       XSElementDeclaration element = (XSElementDeclaration) object;
       if (element.getName().equals(qname.getLocalPart())
@@ -141,10 +151,11 @@ public class XmlUtil {
     if (type == XSConstants.MODEL_GROUP) {
       XSModelGroup modelGroup = (XSModelGroup) object;
       List<XSParticle> particles = modelGroup.getParticles();
-      for(XSParticle particle: particles) {
+      for (XSParticle particle: particles) {
         String name = particle.getTerm().getName();
-        if (name != null && name.equals(qname.getLocalPart()))
+        if (name != null && name.equals(qname.getLocalPart())) {
           return searchElement(particle.getTerm(), particle.getTerm().getType(), qname);
+        }
       }
     }
 

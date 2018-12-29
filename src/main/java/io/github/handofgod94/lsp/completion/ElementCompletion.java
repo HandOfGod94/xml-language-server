@@ -38,7 +38,7 @@ public class ElementCompletion extends AbstractXmlCompletion {
     if (typeDefinition.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE) {
       // if complex type, then getCompletionItems the children model group
       XSComplexTypeDefinition complexTypeDefinition =
-        (XSComplexTypeDefinition) typeDefinition;
+          (XSComplexTypeDefinition) typeDefinition;
       XSParticle rootParticle = complexTypeDefinition.getParticle();
 
       // Recursively look for all the applicable tags

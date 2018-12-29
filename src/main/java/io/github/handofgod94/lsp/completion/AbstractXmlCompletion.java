@@ -35,7 +35,8 @@ public abstract class AbstractXmlCompletion implements XmlCompletion {
   @Override
   public List<CompletionItem> getCompletions() {
     List<CompletionItem> items = new ArrayList<>();
-    Optional<XSElementDeclaration> element = XmlUtil.searchElement(schemaDocument.getXsModel(), qname);
+    Optional<XSElementDeclaration> element =
+        XmlUtil.searchElement(schemaDocument.getXsModel(), qname);
 
     element.ifPresent(e -> {
       items.addAll(
