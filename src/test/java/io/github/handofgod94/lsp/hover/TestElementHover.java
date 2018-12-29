@@ -2,11 +2,12 @@ package io.github.handofgod94.lsp.hover;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import io.github.handofgod94.AbstractLangServerTest;
+import io.github.handofgod94.AbstractXmlUnitTest;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestElementHover extends AbstractLangServerTest {
+public class TestElementHover extends AbstractXmlUnitTest {
 
   private String MOCK_XSD_TEXT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -57,8 +58,8 @@ public class TestElementHover extends AbstractLangServerTest {
   private SchemaDocument schemaDocument;
   private TextDocumentItem textDocumentItem;
 
-  @Inject
-  private PositionalHandler.Factory handlerFactory;
+  @Inject private PositionalHandler.Factory handlerFactory;
+  @Inject private XsAdapter.Factory adapterFactory;
 
 
   @BeforeEach
@@ -88,7 +89,7 @@ public class TestElementHover extends AbstractLangServerTest {
   public void testValidElement() {
     Position pos = new Position(2, 3);
     ElementHover hover = new ElementHover("elementWithDoc",
-      schemaDocument, textDocumentItem, pos, handlerFactory);
+      schemaDocument, textDocumentItem, pos, handlerFactory, adapterFactory);
 
     MarkupContent actualContent = hover.getHover().getContents().getRight();
 
@@ -107,7 +108,7 @@ public class TestElementHover extends AbstractLangServerTest {
   @MethodSource(value = "invalidPositionAndWords")
   public void testInvalidElement(Position position, String wordHovered) {
     ElementHover hover = new ElementHover(wordHovered,
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertEquals("", content.getValue());

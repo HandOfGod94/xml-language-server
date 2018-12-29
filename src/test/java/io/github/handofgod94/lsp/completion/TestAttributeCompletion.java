@@ -1,7 +1,10 @@
 package io.github.handofgod94.lsp.completion;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
 import io.github.handofgod94.AbstractXmlUnitTest;
 import io.github.handofgod94.schema.SchemaDocument;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.io.IOException;
 import java.util.List;
 import javax.xml.namespace.QName;
@@ -16,16 +19,19 @@ public class TestAttributeCompletion extends AbstractXmlUnitTest {
 
   private SchemaDocument schemaDocument;
 
+  @Inject private XsAdapter.Factory adapterFactory;
+
   @BeforeEach
   public void setup() throws IOException, SAXException {
     schemaDocument = createDummyXsdSchema();
+    Guice.createInjector(guiceModule).injectMembers(this);
   }
 
   @Test
   public void testValidCurrentElement() {
     QName currentElement = new QName("shipto");
     AttributeCompletion attr =
-        new AttributeCompletion(schemaDocument, currentElement);
+        new AttributeCompletion(schemaDocument, currentElement, adapterFactory);
     List<CompletionItem> actual = attr.getCompletions();
 
     assertEquals(1, actual.size());
@@ -37,8 +43,8 @@ public class TestAttributeCompletion extends AbstractXmlUnitTest {
   public void testInvalidCurrentElement() {
     QName invalidElement = new QName("dummy");
     QName emptyElement = new QName("shipper");
-    AttributeCompletion invalidAttr = new AttributeCompletion(schemaDocument, invalidElement);
-    AttributeCompletion emptyAttr = new AttributeCompletion(schemaDocument, emptyElement);
+    AttributeCompletion invalidAttr = new AttributeCompletion(schemaDocument, invalidElement, adapterFactory);
+    AttributeCompletion emptyAttr = new AttributeCompletion(schemaDocument, emptyElement, adapterFactory);
 
     assertEquals(0, invalidAttr.getCompletions().size());
     assertEquals(0, emptyAttr.getCompletions().size());

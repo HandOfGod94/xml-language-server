@@ -1,6 +1,7 @@
 package io.github.handofgod94;
 
 
+import io.github.handofgod94.main.XmlLanguageServerModule;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
 import java.io.File;
@@ -16,7 +17,9 @@ import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.xml.sax.SAXException;
 
-public class AbstractXmlUnitTest {
+public abstract class AbstractXmlUnitTest {
+  protected XmlLanguageServerModule guiceModule = new XmlLanguageServerModule();
+
   protected static final String DUMMY_URI = "dummyUri.xml";
   protected static final int DUMMY_VERSION = 1;
   protected static final String MOCK_XML_TEXT =

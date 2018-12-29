@@ -2,11 +2,12 @@ package io.github.handofgod94.lsp.hover;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import io.github.handofgod94.AbstractLangServerTest;
+import io.github.handofgod94.AbstractXmlUnitTest;
 import io.github.handofgod94.common.parser.PositionalHandler;
 import io.github.handofgod94.main.XmlLanguageServer;
 import io.github.handofgod94.schema.SchemaDocument;
 import io.github.handofgod94.schema.SchemaDocumentType;
+import io.github.handofgod94.schema.wrappers.XsAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,7 @@ import org.xml.sax.SAXException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestAttributeHover extends AbstractLangServerTest {
+public class TestAttributeHover extends AbstractXmlUnitTest {
 
   private String MOCK_XSD_TEXT =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -60,6 +61,7 @@ public class TestAttributeHover extends AbstractLangServerTest {
   private TextDocumentItem textDocumentItem;
 
   @Inject private PositionalHandler.Factory handlerFactory;
+  @Inject private XsAdapter.Factory adapterFactory;
 
   @BeforeEach
   public void setup() throws IOException, SAXException {
@@ -88,7 +90,7 @@ public class TestAttributeHover extends AbstractLangServerTest {
   public void testValidAttribute() {
     Position position = new Position(1, 11);
     AttributeHover hover = new AttributeHover("lang",
-      schemaDocument, textDocumentItem, position, handlerFactory);
+      schemaDocument, textDocumentItem, position, handlerFactory, adapterFactory);
     MarkupContent content = hover.getHover().getContents().getRight();
 
     assertTrue(content.getValue().contains("TYPE"));
