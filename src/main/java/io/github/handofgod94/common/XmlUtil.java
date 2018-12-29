@@ -49,13 +49,6 @@ public class XmlUtil {
 
   private static final Logger logger = LogManager.getLogger(XmlUtil.class.getName());
 
-  // XSD Constants
-  public static final String XSD_UNBOUNDED = "UNBOUNDED";
-  public static final String XSD_ANY = "any";
-  public static final String XSD_WC = "WC";
-  public static final Set<String> XSD_KEYS =
-      new HashSet<>(Arrays.asList("", XSD_UNBOUNDED, XSD_ANY, XSD_WC));
-
   /**
    * Initializes document lines.
    *
@@ -84,65 +77,6 @@ public class XmlUtil {
   }
 
   /**
-   * Attempts to partially complete the line and create a parsed doc out of it.
-   *
-   * @param line String which needs to be parsed
-   * @return String containing value of attribute
-   */
-  public static Optional<Document> getPartialDoc(String line) {
-    // TODO: improve implementation to handle cases.
-    // TODO: it's not always single element per line.
-    String trimmedLine = line.trim();
-
-    // first try directly parsing it, if its not successful
-    // we will getCompletionItems empty value
-    Optional<Document> optDocument = createParsedDoc(trimmedLine);
-    if (!optDocument.isPresent()) {
-      if (trimmedLine.startsWith("</")) {
-        // if its an ending line, as starting statement
-        String tag = trimmedLine.substring(2, trimmedLine.lastIndexOf(">"));
-        trimmedLine = "<" + tag + ">" + trimmedLine;
-      } else if (!trimmedLine.endsWith("/>") && trimmedLine.endsWith(">")) {
-        // If its a starting line, add an ending statement
-        trimmedLine = trimmedLine.substring(0, trimmedLine.lastIndexOf(">"));
-        trimmedLine += "/>";
-      }
-      return createParsedDoc(trimmedLine);
-    }
-
-    return optDocument;
-  }
-
-  /**
-   * Checks whether the given position in a give string
-   * is inside string or not.
-   *
-   * @param str   string to check in.
-   * @param index position in the string/
-   * @return true, if it's inside string, false otherwise
-   */
-  public static boolean isInsideString(String str, int index) {
-    // flag to check if we have a matching quote or not
-    boolean isInsideString = false;
-
-    for (int i = 0; i < str.length(); i++) {
-      Character character = str.charAt(i);
-      // if index becomes less then i, then return it
-      // it means we have found the result
-      if (index <= i) {
-        return isInsideString;
-      }
-
-      // otherwise whenever we encounter quotes(")
-      // toggle the flag.
-      if (character == '"') {
-        isInsideString = !isInsideString;
-      }
-    }
-    return isInsideString;
-  }
-
-  /**
    * Parses XML text using PositionalHandler provided.
    * It's assumed that handler is initialized and is not null.
    * After parsing parent and current elements can be accessed using getters.
@@ -167,7 +101,9 @@ public class XmlUtil {
   }
 
   public static Optional<XSElementDeclaration> searchElement(XSModel xsModel, QName qname) {
-    // if presnet in global context, then directly send it
+    if (qname == null) return Optional.empty();
+
+    // if present in global context, then directly send it
     XSElementDeclaration global = xsModel.getElementDeclaration(qname.getLocalPart(), qname.getNamespaceURI());
     if (global != null) return Optional.of(global);
 
