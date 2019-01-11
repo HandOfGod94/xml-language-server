@@ -1,8 +1,10 @@
 # XML Language Server
 
 > I started this project when there was no XML Plugin available for VSCode. But now we have XML Plugin by RedHat available, 
-> so I recommend all to use that as I won't be able to go ahead with the current project.  
-> Do check em out: https://github.com/angelozerr/lsp4xml, https://github.com/redhat-developer/vscode-xml
+> so I recommend all to use that.  
+> Do check em out: https://github.com/angelozerr/lsp4xml, https://github.com/redhat-developer/vscode-xml.  
+> I will continue improving the current one, but not having the freedom to dedicate time on it
+> may take a bit longer to finish it.
 
 ![build-status](https://travis-ci.org/HandOfGod94/xml-language-server.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/HandOfGod94/xml-language-server/badge.svg?branch=dev)](https://coveralls.io/github/HandOfGod94/xml-language-server?branch=dev)
 
